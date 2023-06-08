@@ -1,21 +1,31 @@
-import { CssBaseline, createTheme } from "@mui/material";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { ThemeProvider } from "styled-components";
+import { Button, CssBaseline, ThemeProvider, createTheme } from "@mui/material";
+import { Route, Routes } from "react-router-dom";
 import TimerPage from "./scenes/timerPage/TimerPage";
 import { useMemo } from "react";
+import { themeSettings } from "./theme";
+import ThemePage from "./scenes/themePage/ThemePage";
+import "./App.css";
+import HomePage from "./scenes/homePage/HomePage";
+import NavBar from "./scenes/navbar/NavBar";
 
 function App() {
   const mode = "light";
-  const theme = useMemo(() => createTheme(mode), [mode]);
+  const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<TimerPage />} />
-        </Routes>
-      </BrowserRouter>
+      <div className="app">
+        <div className="mainContent">
+          <Routes>
+            <Route path="/" element={<NavBar />}>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/timer" element={<TimerPage />} />
+              <Route path="/theme" element={<ThemePage />} />
+            </Route>
+          </Routes>
+        </div>
+      </div>
     </ThemeProvider>
   );
 }
