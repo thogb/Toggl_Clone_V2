@@ -9,12 +9,13 @@ export const themeSettings = (mode) => {
       ...(mode === "light"
         ? {
             primary: {
-              main: "#220a2e",
+              main: "#2c1338",
+              dark: "#220a2e",
             },
             secondary: {
               main: "#c95ebe",
             },
-            primary1: augmentColor({ color: { main: "#2c1338" } }),
+            primary1: augmentColor({ color: { main: "#95899a" } }),
           }
         : {}),
     },
