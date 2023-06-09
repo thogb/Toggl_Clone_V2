@@ -42,10 +42,6 @@ const NavBar = () => {
   const { palette } = theme;
   const belowMd = useMediaQuery(theme.breakpoints.down("md"));
 
-  useEffect(() => {
-    setIsMDrawerOpen(false);
-  }, [belowMd]);
-
   const drawerWidth = DRAWER_WIDTH;
   const appbarHeight = APPBAR_HEIGHT;
   const leftDrawerWidth = 47;
@@ -252,20 +248,22 @@ const NavBar = () => {
   return (
     <Box>
       {/* Drawer */}
-      <Drawer
-        variant="temporary"
-        open={isMDrawerOpen}
-        onClose={handleDrawerToggle}
-        ModalProps={{ keepMounted: true }}
-        sx={{
-          "& .MuiDrawer-paper": {
-            boxSizing: "border-box",
-            width: { xs: drawerWidth * 1.5, md: drawerWidth },
-          },
-        }}
-      >
-        {drawer}
-      </Drawer>
+      {belowMd && (
+        <Drawer
+          variant="temporary"
+          open={isMDrawerOpen}
+          onClose={handleDrawerToggle}
+          ModalProps={{ keepMounted: true }}
+          sx={{
+            "& .MuiDrawer-paper": {
+              boxSizing: "border-box",
+              width: { xs: drawerWidth * 1.5, md: drawerWidth },
+            },
+          }}
+        >
+          {drawer}
+        </Drawer>
+      )}
       <Drawer
         variant="permanent"
         sx={{
