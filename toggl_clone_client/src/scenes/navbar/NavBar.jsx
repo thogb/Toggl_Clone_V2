@@ -9,7 +9,7 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
 import { APPBAR_HEIGHT, DRAWER_WIDTH } from "../../utils/constants";
 import SideNavBarButton from "./SideNavBarButton";
@@ -39,7 +39,6 @@ const NavBar = () => {
   const [isMDrawerOpen, setIsMDrawerOpen] = useState(false);
 
   const theme = useTheme();
-  const { palette } = theme;
   const belowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const drawerWidth = DRAWER_WIDTH;
@@ -139,6 +138,7 @@ const NavBar = () => {
           borderColor={"primary.dark"}
           p={1.5}
           display={"flex"}
+          justifyContent={"space-between"}
           sx={{
             "&:hover": {
               cursor: "pointer",
@@ -257,7 +257,7 @@ const NavBar = () => {
           sx={{
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
-              width: { xs: drawerWidth * 1.5, md: drawerWidth },
+              width: { xs: drawerWidth * 2.0, md: drawerWidth },
             },
           }}
         >
@@ -314,13 +314,21 @@ const NavBar = () => {
         <AppBar position="sticky" sx={{ display: { xs: "block", md: "none" } }}>
           <Toolbar sx={{ height: `${appbarHeight}px` }}>
             <IconButton
-              sx={{ color: "white", mr: (theme) => theme.spacing(2) }}
+              sx={{ color: "white", mr: (theme) => theme.spacing(1) }}
               onClick={handleDrawerToggle}
             >
               <MenuIcon />
             </IconButton>
-            <Typography variant="h6" color={"white"}>
-              toggl track
+            <Typography
+              variant="h4"
+              color={"secondary.light"}
+              fontWeight={900}
+              mr={1}
+            >
+              toggl
+            </Typography>
+            <Typography variant="h5" color={"secondary.light"}>
+              track
             </Typography>
           </Toolbar>
         </AppBar>
