@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/material";
+import { alpha, createTheme } from "@mui/material";
 
 export const themeSettings = (mode) => {
   const theme = createTheme();
@@ -17,7 +17,19 @@ export const themeSettings = (mode) => {
             },
             primary1: augmentColor({ color: { main: "#95899a" } }),
           }
-        : {}),
+        : {
+            primary1: augmentColor({ color: { main: "#95899a" } }),
+          }),
+    },
+    components: {
+      MuiBackdrop: {
+        styleOverrides: {
+          root: ({ theme }) =>
+            theme.unstable_sx({
+              backgroundColor: alpha(theme.palette.primary.main, 0.7),
+            }),
+        },
+      },
     },
   };
 };
