@@ -16,10 +16,6 @@ code {
   width: 4px;
 }
 
-::-webkit-scrollbar:hover {
-  width: 20px;
-}
-
 /* Track */
 ::-webkit-scrollbar-track {
   background: transparent;
@@ -27,10 +23,10 @@ code {
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #e57cd8;
+  background: conic-gradient(#e57cd8 0deg, #e57cd8 180deg, transparent 180deg);
 }
 
-/* Handle on hover
+/* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  width: 10px;
-} */
+  background: #e57cd8;
+}
