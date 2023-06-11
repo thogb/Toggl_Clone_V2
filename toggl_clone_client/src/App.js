@@ -1,4 +1,4 @@
-import { Button, CssBaseline, ThemeProvider, createTheme } from "@mui/material";
+import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import { Route, Routes } from "react-router-dom";
 import TimerPage from "./scenes/timerPage/TimerPage";
 import { useMemo } from "react";
@@ -10,6 +10,7 @@ import NavBar from "./scenes/navbar/NavBar";
 
 function App() {
   const mode = "light";
+  // const mode = "dark";
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
 
   return (
