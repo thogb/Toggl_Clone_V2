@@ -16,6 +16,9 @@ const StyledButton = styled(Button)(({ theme }) => ({
   "&:focus > svg": {
     color: "var(--color-focus)",
   },
+  "&:disabled > svg": {
+    color: "var(--color-disabled)",
+  },
 }));
 
 const TTIconButton = ({
@@ -24,12 +27,14 @@ const TTIconButton = ({
   color,
   colorHover,
   colorFocus,
+  colorDisabled,
   ...other
 }) => {
   const style = {
     "--color": color ?? grey[800],
     "--color-hover": colorHover ?? grey[900],
     "--color-focus": colorFocus ?? "",
+    "--color-disabled": colorDisabled ?? color ?? grey[800],
   };
 
   return (
@@ -39,6 +44,7 @@ const TTIconButton = ({
       disableTouchRipple
       disableFocusRipple
       style={style}
+      {...other}
     >
       {children}
     </StyledButton>
