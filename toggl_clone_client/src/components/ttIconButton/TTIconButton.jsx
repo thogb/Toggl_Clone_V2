@@ -44,6 +44,7 @@ const TTIconButton = ({
       disableTouchRipple
       disableFocusRipple
       style={style}
+      onClick={onClick}
       {...other}
     >
       {children}

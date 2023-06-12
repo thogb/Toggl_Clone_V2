@@ -34,7 +34,13 @@ const StyledButton = styled(Button)(({ theme }) => ({
   // },
 }));
 
-const CircularStartButton = ({ size = 40, borderColor = null, ...others }) => {
+const CircularStartButton = ({
+  size = 40,
+  borderColor = null,
+  onClick,
+  children,
+  ...others
+}) => {
   const theme = useTheme();
   const unit = "px";
   const style = {
@@ -50,8 +56,10 @@ const CircularStartButton = ({ size = 40, borderColor = null, ...others }) => {
       disableElevation
       disableTouchRipple
       style={style}
+      onClick={onClick}
+      {...others}
     >
-      {others.children}
+      {children}
     </StyledButton>
   );
 };
