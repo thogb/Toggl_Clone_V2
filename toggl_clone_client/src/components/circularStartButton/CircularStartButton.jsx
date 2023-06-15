@@ -14,9 +14,13 @@ const StyledButton = styled(Button)(({ theme }) => ({
   height: "var(--button-size)",
   padding: 0,
   boxSizing: "content-box",
-  boxShadow: `0px 0px 0px 5px ${alpha(theme.palette.secondary.main, 0.2)}`,
+  transition: theme.transitions.create("box-shadow", { duration: 100 }),
+  boxShadow: `0px 0px 0px var(--shadow-size) var(--shadow-color)`,
   "&:hover": {
-    boxShadow: `0px 0px 0px 3px ${alpha(theme.palette.secondary.main, 0.2)}`,
+    boxShadow: `0px 0px 0px var(--shadow-hover-size) var(--shadow-hover-color)`,
+  },
+  "&:focus": {
+    boxShadow: `0px 0px 0px var(--shadow-focus-size) var(--shadow-focus-color)`,
   },
   // "&::after": {
   //   content: '""',
@@ -35,23 +39,55 @@ const StyledButton = styled(Button)(({ theme }) => ({
 }));
 
 const CircularStartButton = ({
-  size = 40,
-  borderColor = null,
+  size = "40px",
+  shadow,
+  shadowHover,
+  shadowFocus,
   onClick,
   children,
+  bgColor = "secondary",
+  disabled = false,
   ...others
 }) => {
   const theme = useTheme();
-  const unit = "px";
+  shadow = {
+    ...{
+      size: "5px",
+      color: theme.palette.secondary.main,
+      opacity: 0.2,
+    },
+    ...shadow,
+  };
+  shadowHover = {
+    ...{
+      size: "5px",
+      color: theme.palette.secondary.main,
+      opacity: 0.2,
+    },
+    ...shadowHover,
+  };
+  shadowFocus = {
+    ...{
+      size: "5px",
+      color: theme.palette.secondary.main,
+      opacity: 0.2,
+    },
+    ...shadowFocus,
+  };
   const style = {
-    "--button-size": `${size}${unit}`,
-    "--shadow-color": alpha(borderColor ?? theme.palette.secondary.main, 0.2),
+    "--button-size": size,
+    "--shadow-color": alpha(shadow.color, shadow.opacity),
+    "--shadow-size": shadow.size,
+    "--shadow-hover-color": alpha(shadowHover.color, shadowHover.opacity),
+    "--shadow-hover-size": shadowHover.size,
+    "--shadow-focus-color": alpha(shadowFocus.color, shadowFocus.opacity),
+    "--shadow-focus-size": shadowFocus.size,
   };
 
   return (
     <StyledButton
       variant="contained"
-      color="secondary"
+      color={bgColor}
       disableRipple
       disableElevation
       disableTouchRipple
