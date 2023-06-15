@@ -1,6 +1,7 @@
 import { alpha, createTheme } from "@mui/material";
 
 export const themeSettings = (mode) => {
+  const spacing = 8;
   const theme = createTheme();
   const { augmentColor } = theme.palette;
   return {
@@ -21,12 +22,26 @@ export const themeSettings = (mode) => {
             primary1: augmentColor({ color: { main: "#95899a" } }),
           }),
     },
+    spacing: spacing,
+    ttSpacings: {
+      page: {
+        px: 2.5,
+      },
+    },
     components: {
       MuiBackdrop: {
         styleOverrides: {
           root: ({ theme }) =>
             theme.unstable_sx({
               backgroundColor: alpha(theme.palette.primary.main, 0.7),
+            }),
+        },
+      },
+      MuiButton: {
+        styleOverrides: {
+          root: ({ theme }) =>
+            theme.unstable_sx({
+              textTransform: "capitalize",
             }),
         },
       },
