@@ -5,7 +5,7 @@ import React from "react";
 
 const StyledButton = styled(Button)(({ theme }) => ({
   minWidth: 0,
-  padding: 2,
+  padding: theme.spacing(1),
   "&>svg": {
     fontSize: theme.typography.h6.fontSize,
     color: "var(--color)",
@@ -28,13 +28,15 @@ const TTIconButton = ({
   colorHover,
   colorFocus,
   colorDisabled,
+  padding,
   ...other
 }) => {
   const style = {
     "--color": color ?? grey[800],
     "--color-hover": colorHover ?? grey[900],
     "--color-focus": colorFocus ?? "",
-    "--color-disabled": colorDisabled ?? color ?? grey[800],
+    "--color-disabled": colorDisabled ?? color ?? grey[400],
+    padding,
   };
 
   return (
