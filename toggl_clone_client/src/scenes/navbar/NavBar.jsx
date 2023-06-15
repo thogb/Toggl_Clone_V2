@@ -217,6 +217,11 @@ const NavBar = () => {
               icon={<PowerIcon />}
               to={"/integerations"}
             />
+            <TTListItemButton
+              label={"Testing"}
+              icon={<PowerIcon />}
+              to={"/testing"}
+            />
           </TTSideMenuList>
         </Box>
 
