@@ -21,6 +21,9 @@ const TTPopOver = ({
       onClose={onClose}
       anchorOrigin={anchorOrigin ?? { vertical: "bottom", horizontal: "left" }}
       disableScrollLock
+      disableEnforceFocus
+      disableAutoFocus
+      disableRestoreFocus
       sx={{
         "& .MuiBackdrop-root": {
           backgroundColor: "transparent",
