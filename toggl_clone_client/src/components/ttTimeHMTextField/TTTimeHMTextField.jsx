@@ -2,7 +2,12 @@ import styled from "@emotion/styled";
 import { InputBase } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import React, { useEffect, useMemo, useState } from "react";
-import { convert12Hto24H, formatDateHMA } from "../../utils/TTDateUtil";
+import {
+  convert12Hto24H,
+  formatDateHMA,
+  parseDateHMA,
+} from "../../utils/TTDateUtil";
+import { isValid } from "date-fns";
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
   fontSize: theme.typography.body1.fontSize,
@@ -46,10 +51,7 @@ const TTTimeHMTextField = ({
   ...others
 }) => {
   const [value, setValue] = useState("");
-
-  useEffect(() => {
-    formatDate(date);
-  }, []);
+  const [isFocused, setisFocused] = useState(false);
 
   const className = useMemo(() => {
     const classNames = [];
@@ -68,7 +70,7 @@ const TTTimeHMTextField = ({
     } catch (e) {
       const newDate = new Date();
       onDateChange(newDate);
-      formatDate(newDate);
+      // formatDate(newDate);
     }
   };
 
@@ -77,11 +79,13 @@ const TTTimeHMTextField = ({
   };
 
   const handleFocus = (e) => {
+    setisFocused(true);
     if (onFocus) onFocus(e);
     if (selectOnFocus) e.currentTarget.select();
   };
 
   const handleBlur = (e) => {
+    setisFocused(false);
     if (onBlur) onBlur(e);
     const cleanValue = value
       .toUpperCase()
@@ -93,7 +97,7 @@ const TTTimeHMTextField = ({
 
     // verified that either end with digit A or P
     if (cleanValue.length <= 0 || !/[AP0-9]$/.test(cleanValue)) {
-      formatDate(date);
+      // formatDate(date);
       return;
     }
 
@@ -113,7 +117,7 @@ const TTTimeHMTextField = ({
       splitted.length > 2 ||
       splitted.some((v) => v === "" && !Number.isInteger(Number(v)))
     ) {
-      formatDate(date);
+      // formatDate(date);
       return;
     }
     console.log(splitted);
@@ -125,7 +129,7 @@ const TTTimeHMTextField = ({
       const allDigit = splitted[0];
 
       if (allDigit.length > 4) {
-        formatDate(date);
+        // formatDate(date);
         return;
       } else if (allDigit.length > 2) {
         const mid = allDigit.length - 2;
@@ -144,8 +148,10 @@ const TTTimeHMTextField = ({
     hour = strPart ? convert12Hto24H(hour, strPart === "A") : hour;
     console.log("hour: " + hour + " minute: " + minute);
 
-    if (!(hour >= 0 && hour <= 23 && minute >= 0 && minute <= 59)) {
-      formatDate(date);
+    if (
+      !(hour !== null && hour >= 0 && hour <= 23 && minute >= 0 && minute <= 59)
+    ) {
+      // formatDate(date);
       return;
     }
 
@@ -155,12 +161,16 @@ const TTTimeHMTextField = ({
     const newDate = new Date(date);
     console.log(newDate);
     onDateChange(newDate);
-    formatDate(newDate);
+    // formatDate(newDate);
   };
 
   const handleKeyDown = (e) => {};
 
   const style = {};
+
+  if (!isFocused && !isValid(parseDateHMA(value))) {
+    formatDate(date);
+  }
 
   return (
     <StyledInputBase
