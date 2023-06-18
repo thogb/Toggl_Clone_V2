@@ -30,8 +30,11 @@ const TTPopOver = ({
         },
 
         "& .MuiPaper-root": {
+          borderRadius: "8px",
           display: "flex",
-          px: 1 / 2,
+          flexDirection: "column",
+          overflowY: "auto",
+          // px: 1 / 2,
           ...(size !== "none" ? { width: `${SIZES[size]}px` } : {}),
         },
       }}
