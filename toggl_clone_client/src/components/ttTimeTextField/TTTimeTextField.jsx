@@ -1,8 +1,7 @@
 import styled from "@emotion/styled";
 import { InputBase } from "@mui/material";
 import { grey } from "@mui/material/colors";
-import React, { useEffect, useState } from "react";
-import { Form } from "react-router-dom";
+import React, { useEffect, useMemo, useState } from "react";
 import { minuteToTimeObj } from "../../utils/TTDateUtil";
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
@@ -15,6 +14,9 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   "&.TTTimeTextField-small": {
     fontSize: theme.typography.body1.fontSize,
     color: theme.palette.text.primary,
+  },
+  "&.TTTimeTextField-withPopOver": {
+    zIndex: theme.zIndex.modal + 1,
   },
   "& > input": {
     textAlign: "center",
@@ -31,6 +33,7 @@ const DEFAULT_VALUE = "0:00:00";
 
 const TTTimeTextField = ({
   size,
+  withPopOver,
   minute,
   height,
   onFocus,
@@ -43,6 +46,16 @@ const TTTimeTextField = ({
   useEffect(() => {
     formatMinute(minute);
   }, []);
+
+  const className = useMemo(() => {
+    const classNames = [];
+    if (size) {
+      if (size === "sm") classNames.push("TTTimeTextField-small");
+    }
+    if (withPopOver) classNames.push("TTTimeTextField-withPopOver");
+
+    return classNames.length > 0 ? classNames.join(" ") : null;
+  }, [size, withPopOver]);
 
   const handleChange = (e) => {
     setValue(e.target.value);
@@ -77,11 +90,6 @@ const TTTimeTextField = ({
 
     // console.log("on focus textfield + ");
     // console.log(e.relatedTarget);
-  };
-
-  const getNumber = (str) => {
-    const num = Number(str);
-    return Number.isFinite(num) ? num : 0;
   };
 
   const handleBlur = (e) => {
@@ -127,7 +135,7 @@ const TTTimeTextField = ({
 
   return (
     <StyledInputBase
-      className={size === "sm" ? "TTTimeTextField-small" : null}
+      className={className}
       value={value}
       onChange={handleChange}
       onFocus={handleFocus}
