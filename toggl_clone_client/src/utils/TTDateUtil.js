@@ -1,4 +1,4 @@
-import { format, isEqual, parse } from "date-fns";
+import { format, isEqual, isToday, parse } from "date-fns";
 import { DATE_FORMAT, REFERENCE_DATE, TIME_FORMAT } from "./constants";
 
 export const isDateToday = (date) => {
@@ -12,11 +12,28 @@ export const isDateToday = (date) => {
 };
 
 export const formatDateMD = (date) => {
-  return format(date, "MM/dd");
+  return isToday(date) ? "Today" : format(date, "MM/dd");
 };
 
 export const formatDateHMA = (date) => {
   return format(date, TIME_FORMAT);
+};
+
+export const parseDateHMA = (str) => {
+  return parse(str, TIME_FORMAT, REFERENCE_DATE);
+};
+
+export const getDaysBetween = (start, end) => {
+  const newStart = new Date(
+    start.getFullYear(),
+    start.getMonth(),
+    start.getDate()
+  );
+  const newEnd = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+
+  return Math.floor(
+    (newEnd.getTime() - newStart.getTime()) / (24 * 60 * 60 * 1000)
+  );
 };
 
 export const minuteToTimeObj = (minute) => {
@@ -35,4 +52,14 @@ export const timeObjToMinute = (timeObj) => {
     timeObj.minute +
     Number((timeObj.second / 60).toFixed(2))
   );
+};
+
+export const convert12Hto24H = (hour, isAM) => {
+  if (!(hour >= 1 && hour <= 12)) return null;
+
+  if (isAM) {
+    return hour === 12 ? 0 : hour;
+  } else {
+    return hour < 12 ? hour + 12 : hour;
+  }
 };
