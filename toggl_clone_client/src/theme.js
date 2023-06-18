@@ -27,6 +27,9 @@ export const themeSettings = (mode) => {
       page: {
         px: 2.5,
       },
+      popOver: {
+        px: 2,
+      },
     },
     components: {
       MuiBackdrop: {
