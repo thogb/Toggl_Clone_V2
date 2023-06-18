@@ -45,7 +45,7 @@ const TTTimeTextField = ({
 
   useEffect(() => {
     formatMinute(minute);
-  }, []);
+  }, [minute]);
 
   const className = useMemo(() => {
     const classNames = [];
@@ -60,7 +60,6 @@ const TTTimeTextField = ({
   const handleChange = (e) => {
     setValue(e.target.value);
   };
-  console.log(minute);
   // From value of minute update to value in string format
   const formatMinute = (inMinute) => {
     if (Number.isFinite(inMinute)) {
@@ -87,9 +86,6 @@ const TTTimeTextField = ({
   const handleFocus = (e) => {
     if (onFocus) onFocus(e);
     e.currentTarget.select();
-
-    // console.log("on focus textfield + ");
-    // console.log(e.relatedTarget);
   };
 
   const handleBlur = (e) => {
@@ -118,9 +114,6 @@ const TTTimeTextField = ({
     }
 
     formatMinute(newMinutes);
-    console.log("onblur = " + newMinutes);
-    // console.log(e);
-    // console.log(e.currentTarget);
   };
 
   const handleKeyDown = (e) => {
