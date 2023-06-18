@@ -53,6 +53,10 @@ const TTTimeHMTextField = ({
   const [value, setValue] = useState("");
   const [isFocused, setisFocused] = useState(false);
 
+  useEffect(() => {
+    formatDate(date);
+  }, [date]);
+
   const className = useMemo(() => {
     const classNames = [];
     if (size) {
@@ -92,8 +96,6 @@ const TTTimeHMTextField = ({
       .replace(/[ ]+/g, "")
       .replace("AM", "A")
       .replace("PM", "P");
-    console.log(cleanValue);
-    console.log(cleanValue.length <= 0 || !/[AP0-9]$/.test(cleanValue));
 
     // verified that either end with digit A or P
     if (cleanValue.length <= 0 || !/[AP0-9]$/.test(cleanValue)) {
@@ -120,7 +122,6 @@ const TTTimeHMTextField = ({
       // formatDate(date);
       return;
     }
-    console.log(splitted);
 
     let hour = null;
     let minute = null;
@@ -144,9 +145,7 @@ const TTTimeHMTextField = ({
       minute = Number(splitted[1]);
     }
 
-    console.log("hour: " + hour + " minute: " + minute);
     hour = strPart ? convert12Hto24H(hour, strPart === "A") : hour;
-    console.log("hour: " + hour + " minute: " + minute);
 
     if (
       !(hour !== null && hour >= 0 && hour <= 23 && minute >= 0 && minute <= 59)
@@ -159,7 +158,6 @@ const TTTimeHMTextField = ({
     date.setMinutes(minute);
 
     const newDate = new Date(date);
-    console.log(newDate);
     onDateChange(newDate);
     // formatDate(newDate);
   };
