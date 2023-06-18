@@ -4,7 +4,7 @@ import { DateCalendar, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import React from "react";
 
-const StyledDatCalender = styled(DateCalendar)(({ theme }) => ({
+const StyledDateCalender = styled(DateCalendar)(({ theme }) => ({
   "& .MuiPickersCalendarHeader-root": {
     "& .MuiPickersCalendarHeader-label": {
       fontSize: theme.typography.h5.fontSize,
@@ -59,15 +59,15 @@ const StyledDatCalender = styled(DateCalendar)(({ theme }) => ({
 
 const TTDateCalender = (props) => {
   return (
-    <LocalizationProvider adapterLocale={AdapterDateFns}>
-      <StyledDatCalender
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <StyledDateCalender
         slotProps={{
           day: { disableRipple: true },
           nextIconButton: { disableRipple: true },
           previousIconButton: { disableRipple: true },
         }}
         {...props}
-      ></StyledDatCalender>
+      ></StyledDateCalender>
     </LocalizationProvider>
   );
 };
