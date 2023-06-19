@@ -47,6 +47,7 @@ const CircularStartButton = ({
   children,
   bgColor = "secondary",
   disabled = false,
+  style,
   ...others
 }) => {
   const theme = useTheme();
@@ -74,7 +75,7 @@ const CircularStartButton = ({
     },
     ...shadowFocus,
   };
-  const style = {
+  const finalStyle = {
     "--button-size": size,
     "--shadow-color": alpha(shadow.color, shadow.opacity),
     "--shadow-size": shadow.size,
@@ -82,6 +83,7 @@ const CircularStartButton = ({
     "--shadow-hover-size": shadowHover.size,
     "--shadow-focus-color": alpha(shadowFocus.color, shadowFocus.opacity),
     "--shadow-focus-size": shadowFocus.size,
+    ...style,
   };
 
   return (
@@ -91,7 +93,7 @@ const CircularStartButton = ({
       disableRipple
       disableElevation
       disableTouchRipple
-      style={style}
+      style={finalStyle}
       onClick={onClick}
       {...others}
     >
