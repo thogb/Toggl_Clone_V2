@@ -22,6 +22,9 @@ const TTPopper = ({
   placement,
   size = "lg",
   children,
+  style,
+  gap,
+  offset,
   ...other
 }) => {
   const theme = useTheme();
@@ -30,19 +33,26 @@ const TTPopper = ({
   //   const id = open ? "simple-popper" : undefined;
 
   return (
-    <Box>
+    <>
       <Popper
         // id={id}
         open={openPopper}
-        disablePortal
+        // disablePortal
         anchorEl={anchorEl}
         placement={placement ?? "bottom-start"}
-        style={{ zIndex: theme.zIndex.modal + 2 }}
+        modifiers={[
+          offset ? { name: "offset", options: { offset: offset } } : {},
+        ]}
+        style={{
+          zIndex: theme.zIndex.modal + 2,
+          ...style,
+        }}
         {...other}
       >
         <StyledPaper
           elevation={8}
           style={{
+            margin: gap,
             ...(size !== "none" ? { width: `${SIZES[size]}px` } : {}),
           }}
         >
@@ -50,11 +60,11 @@ const TTPopper = ({
         </StyledPaper>
       </Popper>
       <Backdrop
-        style={{ backgroundColor: "transparent" }}
+        style={{ backgroundColor: "transparent", zIndex: theme.zIndex.modal }}
         open={openPopper}
         onClick={() => onClose()}
       ></Backdrop>
-    </Box>
+    </>
   );
 };
 
