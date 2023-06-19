@@ -11,7 +11,6 @@ import { isValid } from "date-fns";
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
   fontSize: theme.typography.body1.fontSize,
-  minWidth: "8ch",
   color: theme.palette.text.primary,
   fontWeight: 400,
   padding: theme.spacing(0, 1.5),
@@ -19,21 +18,12 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   borderColor: grey[300],
   borderWidth: "1px",
   borderStyle: "solid",
-  // backgroundColor: grey[300],
-  //   color: grey[600],
-  // "&.TTTimeTextField-small": {
-  //   fontSize: theme.typography.body1.fontSize,
-  //   color: theme.palette.text.primary,
-  // },
   "&.TTTimeTextField-withPopOver": {
     zIndex: theme.zIndex.modal + 1,
   },
   "& .MuiInputAdornment-root": {
     marginLeft: theme.spacing(3 / 4),
   },
-  // "& > input:focus": {
-  //   color: theme.palette.text.primary,
-  // },
   "& > input::selection": {
     backgroundColor: grey[400],
   },
@@ -63,9 +53,10 @@ const TTTimeHMTextField = ({
       if (size === "sm") classNames.push("TTTimeTextField-small");
     }
     if (withPopOver) classNames.push("TTTimeTextField-withPopOver");
+    if (others.className) classNames.push(others.className);
 
     return classNames.length > 0 ? classNames.join(" ") : null;
-  }, [size, withPopOver]);
+  }, [size, withPopOver, others.className]);
 
   const formatDate = (inDate) => {
     try {
@@ -83,6 +74,7 @@ const TTTimeHMTextField = ({
   };
 
   const handleFocus = (e) => {
+    console.log(date);
     setisFocused(true);
     if (onFocus) onFocus(e);
     if (selectOnFocus) e.currentTarget.select();
@@ -154,17 +146,14 @@ const TTTimeHMTextField = ({
       return;
     }
 
-    date.setHours(hour);
-    date.setMinutes(minute);
-
     const newDate = new Date(date);
+    newDate.setHours(hour);
+    newDate.setMinutes(minute);
     onDateChange(newDate);
     // formatDate(newDate);
   };
 
   const handleKeyDown = (e) => {};
-
-  const style = {};
 
   if (!isFocused && !isValid(parseDateHMA(value))) {
     formatDate(date);
@@ -173,14 +162,13 @@ const TTTimeHMTextField = ({
   return (
     <StyledInputBase
       value={value}
-      className={className}
       onChange={handleChange}
       onFocus={handleFocus}
       onBlur={handleBlur}
       onKeyDown={handleKeyDown}
-      style={style}
       endAdornment={endAdornment}
       {...others}
+      className={className}
     />
   );
 };
