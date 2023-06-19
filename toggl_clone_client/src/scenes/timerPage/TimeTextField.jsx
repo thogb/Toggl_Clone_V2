@@ -4,6 +4,7 @@ import TTDateCalender from "../../components/TTDateCalender/TTDateCalender";
 import {
   Badge,
   Box,
+  Divider,
   Fade,
   InputAdornment,
   Stack,
@@ -13,16 +14,14 @@ import TTTimeHMTextField from "../../components/ttTimeHMTextField/TTTimeHMTextFi
 import { useTheme } from "@emotion/react";
 import { formatDateMD, getDaysBetween } from "../../utils/TTDateUtil";
 import TTPopper from "../../components/ttPopper/TTPopper";
+import { entryDatesActions } from "./EntryDatesReducer";
 
 const TimeTextField = ({
-  startDate,
-  onStartDateChange,
-  stopDate,
-  onStopDateChange,
-  durationMin,
-  onDurationMinChange,
+  entryDates,
+  entryDatesDispatch,
   staticStop = true,
   onFocus,
+  onPopperClose,
 }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const theme = useTheme();
@@ -33,90 +32,116 @@ const TimeTextField = ({
   };
 
   const handleMinuteChange = (newMinute) => {
-    onDurationMinChange(newMinute);
-    if (staticStop) {
-      onStartDateChange(new Date(stopDate.getTime() - newMinute * 60 * 1000));
-    } else {
-      onStopDateChange(new Date(startDate.getTime() - newMinute * 60 * 1000));
-    }
+    entryDatesDispatch({
+      type: entryDatesActions.UPDATE_MINUTE,
+      durationMin: newMinute,
+      staticStop: staticStop,
+    });
+    // onDurationMinChange(newMinute);
+    // if (staticStop) {
+    //   onStartDateChange(new Date(stopDate.getTime() - newMinute * 60 * 1000));
+    // } else {
+    //   onStopDateChange(new Date(startDate.getTime() - newMinute * 60 * 1000));
+    // }
   };
 
   const handleStartChange = (newDate) => {
-    onStartDateChange(newDate);
-    console.log((stopDate.getTime() - newDate.getTime()) / (60 * 1000));
-    onDurationMinChange((stopDate.getTime() - newDate.getTime()) / (60 * 1000));
+    entryDatesDispatch({
+      type: entryDatesActions.UPDATE_START_TIME,
+      startDate: newDate,
+    });
+    // onStartDateChange(newDate);
+    // onDurationMinChange((stopDate.getTime() - newDate.getTime()) / (60 * 1000));
   };
 
   const handleStopChange = (newDate) => {
-    onStopDateChange(newDate);
-    onDurationMinChange(
-      (newDate.getTime() - startDate.getTime()) / (60 * 1000)
-    );
+    entryDatesDispatch({
+      type: entryDatesActions.UPDATE_STOP_TIME,
+      stopDate: newDate,
+    });
+    // onStopDateChange(newDate);
+    // onDurationMinChange(
+    //   (newDate.getTime() - startDate.getTime()) / (60 * 1000)
+    // );
   };
 
   const handleCalenderChange = (newDate) => {
-    onStartDateChange(newDate);
-    onStopDateChange(new Date(newDate.getTime() + durationMin * 60 * 1000));
+    entryDatesDispatch({
+      type: entryDatesActions.UPDATE_START_DATE,
+      startDate: newDate,
+    });
+    // onStartDateChange(newDate);
+    // onStopDateChange(new Date(newDate.getTime() + durationMin * 60 * 1000));
   };
 
-  const daysBetween = getDaysBetween(startDate, stopDate);
+  const handlePopperClose = () => {
+    if (onPopperClose) onPopperClose();
+    setAnchorEl(null);
+  };
+
+  const daysBetween = getDaysBetween(entryDates.startDate, entryDates.stopDate);
 
   return (
     <>
+      {/* duration inputting textfield */}
       <Badge
         badgeContent={daysBetween > 0 ? daysBetween : null}
         color="primary"
       >
         <TTTimeTextField
           withPopOver
-          minute={durationMin}
+          minute={entryDates.durationMin}
           onMinuteChange={handleMinuteChange}
           onFocus={handleFocus}
         />
       </Badge>
 
+      {/* popper */}
       <Fade in={Boolean(anchorEl)} timeout={200}>
         <div>
           <TTPopper
             anchorEl={anchorEl}
-            onClose={() => setAnchorEl(null)}
+            onClose={handlePopperClose}
             placement={"bottom"}
+            offset={[-40, 0]}
           >
             <Stack
               direction={"row"}
               gap={1.5}
               padding={theme.ttSpacings.popOver.px}
+              mb={2}
             >
-              <Box>
+              <Box flexBasis={"50%"}>
                 <Typography variant="caption">START</Typography>
                 <TTTimeHMTextField
-                  date={startDate}
+                  date={entryDates.startDate}
                   onDateChange={handleStartChange}
                   endAdornment={
                     <InputAdornment position="end">
                       <Typography color={"secondary"}>
-                        {formatDateMD(startDate)}
+                        {formatDateMD(entryDates.startDate)}
                       </Typography>
                     </InputAdornment>
                   }
                 />
               </Box>
-              <Box>
+              <Box flexBasis={"50%"}>
                 <Typography variant="caption">STOP</Typography>
                 <Badge
                   badgeContent={daysBetween > 0 ? daysBetween : null}
                   color="primary"
                 >
                   <TTTimeHMTextField
-                    date={stopDate}
+                    date={entryDates.stopDate}
                     onDateChange={handleStopChange}
                   />
                 </Badge>
               </Box>
             </Stack>
+            <Divider />
             <TTDateCalender
               views={["day"]}
-              value={startDate}
+              value={entryDates.startDate}
               onChange={handleCalenderChange}
             ></TTDateCalender>
           </TTPopper>
