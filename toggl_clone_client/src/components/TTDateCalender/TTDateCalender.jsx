@@ -57,7 +57,7 @@ const StyledDateCalender = styled(DateCalendar)(({ theme }) => ({
   },
 }));
 
-const TTDateCalender = (props) => {
+const TTDateCalender = ({ views, value, onChange, ...others }) => {
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <StyledDateCalender
@@ -66,7 +66,10 @@ const TTDateCalender = (props) => {
           nextIconButton: { disableRipple: true },
           previousIconButton: { disableRipple: true },
         }}
-        {...props}
+        views={views ?? ["day"]}
+        value={value}
+        onChange={onChange}
+        {...others}
       ></StyledDateCalender>
     </LocalizationProvider>
   );
