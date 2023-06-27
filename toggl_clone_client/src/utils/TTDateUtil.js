@@ -46,12 +46,50 @@ export const minuteToTimeObj = (minute) => {
   };
 };
 
+export const miliSecToTimeObj = (miliSec) => {
+  // const inSecond = Math.floor(miliSec / 1000);
+  // const hour = Math.floor(inSecond / 3600);
+  // const secLeft = inSecond % 3600;
+  // return {
+  //   hour: hour,
+  //   minute: Math.floor(secLeft / 60),
+  //   second: secLeft % 60,
+  // };
+  return secondToTimeObj(Math.floor(miliSec) / 1000);
+};
+
+export const secondToTimeObj = (inSecond) => {
+  const hour = Math.floor(inSecond / 3600);
+  const secLeft = inSecond % 3600;
+  return {
+    hour: hour,
+    minute: Math.floor(secLeft / 60),
+    second: secLeft % 60,
+  };
+};
+
 export const timeObjToMinute = (timeObj) => {
   return (
     timeObj.hour * 60 +
     timeObj.minute +
     Number((timeObj.second / 60).toFixed(2))
   );
+};
+
+export const formatSecondHMMSS = (second) => {
+  const timeObj = secondToTimeObj(second);
+  return `${String(timeObj.hour)}:${String(timeObj.minute).padStart(
+    2,
+    "0"
+  )}:${String(timeObj.second).padStart(2, "0")}`;
+};
+
+export const formatMinHMMSS = (minutes) => {
+  const timeObj = minuteToTimeObj(minutes);
+  return `${String(timeObj.hour)}:${String(timeObj.minute).padStart(
+    2,
+    "0"
+  )}:${String(timeObj.second).padStart(2, "0")}`;
 };
 
 export const convert12Hto24H = (hour, isAM) => {
