@@ -1,13 +1,16 @@
 import styled from "@emotion/styled";
-import { Button } from "@mui/material";
+import { Button, alpha } from "@mui/material";
 import { grey } from "@mui/material/colors";
+import classNames from "classnames";
 import React from "react";
 
 const StyledButton = styled(Button)(({ theme }) => ({
   minWidth: 0,
-  padding: theme.spacing(1),
+  borderRadius: "8px",
+  padding: theme.spacing(0.75),
+  fontSize: "1.1rem",
   "&>svg": {
-    fontSize: theme.typography.h6.fontSize,
+    fontSize: "inherit",
     color: "var(--color)",
   },
   "&:hover > svg": {
@@ -19,6 +22,22 @@ const StyledButton = styled(Button)(({ theme }) => ({
   "&:disabled > svg": {
     color: "var(--color-disabled)",
   },
+  "&.TT-selected": {
+    backgroundColor: alpha(theme.palette.secondary.main, 0.2),
+    "&>svg": {
+      color: theme.palette.secondary.main,
+    },
+
+    "&:hover": {
+      backgroundColor: alpha(theme.palette.secondary.main, 0.4),
+    },
+  },
+
+  "&.TTPopper-open": {
+    "&>svg": {
+      color: theme.palette.secondary.main,
+    },
+  },
 }));
 
 const TTIconButton = ({
@@ -29,14 +48,20 @@ const TTIconButton = ({
   colorFocus,
   colorDisabled,
   padding,
+  selected = false,
+  className,
+  style,
+  colorStrength = 6,
   ...other
 }) => {
-  const style = {
-    "--color": color ?? grey[800],
-    "--color-hover": colorHover ?? grey[900],
+  const enchanedStyle = {
+    "--color": color ?? grey[Math.min((1 + colorStrength) * 100)],
+    "--color-hover":
+      colorHover ?? grey[Math.min((3 + colorStrength) * 100, 900)],
     "--color-focus": colorFocus ?? "",
     "--color-disabled": colorDisabled ?? color ?? grey[400],
     padding,
+    ...style,
   };
 
   return (
@@ -45,8 +70,9 @@ const TTIconButton = ({
       disableRipple
       disableTouchRipple
       disableFocusRipple
-      style={style}
       onClick={onClick}
+      className={selected ? classNames("TT-selected", className) : className}
+      style={enchanedStyle}
       {...other}
     >
       {children}
