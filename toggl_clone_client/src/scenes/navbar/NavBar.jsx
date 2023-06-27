@@ -17,7 +17,6 @@ import HelpIcon from "@mui/icons-material/Help";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { grey, orange } from "@mui/material/colors";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
 import CloseIcon from "@mui/icons-material/Close";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { TTListItemButton, TTSideMenuList } from "./SideMenuList";
@@ -34,6 +33,7 @@ import CreditCardIcon from "@mui/icons-material/CreditCard";
 import CorporateFareIcon from "@mui/icons-material/CorporateFare";
 import SettingsIcon from "@mui/icons-material/Settings";
 import MenuIcon from "@mui/icons-material/Menu";
+import TTTimerIcon from "./TTTimerIcon";
 
 const NavBar = () => {
   const [isMDrawerOpen, setIsMDrawerOpen] = useState(false);
@@ -91,9 +91,7 @@ const NavBar = () => {
             </SideNavBarButton>
           )}
           <SideNavBarButton to="/timer">
-            <PowerSettingsNewIcon
-              sx={{ color: "white" }}
-            ></PowerSettingsNewIcon>
+            <TTTimerIcon />
           </SideNavBarButton>
         </Box>
 
