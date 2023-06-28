@@ -23,6 +23,14 @@ export const parseDateHMA = (str) => {
   return parse(str, TIME_FORMAT, REFERENCE_DATE);
 };
 
+export const formatDateEEddMMM = (date) => {
+  return isToday(date) ? "Today" : format(date, "EEE, dd MMM");
+};
+
+export const formatDateEEddMMMyyyy = (date) => {
+  return isToday(date) ? "Today" : format(date, "EEE, dd MMM yyyy");
+};
+
 export const getDaysBetween = (start, end) => {
   const newStart = new Date(
     start.getFullYear(),
