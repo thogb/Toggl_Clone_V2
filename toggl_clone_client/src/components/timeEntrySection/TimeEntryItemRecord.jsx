@@ -12,19 +12,52 @@ import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { Box, IconButton, InputBase, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  IconButton,
+  InputBase,
+  Stack,
+  Typography,
+  alpha,
+} from "@mui/material";
 import GrowingInput from "../growingInput/GrowingInput";
 import { timeEntryCheckedActions } from "./TimeEntryCheckedReducer";
 import TTIconButton from "../ttIconButton/TTIconButton";
 import SubButton from "../subButton/SubButton";
 import { formatDateHMA } from "../../utils/TTDateUtil";
 import TagsSelector from "../../scenes/timerPage/TagsSelector";
+import TimeEntryExpandButton from "./TimeEntryExpandButton";
+import classNames from "classnames";
+import { useTheme } from "@emotion/react";
 
 const StyledTimeEntryItemBase = styled(TimeEntryItemBase)(({ theme }) => ({
   "&:hover": {
     backgroundColor: grey[100],
     "& .TT-hidden": {
       visibility: "visible",
+    },
+  },
+
+  [theme.breakpoints.down("md")]: {
+    "& .TimeEntryItemRecord-tags": {
+      alignSelf: "start",
+    },
+  },
+
+  "&.TimeEntryItemRecord-isChildrenOfGroup": {
+    "& .TimeEntryLeftSection": {
+      marginLeft: "40px",
+    },
+  },
+}));
+
+const StyledGrowingInput = styled(GrowingInput)(({ theme }) => ({
+  "&>input": {
+    fontSize: "0.95rem",
+    fontWeight: 500,
+    color: alpha(theme.palette.primary.main, 0.8),
+    "&:focus": {
+      color: theme.palette.primary.main,
     },
   },
 }));
@@ -35,16 +68,37 @@ const TimeEntryItemRecord = ({
   id,
   projectId,
   description,
-  tagList,
   tagsChecked,
   duration,
   startDate,
   stopDate,
-  showCheckbox = false,
+
+  tagList,
+
+  isChildrenOfGroup = false,
+  isTypeHeader = false,
+  isExpanded = false,
+  groupSize = 0,
+
+  className,
+
   checked = false,
+  indeterminate = false,
+  showCheckbox = false,
   timeEntryChecked,
   timeEntryCheckedDispatch,
+  operations = {
+    onCheckBoxClick: () => {},
+    onDescriptionEdit: (description) => {},
+    onProjectEdit: (projectInfo) => {},
+    onTagsCheckedEdit: (tagsChecked) => {},
+    onDateButtonClick: (e) => {},
+    onDateInfoChange: (dateInfo) => {},
+    onDeleteClick: (e) => {},
+    onExpandButonClick: (e) => {},
+  },
 }) => {
+  const theme = useTheme();
   const [teDescription, setTeDescription] = useState(description);
   const [tagSelectorAnchor, setTagSelectorAnchor] = useState(null);
 
@@ -55,41 +109,67 @@ const TimeEntryItemRecord = ({
   const handleTeDescriptionInputComplete = (e) => {
     // Api call to update description of entry
     console.log(e.target.value);
+    operations.onDescriptionEdit(e.target.value);
   };
 
   const handleCheckboxClick = () => {
-    timeEntryCheckedDispatch({
-      type: timeEntryCheckedActions.TOGGLE_CHECKED_LIST_ITEM,
-      id: id,
-    });
+    operations.onCheckBoxClick();
   };
 
   const handleTagsSelectorClose = (newCheckedList) => {
     setTagSelectorAnchor(null);
+    console.log(newCheckedList);
+    operations.onTagsCheckedEdit(newCheckedList);
+  };
+
+  const handleExpandedClick = (e) => {
+    operations.onExpandButonClick(e);
   };
 
   const hasTags = tagsChecked.length > 0;
+  const commonTextColor = alpha(theme.palette.primary.main, 0.7);
 
   return (
     <StyledTimeEntryItemBase
+      className={classNames(
+        "TimeEntryItemRecord",
+        isChildrenOfGroup && "TimeEntryItemRecord-isChildrenOfGroup",
+        className
+      )}
       showCheckbox={showCheckbox}
       checked={checked}
+      indeterminate={indeterminate}
       onCheckBoxClick={handleCheckboxClick}
     >
+      {isTypeHeader && (
+        <Box minWidth={"40px"}>
+          <TimeEntryExpandButton
+            isOpen={isExpanded}
+            onClick={handleExpandedClick}
+          >
+            {groupSize}
+          </TimeEntryExpandButton>
+        </Box>
+      )}
       {/* <TimeEntryMainSection> */}
-      <TimeEntryLeftSection gap={1}>
-        <GrowingInput
+      <TimeEntryLeftSection>
+        <StyledGrowingInput
           value={teDescription}
           placeholder={inputPlaceHolder}
           onChange={handleTeDescriptionChange}
           onInputComplete={handleTeDescriptionInputComplete}
           // style={{ overflow: "hidden", minWidth: 0 }}
+          style={{
+            marginRight: "8px",
+            marginLeft: "0px",
+          }}
         />
         <TTIconButton colorStrength={5} className={"TT-hidden"}>
           <FolderIcon />
         </TTIconButton>
       </TimeEntryLeftSection>
       <Stack
+        className="TimeEntryItemRecord-tags"
         direction={"row"}
         minWidth={200}
         flexShrink={0}
@@ -102,7 +182,7 @@ const TimeEntryItemRecord = ({
             placement={hasTags ? "bottom-start" : "bottom-end"}
             tagCheckedList={tagsChecked}
             popperAnchorEl={tagSelectorAnchor}
-            onClose={() => setTagSelectorAnchor(null)}
+            onClose={handleTagsSelectorClose}
             triggerTouchable={true}
             triggerComponent={
               hasTags ? (
@@ -119,7 +199,11 @@ const TimeEntryItemRecord = ({
                     setTagSelectorAnchor(e.currentTarget);
                   }}
                 >
-                  <Typography noWrap color={"primary.main"}>
+                  <Typography
+                    noWrap
+                    color={commonTextColor}
+                    variant="subtitle2"
+                  >
                     {tagsChecked.join(", ")}
                   </Typography>
                 </SubButton>
@@ -153,7 +237,7 @@ const TimeEntryItemRecord = ({
           >
             <Typography
               variant="body2"
-              color={"primary.light"}
+              color={commonTextColor}
               fontWeight={"fontWeightMedium"}
               noWrap
             >

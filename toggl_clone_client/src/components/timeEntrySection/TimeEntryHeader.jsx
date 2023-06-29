@@ -51,9 +51,9 @@ const DeleteTextButton = styled(TTTextButton)(({ theme }) => ({
 }));
 
 const TimeEntryHeader = ({
-  dateHeading,
+  dateString,
   timeEIdList,
-  totalTime,
+  totalDuration,
   timeEntryChecked,
   timeEntryCheckedDispatch,
 }) => {
@@ -102,7 +102,7 @@ const TimeEntryHeader = ({
       >
         <TimeEntryLeftSection gap={2}>
           <Typography fontSize={"0.95rem"} fontWeight={"600"} mr={"auto"}>
-            {dateHeading}
+            {dateString}
           </Typography>
           {timeEntryChecked.showCheckbox && (
             <>
@@ -126,7 +126,7 @@ const TimeEntryHeader = ({
         </TimeEntryLeftSection>
         <TimeEntryRightSection>
           <SubButton noVerticalPadding={true} style={{ fontSize: "0.875rem" }}>
-            {formatSecondHMMSS(totalTime)}
+            {formatSecondHMMSS(totalDuration)}
           </SubButton>
           <RightTools>
             <OutlinedIconButton

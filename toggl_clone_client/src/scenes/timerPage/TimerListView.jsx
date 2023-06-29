@@ -9,32 +9,45 @@ import TimeEntrySection from "../../components/timeEntrySection/TimeEntrySection
 const dateFormat = "EEE, dd MMM";
 
 const TimerListView = () => {
-  const timeEntries = useSelector((state) => state.entryList.timeEntries);
+  const dateGroupEntries = useSelector(
+    (state) => state.groupedEntryList.dateGroupedEntries
+  );
 
-  const groupedTimeEntries = useMemo(() => {
-    const grouped = {};
-    timeEntries.forEach((timeEntry) => {
-      const dateHeading = format(timeEntry.startDate, dateFormat);
-      if (grouped[dateHeading] === undefined) {
-        grouped[dateHeading] = {
-          dateHeading: dateHeading,
-          timeEntries: [],
-        };
-      }
-      grouped[dateHeading].timeEntries.push(timeEntry);
-    });
+  const sortedDateGroupEntries = useMemo(() => {
+    console.log("in sortedDate goruped");
+    console.log(dateGroupEntries);
+    const dateGroupList = Object.values(dateGroupEntries);
+    dateGroupList.sort((a, b) => a.dateString <= b.dateString);
+    return dateGroupList;
+  }, [dateGroupEntries]);
 
-    const groupedList = Object.values(grouped);
-    groupedList.sort((e1, e2) => e2.startDate - e1.startDate);
-    groupedList.forEach((group) => {
-      let totalTime = 0;
-      group.timeEntries.forEach((entry) => {
-        totalTime += entry.duration;
-      });
-      group["totalTime"] = totalTime;
-    });
-    return groupedList;
-  }, [timeEntries]);
+  // const timeEntries = useSelector((state) => state.entryList.timeEntries);
+
+  // const groupedTimeEntries = useMemo(() => {
+  //   const grouped = {};
+  //   timeEntries.forEach((timeEntry) => {
+  //     const dateHeading = format(timeEntry.startDate, dateFormat);
+  //     if (grouped[dateHeading] === undefined) {
+  //       grouped[dateHeading] = {
+  //         dateHeading: dateHeading,
+  //         timeEntries: [],
+  //       };
+  //     }
+  //     grouped[dateHeading].timeEntries.push(timeEntry);
+  //   });
+
+  //   const groupedList = Object.values(grouped);
+  //   groupedList.sort((e1, e2) => e2.startDate - e1.startDate);
+  //   groupedList.forEach((group) => {
+  //     let totalTime = 0;
+  //     group.timeEntries.forEach((entry) => {
+  //       totalTime += entry.duration;
+  //     });
+  //     group["totalTime"] = totalTime;
+  //   });
+  //   return groupedList;
+  // }, [timeEntries]);
+
   return (
     <Box>
       <TimerPageToolBar>
@@ -47,13 +60,21 @@ const TimerListView = () => {
           <ToolBarLinkButton title={"WEEK"} content={"0:27:45"} to={"/theme"} />
         </Stack>
       </TimerPageToolBar>
-      {groupedTimeEntries.length === 0 ? (
+      {sortedDateGroupEntries.length === 0 ? (
         <div>None</div>
       ) : (
-        groupedTimeEntries.map((sectionData) => {
+        // groupedTimeEntries.map((sectionData) => {
+        //   return (
+        //     <TimeEntrySection
+        //       key={sectionData.dateHeading}
+        //       sectionData={sectionData}
+        //     />
+        //   );
+        // })
+        sortedDateGroupEntries.map((sectionData) => {
           return (
             <TimeEntrySection
-              key={sectionData.dateHeading}
+              key={sectionData.dateString}
               sectionData={sectionData}
             />
           );

@@ -11,6 +11,9 @@ const actions = {
   RESET_CHECKED_LIST: "RESET_CHECKED_LIST",
   TOGGLE_AND_RESET_CHECKED_LIST: "TOGGLE_AND_RESET_CHECKED_LIST",
   SET_CHECKED_LIST: "SET_CHECKED_LIST",
+  TOGGLE_ON_FROM_LIST: "TOGGLE_ON_FROM_LIST",
+  TOGGLE_OFF_FROM_LIST: "TOGGLE_OFF_FROM_LIST",
+  APPEND_TO_CHECK_LIST: "APPEND_TO_CHECK_LIST",
 };
 
 export const timeEntryCheckedReducer = (state, action) => {
@@ -48,6 +51,23 @@ export const timeEntryCheckedReducer = (state, action) => {
       return {
         ...state,
         checkedList: [...action.checkedList],
+      };
+    case actions.APPEND_TO_CHECK_LIST:
+      return {
+        ...state,
+        checkedList: [...state.checkedList, ...action.inList],
+      };
+    // case actions.TOGGLE_ON_FROM_LIST:
+    //   return {
+    //     ...state,
+    //     checkedList: state.checkedList.filter((id) => )
+    //   }
+    case actions.TOGGLE_OFF_FROM_LIST:
+      return {
+        ...state,
+        checkedList: state.checkedList.filter(
+          (item) => action.inList.indexOf(item) === -1
+        ),
       };
     default:
       return state;

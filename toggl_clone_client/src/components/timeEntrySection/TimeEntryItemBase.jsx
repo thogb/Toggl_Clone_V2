@@ -17,8 +17,9 @@ const StyledListItem = styled("li")(({ theme }) => ({
   borderBottom: "1px solid",
   borderBottomColor: grey[300],
   overflow: "hidden",
-  gap: theme.spacing(2),
+  // gap: theme.spacing(2),
   paddingTop: theme.spacing(1 / 2),
+  backgroundColor: theme.palette.background.default,
 
   "& > .MuiCheckbox-root": {
     marginLeft: theme.spacing(-1 * theme.ttSpacings.page.px),
@@ -39,7 +40,7 @@ const StyledListItem = styled("li")(({ theme }) => ({
   },
 
   [theme.breakpoints.down("md")]: {
-    alignItems: "start",
+    // alignItems: "start",
 
     "&>.TimeEntryLeftSection": {
       flexDirection: "column",
@@ -105,6 +106,7 @@ export const TimeEntryLeftSection = ({ children, ...others }) => {
       direction={"row"}
       alignItems={"center"}
       minWidth={200}
+      mr={2}
       {...others}
     >
       {children}
@@ -121,6 +123,7 @@ export const TimeEntryRightSection = ({ children, ...others }) => {
       alignItems={"center"}
       justifyContent={"space-between"}
       gap={2}
+      ml={2}
       {...others}
     >
       {children}

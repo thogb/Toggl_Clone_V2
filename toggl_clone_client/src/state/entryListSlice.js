@@ -1234,3 +1234,4 @@ export const entryListSlice = createSlice({
 
 export const {} = entryListSlice.actions;
 export default entryListSlice.reducer;
+export { getTestState as getRawEntryList };
