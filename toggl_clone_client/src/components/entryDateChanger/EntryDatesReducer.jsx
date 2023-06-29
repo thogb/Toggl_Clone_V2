@@ -1,40 +1,44 @@
 export const getIntialEntryDates = () => {
   const newDate = new Date();
   return {
-    durationMin: 0,
+    duration: 0,
     startDate: newDate,
     stopDate: new Date(newDate),
   };
 };
 
 const actions = {
-  UPDATE_MINUTE: "UPDATE_MINUTE",
+  UPDATE_DURATION: "UPDATE_DURATION",
   UPDATE_START_TIME: "UPDATE_START_TIME",
   UPDATE_STOP_TIME: "UPDATE_STOP_TIME",
   UPDATE_START_DATE: "UPDATE_START_DATE",
   RESET_ENTRY_DATES: "RESET_ENTRY_DATES",
+  SET_DURATION: "SET_DURATION",
+  SET_START_DATE: "SET_START_DATE",
+  SET_STOP_DATE: "SET_STOP_DATE",
+  SET_DATE_INFO: "SET_DATE_INFO",
 };
 
 export const entryDatesReducer = (state, action) => {
   switch (action.type) {
-    case actions.UPDATE_MINUTE:
-      const newDuration = action.durationMin;
+    case actions.UPDATE_DURATION:
+      const newDuration = action.duration;
       return {
         ...state,
-        durationMin: newDuration,
+        duration: newDuration,
         startDate: action.staticStop
-          ? new Date(state.stopDate.getTime() - newDuration * 60 * 1000)
+          ? new Date(state.stopDate.getTime() - newDuration * 1000)
           : state.startDate,
         stopDate: !action.staticStop
-          ? new Date(state.startDate.getTime() - newDuration * 60 * 1000)
+          ? new Date(state.startDate.getTime() - newDuration * 1000)
           : state.stopDate,
       };
     case actions.UPDATE_START_TIME:
       return {
         ...state,
         startDate: action.startDate,
-        durationMin:
-          (state.stopDate.getTime() - action.startDate.getTime()) / (60 * 1000),
+        duration:
+          (state.stopDate.getTime() - action.startDate.getTime()) / 1000,
       };
     case actions.UPDATE_STOP_TIME:
       let { stopDate } = action;
@@ -43,16 +47,33 @@ export const entryDatesReducer = (state, action) => {
       return {
         ...state,
         stopDate: stopDate,
-        durationMin:
-          (stopDate.getTime() - state.startDate.getTime()) / (60 * 1000),
+        duration: (stopDate.getTime() - state.startDate.getTime()) / 1000,
       };
     case actions.UPDATE_START_DATE:
       return {
         ...state,
         startDate: action.startDate,
-        stopDate: new Date(
-          action.startDate.getTime() + state.durationMin * 60 * 1000
-        ),
+        stopDate: new Date(action.startDate.getTime() + state.duration * 1000),
+      };
+    case actions.SET_DURATION:
+      return {
+        ...state,
+        duration: action.duration,
+      };
+    case actions.SET_START_DATE:
+      return {
+        ...state,
+        startDate: action.startDate,
+      };
+    case actions.SET_STOP_DATE:
+      return {
+        ...state,
+        stopDate: action.stopDate,
+      };
+    case actions.SET_DATE_INFO:
+      return {
+        ...state,
+        ...action.dateInfo,
       };
     case actions.RESET_ENTRY_DATES:
       return getIntialEntryDates();

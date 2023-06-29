@@ -2,7 +2,7 @@ import styled from "@emotion/styled";
 import { InputBase } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import React, { useEffect, useMemo, useState } from "react";
-import { minuteToTimeObj } from "../../utils/TTDateUtil";
+import { secondToTimeObj } from "../../utils/TTDateUtil";
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
   fontSize: theme.typography.h6.fontSize,
@@ -34,18 +34,18 @@ const DEFAULT_VALUE = "0:00:00";
 const TTTimeTextField = ({
   size,
   withPopOver,
-  minute,
+  second,
+  onSecondChange,
   height,
   onFocus,
   onBlur,
-  onMinuteChange,
   ...others
 }) => {
   const [value, setValue] = useState(DEFAULT_VALUE);
 
   useEffect(() => {
-    formatMinute(minute);
-  }, [minute]);
+    formatSecond(second);
+  }, [second]);
 
   const className = useMemo(() => {
     const classNames = [];
@@ -60,16 +60,16 @@ const TTTimeTextField = ({
   const handleChange = (e) => {
     setValue(e.target.value);
   };
+
   // From value of minute update to value in string format
-  const formatMinute = (inMinute) => {
-    if (Number.isFinite(inMinute)) {
-      if (inMinute < 0) {
-        onMinuteChange(0);
-        // formatMinute(0);
-      } else if (inMinute === 0) {
+  const formatSecond = (inSecond) => {
+    if (Number.isFinite(inSecond)) {
+      if (inSecond < 0) {
+        if (onSecondChange) onSecondChange(0);
+      } else if (inSecond === 0) {
         setValue(DEFAULT_VALUE);
       } else {
-        const timeObj = minuteToTimeObj(inMinute);
+        const timeObj = secondToTimeObj(inSecond);
         setValue(
           `${String(timeObj.hour)}:${String(timeObj.minute).padStart(
             2,
@@ -78,8 +78,7 @@ const TTTimeTextField = ({
         );
       }
     } else {
-      onMinuteChange(0);
-      //   formatMinute(0);
+      if (onSecondChange) onSecondChange(0);
     }
   };
 
@@ -92,28 +91,28 @@ const TTTimeTextField = ({
     if (onBlur) onBlur(e);
     const contents = value.split(":").map((str) => Number(str));
     const valid = contents.every((i) => Number.isFinite(i) && i >= 0);
-    let newMinutes = 0;
+    let newSecond = 0;
 
     if (valid) {
       if (contents.length === 1) {
-        newMinutes = contents[0];
+        newSecond = contents[0] * 60;
       } else if (contents.length >= 2) {
-        newMinutes += contents[0] * 60;
-        newMinutes += contents[1];
+        newSecond += contents[0] * 3600;
+        newSecond += contents[1] * 60;
 
         if (contents.length >= 3) {
-          newMinutes += contents[2] / 60;
+          newSecond += contents[2];
         }
       }
 
-      if (newMinutes !== minute) {
-        onMinuteChange(newMinutes);
+      if (newSecond !== second) {
+        onSecondChange(newSecond);
       }
     } else {
-      newMinutes = minute;
+      newSecond = second;
     }
 
-    formatMinute(newMinutes);
+    formatSecond(newSecond);
   };
 
   const handleKeyDown = (e) => {

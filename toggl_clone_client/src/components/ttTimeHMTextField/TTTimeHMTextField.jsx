@@ -38,6 +38,7 @@ const TTTimeHMTextField = ({
   onBlur,
   withPopOver,
   endAdornment,
+  disabled = false,
   ...others
 }) => {
   const [value, setValue] = useState("");
@@ -74,7 +75,6 @@ const TTTimeHMTextField = ({
   };
 
   const handleFocus = (e) => {
-    console.log(date);
     setisFocused(true);
     if (onFocus) onFocus(e);
     if (selectOnFocus) e.currentTarget.select();
@@ -161,6 +161,7 @@ const TTTimeHMTextField = ({
 
   return (
     <StyledInputBase
+      disabled={disabled}
       value={value}
       onChange={handleChange}
       onFocus={handleFocus}
