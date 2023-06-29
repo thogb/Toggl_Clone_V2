@@ -34,8 +34,13 @@ import CorporateFareIcon from "@mui/icons-material/CorporateFare";
 import SettingsIcon from "@mui/icons-material/Settings";
 import MenuIcon from "@mui/icons-material/Menu";
 import TTTimerIcon from "./TTTimerIcon";
+import { useSelector } from "react-redux";
+import { formatSecondHMMSS } from "../../utils/TTDateUtil";
 
 const NavBar = () => {
+  const timerStarted = useSelector((state) => state.currentEntry.timerStarted);
+  const duration = useSelector((state) => state.currentEntry.duration);
+
   const [isMDrawerOpen, setIsMDrawerOpen] = useState(false);
 
   const theme = useTheme();
@@ -168,7 +173,7 @@ const NavBar = () => {
           <TTSectionHeading>track</TTSectionHeading>
           <TTSideMenuList>
             <TTListItemButton
-              label={"Timer"}
+              label={timerStarted ? formatSecondHMMSS(duration) : "Timer"}
               icon={<WatchLaterIcon />}
               to={"/timer"}
             />
