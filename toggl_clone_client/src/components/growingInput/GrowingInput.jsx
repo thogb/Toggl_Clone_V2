@@ -6,7 +6,7 @@ const GrowingInputContainer = styled("div")(({ theme }) => ({
   // width: "fit-content",
   fontFamily: '"Roboto","Helvetica","Arial",sans-serif;',
   fontSize: "1rem",
-  backgroundColor: "green",
+  // backgroundColor: "green",
   overflow: "hidden",
   // minWidth: 0,
   maxWidth: "100%",

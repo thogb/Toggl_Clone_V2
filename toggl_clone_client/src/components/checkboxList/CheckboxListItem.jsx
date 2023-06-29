@@ -53,10 +53,10 @@ const StyledListItem = styled(ListItem)(({ theme }) => ({
   },
 }));
 
-const CheckboxListItem = ({ key, value, checked, itemText, onClick }) => {
+const CheckboxListItem = ({ value, checked, itemText, onClick }) => {
   const labelId = `checkbox-list-label-${value}`;
   return (
-    <StyledListItem key={key} disableRipple>
+    <StyledListItem>
       <ListItemButton onClick={onClick} disableTouchRipple>
         <ListItemIcon>
           <Checkbox

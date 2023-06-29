@@ -18,7 +18,9 @@ const CheckboxList = ({ itemList, checkedList, setCheckedList }) => {
 
   if (itemList.length <= 0) {
     return (
-      <Typography textAlign={"center"}>There aren't any items.</Typography>
+      <Typography m={2} textAlign={"center"}>
+        There aren't any items.
+      </Typography>
     );
   }
 

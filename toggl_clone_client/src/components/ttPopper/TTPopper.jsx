@@ -1,6 +1,6 @@
 import { useTheme } from "@emotion/react";
 import styled from "@emotion/styled";
-import { Backdrop, Box, Paper, Popper } from "@mui/material";
+import { Backdrop, Paper, Popper } from "@mui/material";
 import React from "react";
 import PropTypes from "prop-types";
 import { grey } from "@mui/material/colors";
@@ -82,10 +82,6 @@ const TTPopper = ({
       ></Backdrop>
     </>
   );
-
-  if (triggerComponent) {
-    console.log(triggerComponent);
-  }
 
   if (triggerComponent) {
     return (

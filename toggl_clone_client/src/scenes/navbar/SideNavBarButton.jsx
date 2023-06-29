@@ -16,7 +16,7 @@ const SideMenuItem = styled("div")(({ theme }) => ({
   minHeight: `${SIDE_MENU_ITEM_HEIGHT}px`,
   minWidth: `${SIDE_MENU_ITEM_LEN}px`,
   width: "100%",
-  "&:hover": {
+  "&:has(a:focus,button:focus)": {
     backgroundColor: theme.palette.primary.light,
   },
   "& a": {
