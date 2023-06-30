@@ -85,8 +85,6 @@ const TimeEntryItemRecord = ({
   checked = false,
   indeterminate = false,
   showCheckbox = false,
-  timeEntryChecked,
-  timeEntryCheckedDispatch,
   operations = {
     onCheckBoxClick: () => {},
     onDescriptionEdit: (description) => {},
@@ -128,7 +126,6 @@ const TimeEntryItemRecord = ({
 
   const hasTags = tagsChecked.length > 0;
   const commonTextColor = alpha(theme.palette.primary.main, 0.7);
-
   return (
     <StyledTimeEntryItemBase
       className={classNames(

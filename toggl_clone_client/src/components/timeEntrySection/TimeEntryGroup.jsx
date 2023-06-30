@@ -61,6 +61,18 @@ const TimeEntryGroup = ({
     setIsExpanded(!isExpanded);
   };
 
+  const operations = useMemo(() => {
+    return {
+      onCheckBoxClick,
+      onDescriptionEdit,
+      onProjectEdit,
+      onTagsCheckedEdit,
+      onDateInfoChange,
+      onDeleteClick,
+      onExpandButonClick,
+    };
+  }, []);
+
   return (
     <>
       <TimeEntryItemRecord
@@ -79,15 +91,7 @@ const TimeEntryGroup = ({
         showCheckbox={timeEntryChecked.showCheckbox}
         timeEntryChecked={timeEntryChecked}
         timeEntryCheckedDispatch={timeEntryCheckedDispatch}
-        operations={{
-          onCheckBoxClick,
-          onDescriptionEdit,
-          onProjectEdit,
-          onTagsCheckedEdit,
-          onDateInfoChange,
-          onDeleteClick,
-          onExpandButonClick,
-        }}
+        operations={operations}
       />
       {isExpanded &&
         groupedEntry.entries.map((entry) => (

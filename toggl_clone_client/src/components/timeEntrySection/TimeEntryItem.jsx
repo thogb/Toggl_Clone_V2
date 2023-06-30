@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, useMemo } from "react";
 import TimeEntryItemRecord from "./TimeEntryItemRecord";
 import { timeEntryCheckedActions } from "./TimeEntryCheckedReducer";
 import { useDispatch } from "react-redux";
@@ -50,6 +50,17 @@ const TimeEntryItem = ({
     });
   };
 
+  const operations = useMemo(() => {
+    return {
+      onCheckBoxClick,
+      onDescriptionEdit,
+      onProjectEdit,
+      onTagsCheckedEdit,
+      onDateInfoChange,
+      onDeleteClick,
+    };
+  }, []);
+
   return (
     <TimeEntryItemRecord
       id={timeEntry.id}
@@ -63,16 +74,7 @@ const TimeEntryItem = ({
       isChildrenOfGroup={isChildrenOfGroup}
       checked={timeEntryChecked.checkedList.indexOf(timeEntry.id) !== -1}
       showCheckbox={timeEntryChecked.showCheckbox}
-      timeEntryChecked={timeEntryChecked}
-      timeEntryCheckedDispatch={timeEntryCheckedDispatch}
-      operations={{
-        onCheckBoxClick,
-        onDescriptionEdit,
-        onProjectEdit,
-        onTagsCheckedEdit,
-        onDateInfoChange,
-        onDeleteClick,
-      }}
+      operations={operations}
     />
   );
 };

@@ -5,7 +5,6 @@ import {
   getIntialTimeEntryCheckedData,
   timeEntryCheckedReducer,
 } from "./TimeEntryCheckedReducer";
-import TimeEntryItemRecord from "./TimeEntryItemRecord";
 import { useSelector } from "react-redux";
 import TimeEntryItem from "./TimeEntryItem";
 import TimeEntryGroup from "./TimeEntryGroup";
