@@ -126,17 +126,6 @@ const TimerTopBar = () => {
         dateInfo.duration !== initialDateInfo.duration) ||
       Math.abs(dateInfo.startDate - initialDateInfo.startDate) > 60 * 1000
     ) {
-      console.log("dipsatched");
-      console.log(dateInfo);
-      console.log(initialDateInfo);
-      console.log(initialDateInfo.stopDate);
-      console.log(dateInfo.startDate);
-      console.log(
-        Math.floor(
-          (initialDateInfo.stopDate.getTime() - dateInfo.startDate.getTime()) /
-            1000
-        )
-      );
       if (isTimerStarted) {
         dispatch(
           setDateInfo({

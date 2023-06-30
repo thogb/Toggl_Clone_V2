@@ -23,11 +23,7 @@ function App() {
 
   useEffect(() => {
     const dateGroupedEntries = generateDateGroupedEntries(getRawEntryList());
-    // console.log("in app useeffect");
-    // console.log(dateGroupedEntries);
-    console.log(
-      dateGroupedEntries["Wed, 21 Jun 2023"].groupedEntries[0].startDate
-    );
+
     dispatch(setDateGroupedEntries({ dateGroupedEntries: dateGroupedEntries }));
   }, []);
 

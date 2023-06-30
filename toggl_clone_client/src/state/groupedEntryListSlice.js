@@ -1,7 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { formatDateEEddMMMyyyy } from "../utils/TTDateUtil";
-import { createGroupId, isInnerGroupEqual } from "../utils/TimeEntryUtil";
-import { compareAsc, compareDesc } from "date-fns";
+import {} from "../utils/TTDateUtil";
+import {
+  createDateGroupId,
+  createGroupId,
+  isInnerGroupEqual,
+} from "../utils/TimeEntryUtil";
+import { compareDesc } from "date-fns";
 
 const exampleState = {
   dateGroupedEntries: {
@@ -69,7 +73,7 @@ const initialState = {
 export const generateDateGroupedEntries = (timeEntries) => {
   const grouped = {};
   timeEntries.timeEntries.forEach((timeEntry) => {
-    const dateGroupId = formatDateEEddMMMyyyy(timeEntry.startDate);
+    const dateGroupId = createDateGroupId(timeEntry.startDate);
     timeEntry.tags.sort();
 
     // Date group not created
