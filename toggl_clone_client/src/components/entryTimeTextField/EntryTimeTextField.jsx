@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useReducer, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import TTTimeTextField from "../ttTimeTextField/TTTimeTextField";
 import TTDateCalender from "../TTDateCalender/TTDateCalender";
 import {
@@ -14,17 +14,10 @@ import TTTimeHMTextField from "../ttTimeHMTextField/TTTimeHMTextField";
 import { useTheme } from "@emotion/react";
 import { formatDateMD, getDaysBetween } from "../../utils/TTDateUtil";
 import TTPopper from "../ttPopper/TTPopper";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  updateDuration,
-  updateStartDate,
-  updateStartTime,
-  updateStopTime,
-} from "../../state/currentEntrySlice";
+
 import {
   entryDatesActions,
   entryDatesReducer,
-  getIntialEntryDates,
 } from "../entryDateChanger/EntryDatesReducer";
 
 const defaultDate = new Date();
@@ -35,6 +28,7 @@ const EntryTimeTextField = ({
   stopDate = defaultDate,
   staticStop = true,
   disableStopInput = false,
+  resetDatesOnZeroDuration = true,
   onFocus,
   onPopperClose,
 }) => {
@@ -48,7 +42,11 @@ const EntryTimeTextField = ({
   // const [isPopperOpen, setIsPopperOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const theme = useTheme();
-  // const [initialDateInfo, setInitialDateInfo] = useState(null);
+  const [initialDateInfo, setInitialDateInfo] = useState({
+    duration: duration,
+    startDate: new Date(startDate),
+    stopDate: new Date(stopDate),
+  });
   const [entryDatesData, entryDatesDispatch] = useReducer(entryDatesReducer, {
     duration,
     startDate,
@@ -56,19 +54,19 @@ const EntryTimeTextField = ({
   });
 
   const localDuration = entryDatesData.duration;
-  const localStartDate = entryDatesData.startDate;
-  const localStopDate = entryDatesData.stopDate;
+  const localStartDate = new Date(entryDatesData.startDate);
+  const localStopDate = new Date(entryDatesData.stopDate);
 
-  const initialDateInfo = useMemo(() => {
-    if (anchorEl != null) {
-      return {
-        duration,
-        startDate,
-        stopDate,
-      };
-    }
-    return {};
-  }, [anchorEl]);
+  // const initialDateInfo = useMemo(() => {
+  //   if (anchorEl != null) {
+  //     return {
+  //       duration,
+  //       startDate,
+  //       stopDate,
+  //     };
+  //   }
+  //   return {};
+  // }, [anchorEl]);
 
   useEffect(() => {
     if (anchorEl === null) {
@@ -93,15 +91,31 @@ const EntryTimeTextField = ({
       entryDatesDispatch({
         type: entryDatesActions.SET_DATE_INFO,
         dateInfo: {
-          duration,
-          startDate,
-          stopDate,
+          duration: duration,
+          startDate: new Date(startDate).getTime(),
+          stopDate: new Date(stopDate).getTime(),
         },
       });
     }
   }, [duration, startDate, stopDate]);
 
   const handleFocus = (e) => {
+    let newInitialDateInfo = {
+      duration: duration,
+      startDate: new Date(startDate),
+      stopDate: new Date(stopDate),
+    };
+    if (resetDatesOnZeroDuration && localDuration === 0) {
+      newInitialDateInfo = {
+        duration: 0,
+        startDate: new Date(),
+        stopDate: new Date(),
+      };
+      entryDatesDispatch({
+        type: entryDatesActions.RESET_ENTRY_DATES,
+      });
+    }
+    setInitialDateInfo(newInitialDateInfo);
     setAnchorEl(e.currentTarget);
     if (onFocus != null) onFocus(e);
   };
@@ -121,7 +135,7 @@ const EntryTimeTextField = ({
     // dispatch(updateStartTime({ startDate: newDate }));
     entryDatesDispatch({
       type: entryDatesActions.UPDATE_START_TIME,
-      startDate: newDate,
+      startDate: newDate.getTime(),
     });
   };
 
@@ -129,7 +143,7 @@ const EntryTimeTextField = ({
     // dispatch(updateStopTime({ stopDate: newDate }));
     entryDatesDispatch({
       type: entryDatesActions.UPDATE_STOP_TIME,
-      stopDate: newDate,
+      stopDate: newDate.getTime(),
     });
   };
 
@@ -137,11 +151,17 @@ const EntryTimeTextField = ({
     // dispatch(updateStartDate({ startDate: newDate }));
     entryDatesDispatch({
       type: entryDatesActions.UPDATE_START_DATE,
-      startDate: newDate,
+      startDate: newDate.getTime(),
     });
   };
 
   const handlePopperClose = () => {
+    console.log({
+      initialDateInfo: initialDateInfo,
+      duration: localDuration,
+      startDate: localStartDate,
+      stopDate: localStopDate,
+    });
     if (onPopperClose)
       onPopperClose({
         initialDateInfo: initialDateInfo,

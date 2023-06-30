@@ -1,9 +1,11 @@
+import { addDays, subDays } from "date-fns";
+
 export const getIntialEntryDates = () => {
-  const newDate = new Date();
+  const newDate = new Date().getTime();
   return {
     duration: 0,
     startDate: newDate,
-    stopDate: new Date(newDate),
+    stopDate: newDate,
   };
 };
 
@@ -27,33 +29,37 @@ export const entryDatesReducer = (state, action) => {
         ...state,
         duration: newDuration,
         startDate: action.staticStop
-          ? new Date(state.stopDate.getTime() - newDuration * 1000)
+          ? state.stopDate - newDuration * 1000
           : state.startDate,
         stopDate: !action.staticStop
-          ? new Date(state.startDate.getTime() - newDuration * 1000)
+          ? state.startDate - newDuration * 1000
           : state.stopDate,
       };
     case actions.UPDATE_START_TIME:
+      let { startDate } = action;
+      if (state.stopDate < startDate) {
+        startDate = subDays(startDate, 1).getTime();
+      }
       return {
         ...state,
-        startDate: action.startDate,
-        duration:
-          (state.stopDate.getTime() - action.startDate.getTime()) / 1000,
+        startDate: startDate,
+        duration: (state.stopDate - startDate) / 1000,
       };
     case actions.UPDATE_STOP_TIME:
       let { stopDate } = action;
-      if (stopDate.getTime() < state.startDate.getTime())
-        stopDate.setDate(stopDate.getDate() + 1);
+      if (stopDate < state.startDate)
+        // stopDate.setDate(stopDate.getDate() + 1);
+        stopDate = addDays(stopDate, 1).getTime();
       return {
         ...state,
         stopDate: stopDate,
-        duration: (stopDate.getTime() - state.startDate.getTime()) / 1000,
+        duration: (stopDate - state.startDate) / 1000,
       };
     case actions.UPDATE_START_DATE:
       return {
         ...state,
         startDate: action.startDate,
-        stopDate: new Date(action.startDate.getTime() + state.duration * 1000),
+        stopDate: action.startDate + state.duration * 1000,
       };
     case actions.SET_DURATION:
       return {

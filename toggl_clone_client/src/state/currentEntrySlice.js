@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { addDays, subDays } from "date-fns";
 
 const initialState = {
   description: "",
@@ -7,8 +8,8 @@ const initialState = {
   tags: [],
   tagsChecked: [],
   duration: 0,
-  startDate: new Date(),
-  stopDate: new Date(),
+  startDate: new Date().getTime(),
+  stopDate: new Date().getTime(),
   timerStarted: false,
 };
 
@@ -64,8 +65,8 @@ const testState = {
   ],
   tagsChecked: [],
   duration: 0,
-  startDate: new Date(),
-  stopDate: new Date(),
+  startDate: new Date().getTime(),
+  stopDate: new Date().getTime(),
   timerStarted: false,
   timerInterval: null,
 };
@@ -78,45 +79,41 @@ export const currentEntrySlice = createSlice({
       const { duration, staticStop = true } = action.payload;
       state.duration = duration;
       state.startDate = staticStop
-        ? new Date(state.stopDate.getTime() - duration * 1000)
+        ? state.stopDate - duration * 1000
         : state.startDate;
       state.stopDate = !staticStop
-        ? new Date(state.startDate.getTime() - duration * 1000)
+        ? state.startDate - duration * 1000
         : state.stopDate;
     },
     updateStartTime: (state, action) => {
       let startDate = action.payload.startDate;
-      if (state.stopDate.getTime() < startDate.getTime())
-        startDate.setDate(startDate.getDate() - 1);
+      if (state.stopDate < startDate)
+        startDate = subDays(startDate, 1).getTime();
       state.startDate = startDate;
-      state.duration = Math.floor(
-        (state.stopDate.getTime() - startDate.getTime()) / 1000
-      );
+      state.duration = Math.floor((state.stopDate - startDate) / 1000);
     },
     updateStopTime: (state, action) => {
       let { stopDate } = action.payload;
-      if (stopDate.getTime() < state.startDate.getTime())
-        stopDate.setDate(stopDate.getDate() + 1);
+      if (stopDate < state.startDate) stopDate = addDays(stopDate, 1).getTime();
       state.stopDate = stopDate;
-      state.duration = Math.floor(
-        (stopDate.getTime() - state.startDate.getTime()) / 1000
-      );
+      state.duration = Math.floor((stopDate - state.startDate) / 1000);
     },
     updateStartDate: (state, action) => {
       const startDate = action.payload.startDate;
       state.startDate = startDate;
-      state.stopDate = new Date(startDate.getTime() + state.duration * 1000);
+      state.stopDate = startDate + state.duration * 1000;
     },
     setDateInfo: (state, action) => {
       const { dateInfo } = action.payload;
+      console.log(dateInfo);
       state.duration = dateInfo.duration;
       state.startDate = dateInfo.startDate;
       state.stopDate = dateInfo.stopDate;
     },
     resetDateInfo: (state) => {
-      const newDate = new Date();
+      const newDate = new Date().getTime();
       state.startDate = newDate;
-      state.stopDate = new Date(newDate);
+      state.stopDate = newDate;
       state.duration = 0;
     },
     // tags
@@ -130,14 +127,13 @@ export const currentEntrySlice = createSlice({
       state.duration += 1;
     },
     startTimer: (state, action) => {
-      state.startDate = new Date();
+      state.startDate = new Date().getTime();
       state.timerStarted = true;
       state.timerInterval = action.payload.timerInterval;
     },
     endTimer: (state) => {
-      state.stopDate = new Date(
-        state.startDate.getTime() + state.duration * 1000
-      );
+      state.stopDate = state.startDate + state.duration * 1000;
+
       state.timerStarted = false;
       clearInterval(state.timerInterval);
     },

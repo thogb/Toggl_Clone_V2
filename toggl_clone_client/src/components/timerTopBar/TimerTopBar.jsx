@@ -28,10 +28,10 @@ import {
   resetDateInfo,
   setDateInfo,
   setTagsChecked,
-  setTimerStarted,
   startTimer,
   toggleTimerStarted,
 } from "../../state/currentEntrySlice";
+import { getDiffInSeconds } from "../../utils/TTDateUtil";
 
 const TimerTopBar = () => {
   const dispatch = useDispatch();
@@ -126,19 +126,41 @@ const TimerTopBar = () => {
         dateInfo.duration !== initialDateInfo.duration) ||
       Math.abs(dateInfo.startDate - initialDateInfo.startDate) > 60 * 1000
     ) {
-      dispatch(
-        setDateInfo({
-          dateInfo: {
-            duration: Math.floor(
-              (initialDateInfo.stopDate.getTime() -
-                dateInfo.startDate.getTime()) /
-                1000
-            ),
-            startDate: dateInfo.startDate,
-            stopDate: initialDateInfo.stopDate,
-          },
-        })
+      console.log("dipsatched");
+      console.log(dateInfo);
+      console.log(initialDateInfo);
+      console.log(initialDateInfo.stopDate);
+      console.log(dateInfo.startDate);
+      console.log(
+        Math.floor(
+          (initialDateInfo.stopDate.getTime() - dateInfo.startDate.getTime()) /
+            1000
+        )
       );
+      if (isTimerStarted) {
+        dispatch(
+          setDateInfo({
+            dateInfo: {
+              duration: getDiffInSeconds(
+                initialDateInfo.stopDate.getTime(),
+                dateInfo.startDate.getTime()
+              ),
+              startDate: dateInfo.startDate.getTime(),
+              stopDate: initialDateInfo.stopDate.getTime(),
+            },
+          })
+        );
+      } else {
+        dispatch(
+          setDateInfo({
+            dateInfo: {
+              duration: dateInfo.duration,
+              startDate: dateInfo.startDate.getTime(),
+              stopDate: dateInfo.stopDate.getTime(),
+            },
+          })
+        );
+      }
     }
   };
 
@@ -215,11 +237,7 @@ const TimerTopBar = () => {
           <EntryTimeTextField
             duration={duration}
             startDate={startDate}
-            stopDate={
-              isTimerStarted
-                ? new Date(startDate.getTime() + duration * 1000)
-                : stopDate
-            }
+            stopDate={isTimerStarted ? startDate + duration * 1000 : stopDate}
             disableStopInput={isTimerStarted}
             onPopperClose={handleTimePopperClose}
           />

@@ -1,8 +1,8 @@
-import { InputAdornment, Stack, Typography } from "@mui/material";
+import { Badge, InputAdornment, Stack, Typography } from "@mui/material";
 import React, { useState } from "react";
 import TTTimeHMTextField from "../ttTimeHMTextField/TTTimeHMTextField";
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
-import { formatDateMD } from "../../utils/TTDateUtil";
+import { formatDateMD, getDaysBetween } from "../../utils/TTDateUtil";
 import TTDateCalender from "../TTDateCalender/TTDateCalender";
 import TTPopper from "../ttPopper/TTPopper";
 import { grey } from "@mui/material/colors";
@@ -30,6 +30,8 @@ const EntryDateChanger = () => {
   const [anchorEl, setAnchorEl] = useState(null);
 
   const isPopperOpen = Boolean(anchorEl);
+
+  const daysBetween = getDaysBetween(startDate, stopDate);
 
   return (
     <Stack
@@ -68,12 +70,17 @@ const EntryDateChanger = () => {
         />
       </TTPopper>
       <ArrowRightAltIcon />
-      <StyledTextField
-        date={stopDate}
-        onDateChange={(newDate) =>
-          dispatch(updateStopTime({ stopDate: newDate }))
-        }
-      />
+      <Badge
+        badgeContent={daysBetween > 0 ? daysBetween : null}
+        color="primary"
+      >
+        <StyledTextField
+          date={stopDate}
+          onDateChange={(newDate) =>
+            dispatch(updateStopTime({ stopDate: newDate }))
+          }
+        />
+      </Badge>
     </Stack>
   );
 };

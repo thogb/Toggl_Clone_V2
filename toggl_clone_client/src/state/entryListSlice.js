@@ -1218,8 +1218,8 @@ const getTestState = () => {
     },
   ];
   timeEntries.forEach((v) => {
-    v.startDate = new Date(v.startDate);
-    v.stopDate = new Date(v.stopDate);
+    v.startDate = new Date(v.startDate).getTime();
+    v.stopDate = new Date(v.stopDate).getTime();
   });
   return {
     timeEntries,

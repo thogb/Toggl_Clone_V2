@@ -1,4 +1,12 @@
-import { format, isEqual, isToday, parse } from "date-fns";
+import {
+  differenceInCalendarDays,
+  differenceInSeconds,
+  format,
+  isEqual,
+  isToday,
+  parse,
+  setMilliseconds,
+} from "date-fns";
 import { DATE_FORMAT, REFERENCE_DATE, TIME_FORMAT } from "./constants";
 
 export const isDateToday = (date) => {
@@ -32,15 +40,22 @@ export const formatDateEEddMMMyyyy = (date) => {
 };
 
 export const getDaysBetween = (start, end) => {
-  const newStart = new Date(
-    start.getFullYear(),
-    start.getMonth(),
-    start.getDate()
-  );
-  const newEnd = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+  return Math.abs(differenceInCalendarDays(end, start));
+  // const newStart = new Date(
+  //   start.getFullYear(),
+  //   start.getMonth(),
+  //   start.getDate()
+  // );
+  // const newEnd = new Date(end.getFullYear(), end.getMonth(), end.getDate());
 
-  return Math.floor(
-    (newEnd.getTime() - newStart.getTime()) / (24 * 60 * 60 * 1000)
+  // return Math.floor(
+  //   (newEnd.getTime() - newStart.getTime()) / (24 * 60 * 60 * 1000)
+  // );
+};
+
+export const getDiffInSeconds = (start, end) => {
+  return Math.abs(
+    differenceInSeconds(setMilliseconds(end, 0), setMilliseconds(start, 0))
   );
 };
 
