@@ -11,7 +11,7 @@ import { DATE_FORMAT, REFERENCE_DATE, TIME_FORMAT } from "./constants";
 
 export const isDateToday = (date) => {
   const today = parse(
-    format(new Date(), DATE_FORMAT),
+    format(Date.now(), DATE_FORMAT),
     DATE_FORMAT,
     REFERENCE_DATE
   );

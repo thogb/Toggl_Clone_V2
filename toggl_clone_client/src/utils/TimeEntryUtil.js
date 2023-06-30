@@ -1,3 +1,5 @@
+import { formatDateEEddMMMyyyy } from "./TTDateUtil";
+
 // Assumes tags are all sorted in order
 export const isTagDescriptionEqual = (a, b) => {
   return a.description === b.description && isListEqual(a.tags, b.tags);
@@ -21,4 +23,12 @@ export const isListEqual = (a, b) => {
 
 export const createGroupId = (dateString, count) => {
   return `${dateString} - ${count}`;
+};
+
+export const createDateGroupId = (date) => {
+  return formatDateEEddMMMyyyy(date);
+};
+
+export const getTotalDurationOfADay = (dateGroupEntries, date) => {
+  return dateGroupEntries[createDateGroupId(date)]?.totalTime ?? 0;
 };
