@@ -18,3 +18,7 @@ export const isListEqual = (a, b) => {
   }
   return true;
 };
+
+export const createGroupId = (dateString, count) => {
+  return `${dateString} - ${count}`;
+};

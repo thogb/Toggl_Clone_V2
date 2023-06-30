@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import React, { useMemo, useReducer } from "react";
+import React, { memo, useMemo, useReducer } from "react";
 import TimeEntryHeader from "./TimeEntryHeader";
 import {
   getIntialTimeEntryCheckedData,
@@ -19,8 +19,7 @@ const TimeEntryList = styled("ul")(({ theme }) => ({
 
 const TimeEntrySection = ({ sectionData, ...other }) => {
   const tagList = useSelector((state) => state.currentEntry.tags);
-
-  const { dateString, groupedEntries, totalDuration } = sectionData;
+  const { dateGroupId, groupedEntries, totalDuration } = sectionData;
   const [timeEntryChecked, timeEntryCheckedDispatch] = useReducer(
     timeEntryCheckedReducer,
     getIntialTimeEntryCheckedData()
@@ -45,7 +44,7 @@ const TimeEntrySection = ({ sectionData, ...other }) => {
     <TimeEntryList className="TimeEntryList-root">
       <TimeEntryHeader
         key={"test"}
-        dateString={dateString}
+        dateGroupId={dateGroupId}
         timeEIdList={timeEIdList}
         totalDuration={totalDuration}
         timeEntryChecked={timeEntryChecked}
@@ -70,13 +69,15 @@ const TimeEntrySection = ({ sectionData, ...other }) => {
         />
       ))} */}
       {groupedEntries.map((groupedEntry) => {
-        if (groupedEntry.entry !== undefined) {
+        if (groupedEntry.entries.length === 1) {
           // console.log(groupedEntry.entry);
           // console.log(groupedEntry.entries);
           return (
             <TimeEntryItem
-              key={groupedEntry.entry.id}
-              timeEntry={groupedEntry.entry}
+              key={groupedEntry.entries[0].id}
+              dateGroupId={sectionData.dateGroupId}
+              gId={groupedEntry.gId}
+              timeEntry={groupedEntry.entries[0]}
               tagList={tagList}
               // checked={
               //   timeEntryChecked.checkedList.indexOf(groupedEntry.entry.id) !==
@@ -90,6 +91,7 @@ const TimeEntrySection = ({ sectionData, ...other }) => {
           return (
             <TimeEntryGroup
               key={groupedEntry.gId}
+              dateGroupId={sectionData.dateGroupId}
               groupedEntry={groupedEntry}
               tagList={tagList}
               timeEntryChecked={timeEntryChecked}
@@ -102,4 +104,4 @@ const TimeEntrySection = ({ sectionData, ...other }) => {
   );
 };
 
-export default TimeEntrySection;
+export default memo(TimeEntrySection);

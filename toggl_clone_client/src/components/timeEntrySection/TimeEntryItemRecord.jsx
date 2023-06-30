@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
 import TimeEntryItemBase, {
   RightTools,
   TimeEntryLeftSection,
@@ -108,7 +108,7 @@ const TimeEntryItemRecord = ({
 
   const handleTeDescriptionInputComplete = (e) => {
     // Api call to update description of entry
-    console.log(e.target.value);
+    // console.log(e.target.value);
     operations.onDescriptionEdit(e.target.value);
   };
 
@@ -267,4 +267,4 @@ const TimeEntryItemRecord = ({
   );
 };
 
-export default TimeEntryItemRecord;
+export default memo(TimeEntryItemRecord);

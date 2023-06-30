@@ -1,5 +1,5 @@
 import { Box, Stack } from "@mui/material";
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import TimerPageToolBar from "./TimerPageToolBar";
 import ToolBarLinkButton from "./ToolBarLinkButton";
 import { useSelector } from "react-redux";
@@ -14,39 +14,10 @@ const TimerListView = () => {
   );
 
   const sortedDateGroupEntries = useMemo(() => {
-    console.log("in sortedDate goruped");
-    console.log(dateGroupEntries);
     const dateGroupList = Object.values(dateGroupEntries);
     dateGroupList.sort((a, b) => a.dateString <= b.dateString);
     return dateGroupList;
   }, [dateGroupEntries]);
-
-  // const timeEntries = useSelector((state) => state.entryList.timeEntries);
-
-  // const groupedTimeEntries = useMemo(() => {
-  //   const grouped = {};
-  //   timeEntries.forEach((timeEntry) => {
-  //     const dateHeading = format(timeEntry.startDate, dateFormat);
-  //     if (grouped[dateHeading] === undefined) {
-  //       grouped[dateHeading] = {
-  //         dateHeading: dateHeading,
-  //         timeEntries: [],
-  //       };
-  //     }
-  //     grouped[dateHeading].timeEntries.push(timeEntry);
-  //   });
-
-  //   const groupedList = Object.values(grouped);
-  //   groupedList.sort((e1, e2) => e2.startDate - e1.startDate);
-  //   groupedList.forEach((group) => {
-  //     let totalTime = 0;
-  //     group.timeEntries.forEach((entry) => {
-  //       totalTime += entry.duration;
-  //     });
-  //     group["totalTime"] = totalTime;
-  //   });
-  //   return groupedList;
-  // }, [timeEntries]);
 
   return (
     <Box>
@@ -63,18 +34,10 @@ const TimerListView = () => {
       {sortedDateGroupEntries.length === 0 ? (
         <div>None</div>
       ) : (
-        // groupedTimeEntries.map((sectionData) => {
-        //   return (
-        //     <TimeEntrySection
-        //       key={sectionData.dateHeading}
-        //       sectionData={sectionData}
-        //     />
-        //   );
-        // })
         sortedDateGroupEntries.map((sectionData) => {
           return (
             <TimeEntrySection
-              key={sectionData.dateString}
+              key={sectionData.dateGroupId}
               sectionData={sectionData}
             />
           );

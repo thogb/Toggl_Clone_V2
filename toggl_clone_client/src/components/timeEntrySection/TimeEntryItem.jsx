@@ -1,8 +1,16 @@
-import React from "react";
+import React, { memo } from "react";
 import TimeEntryItemRecord from "./TimeEntryItemRecord";
 import { timeEntryCheckedActions } from "./TimeEntryCheckedReducer";
+import { useDispatch } from "react-redux";
+import {
+  updateBatchTEDescription,
+  updateTEDescription,
+} from "../../state/groupedEntryListSlice";
 
 const TimeEntryItem = ({
+  dateGroupId,
+  gId,
+
   timeEntry,
   isChildrenOfGroup = false,
   tagList,
@@ -11,7 +19,21 @@ const TimeEntryItem = ({
   timeEntryChecked,
   timeEntryCheckedDispatch,
 }) => {
-  const onDescriptionEdit = (description) => {};
+  console.log("rerender " + timeEntry.id);
+  // console.log(true);
+  const dispatch = useDispatch();
+
+  const onDescriptionEdit = (description) => {
+    // console.log(description);
+    // console.log(dateGroupId);
+    // console.log(gId);
+    // console.log(timeEntry.description);
+    dispatch(
+      updateTEDescription({ dateGroupId, gId, id: timeEntry.id, description })
+    );
+    // dispatch(updateBatchTEDescription({}));
+    // dispatch({ type: "none" });
+  };
 
   const onProjectEdit = (projectInfo) => {};
 
@@ -55,4 +77,4 @@ const TimeEntryItem = ({
   );
 };
 
-export default TimeEntryItem;
+export default memo(TimeEntryItem);

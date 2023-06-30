@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import { Checkbox, Stack } from "@mui/material";
 import classNames from "classnames";
-import React from "react";
+import React, { memo } from "react";
 import StackBetween from "../stackBetween/StackBetween";
 import { grey } from "@mui/material/colors";
 
@@ -82,7 +82,7 @@ const TimeEntryItemBase = ({
   );
 };
 
-export default TimeEntryItemBase;
+export default memo(TimeEntryItemBase);
 
 export const RightTools = ({ children }) => {
   return (

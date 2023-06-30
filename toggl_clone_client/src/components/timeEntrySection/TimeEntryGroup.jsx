@@ -1,9 +1,11 @@
-import React, { useMemo, useState } from "react";
+import React, { memo, useMemo, useState } from "react";
 import TimeEntryItemRecord from "./TimeEntryItemRecord";
 import TimeEntryItem from "./TimeEntryItem";
 import { timeEntryCheckedActions } from "./TimeEntryCheckedReducer";
 
 const TimeEntryGroup = ({
+  dateGroupId,
+
   groupedEntry,
   tagList,
   timeEntryChecked,
@@ -91,6 +93,8 @@ const TimeEntryGroup = ({
         groupedEntry.entries.map((entry) => (
           <TimeEntryItem
             key={entry.id}
+            dateGroupId={dateGroupId}
+            gId={groupedEntry.gId}
             tagList={tagList}
             timeEntry={entry}
             isChildrenOfGroup={true}
@@ -103,4 +107,4 @@ const TimeEntryGroup = ({
   );
 };
 
-export default TimeEntryGroup;
+export default memo(TimeEntryGroup);

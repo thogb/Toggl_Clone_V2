@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import TimeEntryItemBase, {
   RightTools,
   TimeEntryLeftSection,
@@ -51,7 +51,7 @@ const DeleteTextButton = styled(TTTextButton)(({ theme }) => ({
 }));
 
 const TimeEntryHeader = ({
-  dateString,
+  dateGroupId,
   timeEIdList,
   totalDuration,
   timeEntryChecked,
@@ -102,7 +102,7 @@ const TimeEntryHeader = ({
       >
         <TimeEntryLeftSection gap={2}>
           <Typography fontSize={"0.95rem"} fontWeight={"600"} mr={"auto"}>
-            {dateString}
+            {dateGroupId}
           </Typography>
           {timeEntryChecked.showCheckbox && (
             <>
@@ -142,4 +142,4 @@ const TimeEntryHeader = ({
   );
 };
 
-export default TimeEntryHeader;
+export default memo(TimeEntryHeader);

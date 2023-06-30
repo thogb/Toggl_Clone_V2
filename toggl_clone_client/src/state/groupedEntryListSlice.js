@@ -1,14 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { formatDateEEddMMMyyyy } from "../utils/TTDateUtil";
-import {
-  isInnerGroupEqual,
-  isTagDescriptionEqual,
-} from "../utils/TimeEntryUtil";
+import { createGroupId, isInnerGroupEqual } from "../utils/TimeEntryUtil";
 
 const exampleState = {
   dateGroupedEntries: {
     "Wed, 21 Jun 2023": {
-      dateString: "Wed, 21 Jun 2023",
+      dateGroupId: "Wed, 21 Jun 2023",
       totalDuration: 0,
       groupCount: 0,
       groupedEntries: [
@@ -55,33 +52,10 @@ const exampleState = {
             },
           ],
         },
-        {
-          description: "desc",
-          tags: ["tag1", "tag2"], //sorted as string
-          startDate: new Date(),
-          stopDate: new Date(),
-          totalDuration: 12,
-          entry: {
-            id: 3004659064,
-            workspace_id: 7169665,
-            startDate: new Date(),
-            stopDate: new Date(),
-            duration: 4,
-            description: "",
-            tags: [
-              "backend",
-              "Brain_training",
-              "C#",
-              ".net_Core",
-              ".net_Core_Web",
-            ],
-          },
-          entries: undefined,
-        },
       ],
     },
     "Tue, 20 Jun": {
-      dateString: "Tue, 20 Jun",
+      dateGroupId: "Tue, 20 Jun",
       year: 2023,
     },
   },
@@ -94,30 +68,31 @@ const initialState = {
 export const generateDateGroupedEntries = (timeEntries) => {
   const grouped = {};
   timeEntries.timeEntries.forEach((timeEntry) => {
-    const dateString = formatDateEEddMMMyyyy(timeEntry.startDate);
+    const dateGroupId = formatDateEEddMMMyyyy(timeEntry.startDate);
     timeEntry.tags.sort();
 
     // Date group not created
-    if (grouped[dateString] === undefined) {
+    if (grouped[dateGroupId] === undefined) {
       // Create the date group and entry
-      grouped[dateString] = {
-        dateString: dateString,
+      grouped[dateGroupId] = {
+        dateGroupId: dateGroupId,
         totalDuration: timeEntry.duration,
         groupCount: 1,
         groupedEntries: [
           {
-            gId: 1,
+            gId: createGroupId(dateGroupId, 1),
             description: timeEntry.description,
             tags: timeEntry.tags,
             startDate: new Date(timeEntry.startDate),
             stopDate: new Date(timeEntry.stopDate),
             totalDuration: timeEntry.duration,
-            entry: timeEntry,
+            // entry: timeEntry,
+            entries: [timeEntry],
           },
         ],
       };
     } else {
-      const dateGroup = grouped[dateString];
+      const dateGroup = grouped[dateGroupId];
       // const descTagGroup = dateGroup.groupedEntries.find((v) =>
       //   isTagDescriptionEqual(v, timeEntry)
       // );
@@ -131,17 +106,17 @@ export const generateDateGroupedEntries = (timeEntries) => {
       if (descTagGroup === undefined) {
         dateGroup.groupCount++;
         dateGroup.groupedEntries.push({
-          gId: dateGroup.groupCount,
+          gId: createGroupId(dateGroupId, dateGroup.groupCount),
           description: timeEntry.description,
           projectId: timeEntry.projectId,
           tags: timeEntry.tags,
           startDate: new Date(timeEntry.startDate),
           stopDate: new Date(timeEntry.stopDate),
           totalDuration: timeEntry.duration,
-          entry: timeEntry,
+          // entry: timeEntry,
+          entries: [timeEntry],
         });
       } else {
-        console.log("found group");
         let entries = descTagGroup.entries;
         if (entries === undefined) {
           descTagGroup.entries = [timeEntry, descTagGroup.entry];
@@ -162,8 +137,8 @@ export const generateDateGroupedEntries = (timeEntries) => {
     }
   });
 
-  for (let dateString in grouped) {
-    const groupedEntries = grouped[dateString].groupedEntries;
+  for (let dateGroupId in grouped) {
+    const groupedEntries = grouped[dateGroupId].groupedEntries;
     groupedEntries.sort((a, b) => b.startDate - a.startDate);
     groupedEntries.forEach((groupedEntry) => {
       if (groupedEntry.entries !== undefined) {
@@ -180,12 +155,40 @@ export const groupedEntryListSlice = createSlice({
   initialState: initialState,
   reducers: {
     setDateGroupedEntries: (state, action) => {
-      console.log("in reducer set date grouped");
-      console.log(action.dateGroupedEntries);
       state.dateGroupedEntries = action.payload.dateGroupedEntries;
     },
+    updateTEDescription: (state, action) => {
+      const { dateGroupId, gId, id, description } = action.payload;
+      // console.log(dateGroupId);
+      // console.log(gId);
+      // console.log(id);
+      // console.log(description);
+
+      const group = state.dateGroupedEntries[dateGroupId].groupedEntries.find(
+        (groupEntry) => groupEntry.gId === gId
+      );
+      const timeEntry = group.entries.find((entry) => entry.id === id);
+      timeEntry.description = description;
+
+      // console.log("group");
+      // console.log(state.dateGroupedEntries["Wed, 21 Jun 2023"]);
+      // console.log("state");
+      // console.log(state.dateGroupedEntries);
+      // const newGroup = { ...state.dateGroupedEntries };
+      // console.log("group");
+      // console.log(newGroup);
+      // return {
+      //   ...state,
+      //   dateGroupedEntries: newGroup,
+      // };
+    },
+    updateBatchTEDescription: (state, action) => {},
   },
 });
 
-export const { setDateGroupedEntries } = groupedEntryListSlice.actions;
+export const {
+  setDateGroupedEntries,
+  updateTEDescription,
+  updateBatchTEDescription,
+} = groupedEntryListSlice.actions;
 export default groupedEntryListSlice.reducer;
