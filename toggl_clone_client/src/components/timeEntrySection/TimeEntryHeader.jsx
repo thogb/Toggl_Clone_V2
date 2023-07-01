@@ -39,7 +39,9 @@ const OutlinedIconButton = styled("button")(({ theme }) => ({
   },
 }));
 
-const StyledTimeEntryItemBase = styled(TimeEntryItemBase)(({ theme }) => ({}));
+const StyledTimeEntryItemBase = styled(TimeEntryItemBase)(({ theme }) => ({
+  border: "none",
+}));
 
 const DeleteTextButton = styled(TTTextButton)(({ theme }) => ({
   "&:enabled": {
@@ -86,7 +88,7 @@ const TimeEntryHeader = ({
   };
 
   return (
-    <TimeEntryItemBase
+    <StyledTimeEntryItemBase
       className={"TimeEntryHeader"}
       showCheckbox={timeEntryChecked.showCheckbox}
       checked={checked}
@@ -138,7 +140,7 @@ const TimeEntryHeader = ({
           </RightTools>
         </TimeEntryRightSection>
       </Stack>
-    </TimeEntryItemBase>
+    </StyledTimeEntryItemBase>
   );
 };
 

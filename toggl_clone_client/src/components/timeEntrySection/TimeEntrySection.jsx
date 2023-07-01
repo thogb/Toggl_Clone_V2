@@ -8,12 +8,16 @@ import {
 import { useSelector } from "react-redux";
 import TimeEntryItem from "./TimeEntryItem";
 import TimeEntryGroup from "./TimeEntryGroup";
+import { alpha } from "@mui/material";
+import { grey } from "@mui/material/colors";
 
 const TimeEntryList = styled("ul")(({ theme }) => ({
   listStyle: "none",
   padding: 0,
   margin: 0,
   marginBottom: theme.spacing(4),
+  "--boxshadow-color": alpha(grey[500], 0.5),
+  boxShadow: "0px 1px 2px var(--boxshadow-color)",
 }));
 
 const TimeEntrySection = ({ sectionData, ...other }) => {
