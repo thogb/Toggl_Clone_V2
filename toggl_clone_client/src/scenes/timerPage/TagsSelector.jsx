@@ -34,11 +34,12 @@ const TagsSelector = ({
   }, [tagCheckedList]);
 
   const reOrderTagsList = () => {
-    checkedList.sort();
+    const newCheckedList = [...checkedList].sort();
     const filteredList = localList
-      .filter((v) => checkedList.indexOf(v) === -1)
+      .filter((v) => newCheckedList.indexOf(v) === -1)
       .sort();
-    setLocalList([...checkedList, ...filteredList]);
+    setLocalList([...newCheckedList, ...filteredList]);
+    setCheckedList(newCheckedList);
   };
 
   const handleSearchChange = (e) => {
@@ -47,19 +48,20 @@ const TagsSelector = ({
   };
 
   const handlePopperClose = () => {
-    checkedList.sort();
-    if (onSelectionComplete) onSelectionComplete(checkedList);
+    const newCheckedList = [...checkedList].sort();
+    if (onSelectionComplete) onSelectionComplete(newCheckedList);
     setAnchorEl(null);
+    setCheckedList(newCheckedList);
   };
 
   const handlePopperOpen = (e) => {
-    // reOrderTagsList();
     setAnchorEl(e.currentTarget);
   };
 
   const controlledClose = () => {
-    checkedList.sort();
-    if (onClose) onClose(checkedList);
+    const newCheckedList = [...checkedList].sort();
+    if (onClose) onClose(newCheckedList);
+    setCheckedList(newCheckedList);
   };
 
   const searchIsNotEmpty = searchValue !== "";
@@ -68,6 +70,7 @@ const TagsSelector = ({
     !tagList.some((tagName) => searchValue.trim() === tagName);
   // const hasTagsSelected = checkedList.length > 0;
   const hasTagsSelected = tagCheckedList.length > 0;
+
   return (
     <>
       <TTPopper

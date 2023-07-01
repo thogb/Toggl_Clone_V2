@@ -32,7 +32,6 @@ const TimerListView = () => {
     const startDate = startOfWeek(Date.now(), { weekStartsOn: 1 });
     let totalDuration = 0;
     for (let i = 0; i < 7; i++) {
-      console.log(startDate);
       totalDuration += getTotalDurationOfADay(dateGroupEntries, startDate);
       startDate.setDate(startDate.getDate() + 1);
     }
