@@ -1,4 +1,4 @@
-import React, { memo, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import TimeEntryItemBase, {
   RightTools,
   TimeEntryLeftSection,
@@ -99,6 +99,10 @@ const TimeEntryItemRecord = ({
   const theme = useTheme();
   const [teDescription, setTeDescription] = useState(description);
   const [tagSelectorAnchor, setTagSelectorAnchor] = useState(null);
+
+  useEffect(() => {
+    setTeDescription(description);
+  }, [description]);
 
   const handleTeDescriptionChange = (e) => {
     setTeDescription(e.target.value);

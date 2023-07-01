@@ -12,6 +12,7 @@ const TimeEntryGroup = ({
   timeEntryCheckedDispatch,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [testBool, setTestBool] = useState(false);
 
   const checkedList = timeEntryChecked.checkedList;
 
@@ -58,7 +59,7 @@ const TimeEntryGroup = ({
   };
 
   const onExpandButonClick = (e) => {
-    setIsExpanded(!isExpanded);
+    setIsExpanded((isExpanded) => !isExpanded);
   };
 
   const operations = useMemo(() => {

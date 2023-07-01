@@ -1,9 +1,16 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {} from "../utils/TTDateUtil";
 import {
+  GroupedEntrySingleton,
   createDateGroupId,
   createGroupId,
-  isInnerGroupEqual,
+  findGroupedEntry,
+  findGroupedEntryAndTimeEntry,
+  findGroupedEntryByTE,
+  findTimeEntry,
+  isGroupEntryEqual,
+  moveTeFromToGroupedEntry,
+  updateTEGroupData,
 } from "../utils/TimeEntryUtil";
 import { compareDesc } from "date-fns";
 
@@ -12,11 +19,10 @@ const exampleState = {
     "Wed, 21 Jun 2023": {
       dateGroupId: "Wed, 21 Jun 2023",
       totalDuration: 0,
-      groupCount: 0,
       groupedEntries: [
         //sorted by {}.startDate
         {
-          gId: 1, // from groupCount
+          gId: "Wed, 21 Jun 2023 - 0", // from groupCount
           description: "desc",
           projectId: 1234123,
           tags: ["tag1", "tag2"], //sorted as string
@@ -28,6 +34,7 @@ const exampleState = {
             {
               id: 3004659064,
               workspace_id: 7169665,
+              projectId: 1234123,
               startDate: new Date().getTime(),
               stopDate: new Date().getTime(),
               duration: 4,
@@ -43,6 +50,7 @@ const exampleState = {
             {
               id: 3004659064,
               workspace_id: 7169665,
+              projectId: 1234123,
               startDate: new Date().getTime(),
               stopDate: new Date().getTime(),
               duration: 4,
@@ -82,10 +90,9 @@ export const generateDateGroupedEntries = (timeEntries) => {
       grouped[dateGroupId] = {
         dateGroupId: dateGroupId,
         totalDuration: timeEntry.duration,
-        groupCount: 1,
         groupedEntries: [
           {
-            gId: createGroupId(dateGroupId, 1),
+            gId: GroupedEntrySingleton.getNextGroupId(),
             description: timeEntry.description,
             tags: timeEntry.tags,
             startDate: timeEntry.startDate,
@@ -100,14 +107,13 @@ export const generateDateGroupedEntries = (timeEntries) => {
       const dateGroup = grouped[dateGroupId];
 
       const descTagGroup = dateGroup.groupedEntries.find((v) =>
-        isInnerGroupEqual(v, timeEntry)
+        isGroupEntryEqual(v, timeEntry)
       );
 
       // Desc tag group not found
       if (descTagGroup === undefined) {
-        dateGroup.groupCount++;
         dateGroup.groupedEntries.push({
-          gId: createGroupId(dateGroupId, dateGroup.groupCount),
+          gId: GroupedEntrySingleton.getNextGroupId(),
           description: timeEntry.description,
           projectId: timeEntry.projectId,
           tags: timeEntry.tags,
@@ -142,6 +148,7 @@ export const generateDateGroupedEntries = (timeEntries) => {
     const groupedEntries = grouped[dateGroupId].groupedEntries;
     groupedEntries.sort((a, b) => compareDesc(a.startDate, b.startDate));
     groupedEntries.forEach((groupedEntry) => {
+      console.log(groupedEntry.gId);
       if (groupedEntry.entries !== undefined) {
         groupedEntry.entries.sort((a, b) =>
           compareDesc(a.startDate, b.startDate)
@@ -163,13 +170,41 @@ export const groupedEntryListSlice = createSlice({
     updateTEDescription: (state, action) => {
       const { dateGroupId, gId, id, description } = action.payload;
 
-      const group = state.dateGroupedEntries[dateGroupId].groupedEntries.find(
-        (groupEntry) => groupEntry.gId === gId
-      );
-      const timeEntry = group.entries.find((entry) => entry.id === id);
-      timeEntry.description = description;
+      updateTEGroupData(state.dateGroupedEntries, dateGroupId, gId, id, {
+        name: "description",
+        description: description,
+      });
+
+      // const dateGroupEntry = state.dateGroupedEntries[dateGroupId];
+      // const groupedEntries = dateGroupEntry.groupedEntries;
+      // const { groupedEntry, timeEntry } = findGroupedEntryAndTimeEntry(
+      //   groupedEntries,
+      //   gId,
+      //   id
+      // );
+
+      // timeEntry.description = description.trim();
+      // // Find the new groupEntry it belongs to
+      // const newGroupEntry = findGroupedEntryByTE(groupedEntries, timeEntry);
+      // // If groupEntry is not the same as the old one then move to new groupEntry
+      // if (newGroupEntry !== groupedEntry) {
+      //   checkedMoveTeFromToGroupedEntry(
+      //     groupedEntries,
+      //     groupedEntry,
+      //     newGroupEntry,
+      //     timeEntry
+      //   );
+      // }
     },
     updateBatchTEDescription: (state, action) => {},
+    updateTETags: (state, action) => {
+      const { dateGroupId, gId, id, tags } = action.payload;
+      updateTEGroupData(state.dateGroupedEntries, dateGroupId, gId, id, {
+        name: "tags",
+        tags: tags,
+      });
+    },
+    updateBatchTETags: (state, action) => {},
   },
 });
 
@@ -177,5 +212,7 @@ export const {
   setDateGroupedEntries,
   updateTEDescription,
   updateBatchTEDescription,
+  updateTETags,
+  updateBatchTETags,
 } = groupedEntryListSlice.actions;
 export default groupedEntryListSlice.reducer;

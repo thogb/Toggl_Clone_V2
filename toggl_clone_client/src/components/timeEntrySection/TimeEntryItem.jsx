@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import {
   updateBatchTEDescription,
   updateTEDescription,
+  updateTETags,
 } from "../../state/groupedEntryListSlice";
 
 const TimeEntryItem = ({
@@ -19,25 +20,21 @@ const TimeEntryItem = ({
   timeEntryChecked,
   timeEntryCheckedDispatch,
 }) => {
-  console.log("rerender " + timeEntry.id);
-  // console.log(true);
   const dispatch = useDispatch();
 
   const onDescriptionEdit = (description) => {
-    // console.log(description);
-    // console.log(dateGroupId);
-    // console.log(gId);
-    // console.log(timeEntry.description);
     dispatch(
       updateTEDescription({ dateGroupId, gId, id: timeEntry.id, description })
     );
-    // dispatch(updateBatchTEDescription({}));
-    // dispatch({ type: "none" });
   };
 
   const onProjectEdit = (projectInfo) => {};
 
-  const onTagsCheckedEdit = (tagsChecked) => {};
+  const onTagsCheckedEdit = (tagsChecked) => {
+    dispatch(
+      updateTETags({ dateGroupId, gId, id: timeEntry.id, tags: tagsChecked })
+    );
+  };
 
   const onDateInfoChange = (dateInfo) => {};
 
@@ -60,6 +57,8 @@ const TimeEntryItem = ({
       onDeleteClick,
     };
   }, []);
+
+  console.log("rerender " + timeEntry.id);
 
   return (
     <TimeEntryItemRecord

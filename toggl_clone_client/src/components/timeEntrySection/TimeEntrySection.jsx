@@ -24,7 +24,6 @@ const TimeEntrySection = ({ sectionData, ...other }) => {
     getIntialTimeEntryCheckedData()
   );
 
-  // const timeEIdList = timeEntries.map((timeEntry) => timeEntry.id);
   const timeEIdList = useMemo(() => {
     const list = [];
     groupedEntries.forEach((groupedEntry) => {
@@ -49,28 +48,9 @@ const TimeEntrySection = ({ sectionData, ...other }) => {
         timeEntryChecked={timeEntryChecked}
         timeEntryCheckedDispatch={timeEntryCheckedDispatch}
       />
-      {/* {timeEntries.map((timeEntry) => (
-        <TimeEntryItemRecord
-          key={timeEntry.id}
-          id={timeEntry.id}
-          checked={timeEntryChecked.checkedList.indexOf(timeEntry.id) !== -1}
-          showCheckbox={timeEntryChecked.showCheckbox}
-          projectId={timeEntry.projectId}
-          description={timeEntry.description}
-          tagList={tagList}
-          tagsChecked={timeEntry.tags}
-          duration={timeEntry.duration}
-          startDate={timeEntry.startDate}
-          stopDate={timeEntry.stopDate}
-          timeEntryChecked={timeEntryChecked}
-          timeEntryCheckedDispatch={timeEntryCheckedDispatch}
-          isTypeHeader={true}
-        />
-      ))} */}
+
       {groupedEntries.map((groupedEntry) => {
         if (groupedEntry.entries.length === 1) {
-          // console.log(groupedEntry.entry);
-          // console.log(groupedEntry.entries);
           return (
             <TimeEntryItem
               key={groupedEntry.entries[0].id}
@@ -78,10 +58,6 @@ const TimeEntrySection = ({ sectionData, ...other }) => {
               gId={groupedEntry.gId}
               timeEntry={groupedEntry.entries[0]}
               tagList={tagList}
-              // checked={
-              //   timeEntryChecked.checkedList.indexOf(groupedEntry.entry.id) !==
-              //   -1
-              // }
               timeEntryChecked={timeEntryChecked}
               timeEntryCheckedDispatch={timeEntryCheckedDispatch}
             />
