@@ -174,27 +174,6 @@ export const groupedEntryListSlice = createSlice({
         name: "description",
         description: description,
       });
-
-      // const dateGroupEntry = state.dateGroupedEntries[dateGroupId];
-      // const groupedEntries = dateGroupEntry.groupedEntries;
-      // const { groupedEntry, timeEntry } = findGroupedEntryAndTimeEntry(
-      //   groupedEntries,
-      //   gId,
-      //   id
-      // );
-
-      // timeEntry.description = description.trim();
-      // // Find the new groupEntry it belongs to
-      // const newGroupEntry = findGroupedEntryByTE(groupedEntries, timeEntry);
-      // // If groupEntry is not the same as the old one then move to new groupEntry
-      // if (newGroupEntry !== groupedEntry) {
-      //   checkedMoveTeFromToGroupedEntry(
-      //     groupedEntries,
-      //     groupedEntry,
-      //     newGroupEntry,
-      //     timeEntry
-      //   );
-      // }
     },
     updateGEDescription: (state, action) => {},
     updateTETags: (state, action) => {

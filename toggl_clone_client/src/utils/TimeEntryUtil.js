@@ -191,22 +191,27 @@ export const updateTEGroupData = (
   } else if (name === "tags") {
     const newTags = [...data.tags];
     newTags.sort();
-    timeEntry.tags = newTags;
+    if (!isListEqual(timeEntry.tags, newTags)) {
+      timeEntry.tags = newTags;
+    }
   }
 
   // Find the new groupEntry it belongs to
   const newGroupedEntry = findGroupedEntryByTE(groupedEntries, timeEntry);
-  if (newGroupedEntry === undefined && groupedEntry.entries.length < 2) {
-    refreshGroupedEntryData(groupedEntry);
-  } else {
-    moveTeFromToGroupedEntry(
-      groupedEntries,
-      groupedEntry,
-      newGroupedEntry,
-      timeEntry
-    );
+  // If same groupEntry then it means that there are no actual changes
+  if (groupedEntry !== newGroupedEntry) {
+    if (newGroupedEntry === undefined && groupedEntry.entries.length < 2) {
+      refreshGroupedEntryData(groupedEntry);
+    } else {
+      moveTeFromToGroupedEntry(
+        groupedEntries,
+        groupedEntry,
+        newGroupedEntry,
+        timeEntry
+      );
+    }
+    sortGroupedEntriesByDateInfo(groupedEntries);
   }
-  sortGroupedEntriesByDateInfo(groupedEntries);
 };
 
 export const createNewGroupedEntry = (timeEntry) => {
