@@ -1,4 +1,5 @@
 import { alpha, createTheme } from "@mui/material";
+import { red } from "@mui/material/colors";
 
 export const themeSettings = (mode) => {
   const spacing = 8;
@@ -21,6 +22,14 @@ export const themeSettings = (mode) => {
         : {
             primary1: augmentColor({ color: { main: "#95899a" } }),
           }),
+      action: {
+        ...theme.palette.action,
+        // selected: alpha(red[500], 0.8),
+        hover: alpha("#000", 0.1),
+        // selected: alpha("#000", 0.9),
+        hoverOpacity: 0.1,
+        selectedOpacity: 0.2,
+      },
     },
     spacing: spacing,
     ttSpacings: {
