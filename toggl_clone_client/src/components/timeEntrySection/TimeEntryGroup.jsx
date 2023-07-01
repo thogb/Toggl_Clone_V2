@@ -16,22 +16,43 @@ const TimeEntryGroup = ({
 
   const checkedList = timeEntryChecked.checkedList;
 
-  const checked = useMemo(() => {
-    if (groupedEntry.entries.length > checkedList.length) return false;
-    return groupedEntry.entries.every(
-      (entry) => checkedList.indexOf(entry.id) !== -1
-    );
-  }, [checkedList]);
-
-  const indeterminate = useMemo(() => {
-    return (
+  const checkboxInfo = useMemo(() => {
+    let checked = !(groupedEntry.entries.length > checkedList.length);
+    checked =
+      checked &&
+      groupedEntry.entries.every(
+        (entry) => checkedList.indexOf(entry.id) !== -1
+      );
+    console.log("checked " + checked);
+    const indeterminate =
       !checked &&
       checkedList.length > 0 &&
-      groupedEntry.entries.some((entry) => checkedList.indexOf(entry.id) !== -1)
-    );
+      groupedEntry.entries.some(
+        (entry) => checkedList.indexOf(entry.id) !== -1
+      );
+    return {
+      checked,
+      indeterminate,
+      isCheckOn: checked || indeterminate,
+    };
   }, [checkedList]);
 
-  const isCheckOn = checked || indeterminate;
+  // const checked = useMemo(() => {
+  //   if (groupedEntry.entries.length > checkedList.length) return false;
+  //   return groupedEntry.entries.every(
+  //     (entry) => checkedList.indexOf(entry.id) !== -1
+  //   );
+  // }, [checkedList]);
+
+  // const indeterminate = useMemo(() => {
+  //   return (
+  //     !checked &&
+  //     checkedList.length > 0 &&
+  //     groupedEntry.entries.some((entry) => checkedList.indexOf(entry.id) !== -1)
+  //   );
+  // }, [checkedList]);
+
+  // const isCheckOn = checked || indeterminate;
 
   const onDescriptionEdit = (description) => {};
 
@@ -43,36 +64,31 @@ const TimeEntryGroup = ({
 
   const onDeleteClick = (e) => {};
 
-  const onCheckBoxClick = () => {
+  const onCheckBoxClick = (e) => {
+    console.log(" in box click + " + checkboxInfo.isCheckOn);
     const idList = groupedEntry.entries.map((entry) => entry.id);
-    if (isCheckOn) {
-      timeEntryCheckedDispatch({
-        type: timeEntryCheckedActions.TOGGLE_OFF_FROM_LIST,
-        inList: idList,
-      });
-    } else {
-      timeEntryCheckedDispatch({
-        type: timeEntryCheckedActions.APPEND_TO_CHECK_LIST,
-        inList: idList,
-      });
-    }
+    timeEntryCheckedDispatch({
+      type: timeEntryCheckedActions.TOGGLE_FROM_GROUP,
+      checkOn: checkboxInfo.isCheckOn,
+      inList: idList,
+    });
   };
 
   const onExpandButonClick = (e) => {
     setIsExpanded((isExpanded) => !isExpanded);
   };
 
-  const operations = useMemo(() => {
-    return {
-      onCheckBoxClick,
-      onDescriptionEdit,
-      onProjectEdit,
-      onTagsCheckedEdit,
-      onDateInfoChange,
-      onDeleteClick,
-      onExpandButonClick,
-    };
-  }, []);
+  // const operations = useMemo(() => {
+  //   return {
+  //     onCheckBoxClick,
+  //     onDescriptionEdit,
+  //     onProjectEdit,
+  //     onTagsCheckedEdit,
+  //     onDateInfoChange,
+  //     onDeleteClick,
+  //     onExpandButonClick,
+  //   };
+  // }, []);
 
   return (
     <>
@@ -84,15 +100,23 @@ const TimeEntryGroup = ({
         duration={groupedEntry.totalDuration}
         startDate={groupedEntry.startDate}
         stopDate={groupedEntry.stopDate}
-        checked={checked}
-        indeterminate={indeterminate}
+        checked={checkboxInfo.checked}
+        indeterminate={checkboxInfo.indeterminate}
         isTypeHeader={true}
         isExpanded={isExpanded}
         groupSize={groupedEntry.entries.length}
         showCheckbox={timeEntryChecked.showCheckbox}
         timeEntryChecked={timeEntryChecked}
         timeEntryCheckedDispatch={timeEntryCheckedDispatch}
-        operations={operations}
+        operations={{
+          onCheckBoxClick,
+          onDescriptionEdit,
+          onProjectEdit,
+          onTagsCheckedEdit,
+          onDateInfoChange,
+          onDeleteClick,
+          onExpandButonClick,
+        }}
       />
       {isExpanded &&
         groupedEntry.entries.map((entry) => (

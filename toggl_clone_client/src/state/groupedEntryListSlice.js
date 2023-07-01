@@ -196,7 +196,7 @@ export const groupedEntryListSlice = createSlice({
       //   );
       // }
     },
-    updateBatchTEDescription: (state, action) => {},
+    updateGEDescription: (state, action) => {},
     updateTETags: (state, action) => {
       const { dateGroupId, gId, id, tags } = action.payload;
       updateTEGroupData(state.dateGroupedEntries, dateGroupId, gId, id, {
@@ -204,15 +204,25 @@ export const groupedEntryListSlice = createSlice({
         tags: tags,
       });
     },
-    updateBatchTETags: (state, action) => {},
+    updateGETags: (state, action) => {},
+    updateTEProjectId: (state, action) => {
+      const { dateGroupId, gId, id, projectId } = action.payload;
+      updateTEGroupData(state.dateGroupedEntries, dateGroupId, gId, id, {
+        name: "projectId",
+        projectId: projectId,
+      });
+    },
+    updateGEProjectId: (state, action) => {},
   },
 });
 
 export const {
   setDateGroupedEntries,
   updateTEDescription,
-  updateBatchTEDescription,
+  updateGEDescription,
   updateTETags,
-  updateBatchTETags,
+  updateGETags,
+  updateTEProjectId,
+  updateGEProjectId,
 } = groupedEntryListSlice.actions;
 export default groupedEntryListSlice.reducer;

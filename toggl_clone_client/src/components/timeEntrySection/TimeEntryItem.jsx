@@ -47,16 +47,16 @@ const TimeEntryItem = ({
     });
   };
 
-  const operations = useMemo(() => {
-    return {
-      onCheckBoxClick,
-      onDescriptionEdit,
-      onProjectEdit,
-      onTagsCheckedEdit,
-      onDateInfoChange,
-      onDeleteClick,
-    };
-  }, []);
+  // const operations = useMemo(() => {
+  //   return {
+  //     onCheckBoxClick,
+  //     onDescriptionEdit,
+  //     onProjectEdit,
+  //     onTagsCheckedEdit,
+  //     onDateInfoChange,
+  //     onDeleteClick,
+  //   };
+  // }, []);
 
   console.log("rerender " + timeEntry.id);
 
@@ -73,7 +73,14 @@ const TimeEntryItem = ({
       isChildrenOfGroup={isChildrenOfGroup}
       checked={timeEntryChecked.checkedList.indexOf(timeEntry.id) !== -1}
       showCheckbox={timeEntryChecked.showCheckbox}
-      operations={operations}
+      operations={{
+        onCheckBoxClick,
+        onDescriptionEdit,
+        onProjectEdit,
+        onTagsCheckedEdit,
+        onDateInfoChange,
+        onDeleteClick,
+      }}
     />
   );
 };
