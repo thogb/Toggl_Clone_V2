@@ -3,18 +3,9 @@ import {} from "../utils/TTDateUtil";
 import {
   GroupedEntrySingleton,
   createDateGroupId,
-  createGroupId,
-  findAllByIds,
-  findGroupedEntry,
-  findGroupedEntryAndTimeEntry,
-  findGroupedEntryByGId,
-  findGroupedEntryByTE,
-  findTimeEntry,
+  deleteGEFromDateGroupEntry,
+  deleteTEFromGroupedEntry,
   isGroupEntryEqual,
-  moveTEFromGroupedEntry,
-  moveTEToGroupedEntry,
-  moveTeFromToGroupedEntry,
-  sortGroupedEntriesByDateInfo,
   updateTEGroupData,
 } from "../utils/TimeEntryUtil";
 import { compareDesc } from "date-fns";
@@ -200,41 +191,12 @@ export const groupedEntryListSlice = createSlice({
 
     deleteTE: (state, action) => {
       const { dateGroupId, gId, id } = action.payload;
-      const dateGroupedEntries = state.dateGroupedEntries;
-      const { dateGroupEntry, groupedEntry, timeEntry } = findAllByIds(
-        dateGroupedEntries,
-        dateGroupId,
-        gId,
-        id
-      );
-      const groupedEntries = dateGroupEntry.groupedEntries;
-
-      moveTEFromGroupedEntry(groupedEntries, groupedEntry, timeEntry);
-      if (groupedEntries.length === 0) {
-        delete dateGroupedEntries[dateGroupId];
-      } else {
-        dateGroupEntry.totalDuration -= timeEntry.duration;
-        sortGroupedEntriesByDateInfo(groupedEntries);
-      }
+      deleteTEFromGroupedEntry(state.dateGroupedEntries, dateGroupId, gId, id);
     },
     deleteGE: (state, action) => {
       // Delete group entry from the dateGroup with id = dategroupId
       const { dateGroupId, gId } = action.payload;
-      const dateGroupedEntries = state.dateGroupedEntries;
-      const dateGroupEntry = dateGroupedEntries[dateGroupId];
-      const groupedEntries = dateGroupEntry.groupedEntries;
-      const groupEntry = findGroupedEntryByGId(groupedEntries, gId);
-
-      // Delete groupEntry from groupedEntries
-      groupedEntries.splice(
-        groupedEntries.findIndex((ge) => ge.gId === gId),
-        1
-      );
-      if (groupedEntries.length === 0) {
-        delete dateGroupedEntries[dateGroupId];
-      } else {
-        dateGroupEntry.totalDuration -= groupEntry.totalDuration;
-      }
+      deleteGEFromDateGroupEntry(state.dateGroupedEntries, dateGroupId, gId);
     },
   },
 });

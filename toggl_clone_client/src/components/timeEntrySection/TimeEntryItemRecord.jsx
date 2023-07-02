@@ -47,6 +47,11 @@ const StyledTimeEntryItemBase = styled(TimeEntryItemBase)(({ theme }) => ({
   },
 
   "&.TimeEntryItemRecord-isChildrenOfGroup": {
+    backgroundColor: grey[100],
+    "&:hover": {
+      backgroundColor: grey[200],
+    },
+
     "& .TimeEntryLeftSection": {
       marginLeft: "40px",
     },
