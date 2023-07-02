@@ -34,7 +34,6 @@ const TagsSelector = ({
   }, [tagCheckedList]);
 
   const reOrderTagsList = () => {
-    console.log("Reordering tags list");
     const newCheckedList = [...checkedList].sort();
     const filteredList = localList
       .filter((v) => newCheckedList.indexOf(v) === -1)

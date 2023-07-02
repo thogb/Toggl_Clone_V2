@@ -276,7 +276,6 @@ const TimeEntryItemRecord = ({
           {menuOptions.length > 0 && (
             <TTMenu
               anchorEl={menuAnchor}
-              keepMounted
               open={Boolean(menuAnchor)}
               onClose={() => setMenuAnchor(null)}
             >

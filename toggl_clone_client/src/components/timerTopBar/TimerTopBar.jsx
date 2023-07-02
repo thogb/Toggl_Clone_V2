@@ -19,6 +19,7 @@ import AddIcon from "@mui/icons-material/Add";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import StopIcon from "@mui/icons-material/Stop";
 import CheckIcon from "@mui/icons-material/Check";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { grey } from "@mui/material/colors";
 import TagsSelector from "../../scenes/timerPage/TagsSelector";
 import { useDispatch, useSelector } from "react-redux";
@@ -32,6 +33,15 @@ import {
   toggleTimerStarted,
 } from "../../state/currentEntrySlice";
 import { getDiffInSeconds } from "../../utils/TTDateUtil";
+import { TTMenu } from "../ttMenu/TTMenu";
+import { TTMenuItem } from "../ttMenu/TTMenuItem";
+
+const timerStates = Object.freeze({
+  STARTED: "STARTED",
+  IDLE: "IDLE",
+  MANUAL: "MANUAL",
+  CHECK: "CHECK",
+});
 
 const TimerTopBar = () => {
   const dispatch = useDispatch();
@@ -46,6 +56,8 @@ const TimerTopBar = () => {
 
   const desciptionInput = useRef();
   const [isTimerMode, setIsTimerMode] = useState(true);
+
+  const [menuAnchor, setMenuAnchor] = useState(null);
 
   //retrieved from redux for if timer is started
 
@@ -92,6 +104,38 @@ const TimerTopBar = () => {
     shadowFocus: {
       size: "0px",
     },
+  };
+
+  const timerState = !isTimerMode
+    ? timerStates.MANUAL
+    : isTimerStarted
+    ? timerStates.STARTED
+    : duration <= 0
+    ? timerStates.IDLE
+    : timerStates.CHECK;
+
+  const handleTimerButtonClick = () => {
+    console.log(timerState);
+    console.log(isTimerStarted);
+    switch (timerState) {
+      case timerStates.MANUAL:
+        return;
+      case timerStates.STARTED:
+        console.log(" end timer");
+        dispatch(endTimer());
+        return;
+      case timerStates.IDLE:
+        const timerInterval = setInterval(() => {
+          dispatch(incrementDuration());
+        }, 1000);
+        dispatch(startTimer({ timerInterval: timerInterval }));
+        desciptionInput.current.focus();
+        return;
+      case timerStates.CHECK:
+        return;
+      default:
+        return;
+    }
   };
 
   const toggleLocalTimerStarted = () => {
@@ -155,6 +199,27 @@ const TimerTopBar = () => {
 
   const handleTagsSelectionComplete = (tagsChecked) => {
     dispatch(setTagsChecked({ tagsChecked: tagsChecked }));
+  };
+
+  const handleMenuItemClick = (code) => {
+    if (code === "DELETE") {
+      console.log("delete clicked");
+    }
+
+    setMenuAnchor(null);
+  };
+
+  const getCircularButtonIcon = () => {
+    switch (timerState) {
+      case timerStates.MANUAL:
+        return <AddIcon style={{ fontSize: "30px" }} />;
+      case timerStates.STARTED:
+        return <StopIcon style={{ fontSize: "30px" }} />;
+      case timerStates.IDLE:
+        return <PlayArrowIcon style={{ fontSize: "30px" }} />;
+      default:
+        return <CheckIcon style={{ fontSize: "30px" }} />;
+    }
   };
 
   console.log("top bar render");
@@ -236,54 +301,93 @@ const TimerTopBar = () => {
         {/* timer button */}
         <CircularStartButton
           bgColor={isTimerStarted ? "timing" : "secondary"}
-          onClick={toggleLocalTimerStarted}
+          onClick={handleTimerButtonClick}
           shadowHover={{ size: "3px" }}
           style={{ marginLeft: theme.spacing(2.5) }}
         >
-          {!isTimerMode ? (
-            <AddIcon style={{ fontSize: "30px" }} />
-          ) : isTimerStarted ? (
-            <StopIcon style={{ fontSize: "30px" }} />
-          ) : duration <= 0 ? (
-            <PlayArrowIcon style={{ fontSize: "30px" }} />
-          ) : (
-            <CheckIcon style={{ fontSize: "30px" }} />
-          )}
+          {getCircularButtonIcon()}
         </CircularStartButton>
         <Box
-          mx={theme.ttSpacings.page.px}
-          bgcolor={grey[200]}
-          p={"5px"}
-          borderRadius={"12px"}
+          minWidth={70}
+          display={"flex"}
+          flexDirection={"row"}
+          justifyContent={"center"}
         >
-          <Stack direction={"column"} gap={1.5}>
-            <CircularStartButton
-              disabled={true}
-              size="16px"
-              bgColor={isTimerMode ? "timerOptionSelected" : "timerOption"}
-              onClick={() => {
-                if (!isTimerMode) {
-                  setIsTimerMode(true);
-                  handleTimeModeChange();
-                }
-              }}
-              {...(isTimerMode ? timerOptionSSelected : timerOptionStyle)}
+          {timerState !== timerStates.STARTED ? (
+            <Stack
+              width={"fit-content"}
+              direction={"column"}
+              gap={1.5}
+              mx={theme.ttSpacings.page.px}
+              bgcolor={grey[200]}
+              p={"5px"}
+              borderRadius={"12px"}
             >
-              <PlayArrowIcon sx={{ fontSize: "14px" }} />
-            </CircularStartButton>
-            <CircularStartButton
-              size="16px"
-              bgColor={!isTimerMode ? "timerOptionSelected" : "timerOption"}
-              onClick={() => {
-                if (isTimerMode) {
-                  handleTimeModeChange();
-                }
-              }}
-              {...(!isTimerMode ? timerOptionSSelected : timerOptionStyle)}
-            >
-              <AddIcon sx={{ fontSize: "14px" }} />
-            </CircularStartButton>
-          </Stack>
+              <CircularStartButton
+                disabled={true}
+                size="16px"
+                bgColor={isTimerMode ? "timerOptionSelected" : "timerOption"}
+                onClick={() => {
+                  if (!isTimerMode) {
+                    setIsTimerMode(true);
+                    handleTimeModeChange();
+                  }
+                }}
+                {...(isTimerMode ? timerOptionSSelected : timerOptionStyle)}
+              >
+                <PlayArrowIcon sx={{ fontSize: "14px" }} />
+              </CircularStartButton>
+              <CircularStartButton
+                size="16px"
+                bgColor={!isTimerMode ? "timerOptionSelected" : "timerOption"}
+                onClick={() => {
+                  if (isTimerMode) {
+                    handleTimeModeChange();
+                  }
+                }}
+                {...(!isTimerMode ? timerOptionSSelected : timerOptionStyle)}
+              >
+                <AddIcon sx={{ fontSize: "14px" }} />
+              </CircularStartButton>
+            </Stack>
+          ) : (
+            <>
+              <TTIconButton
+                open={Boolean(menuAnchor)}
+                style={{
+                  padding: theme.spacing(1 / 4, 1 / 4),
+                  fontSize: "1.8rem",
+                }}
+                onClick={(e) => setMenuAnchor(e.currentTarget)}
+              >
+                <MoreHorizIcon />
+              </TTIconButton>
+              <TTMenu
+                anchorEl={menuAnchor}
+                open={Boolean(menuAnchor)}
+                onClose={() => setMenuAnchor(null)}
+              >
+                <TTMenuItem
+                  disabled={true}
+                  onClick={() => handleMenuItemClick()}
+                >
+                  Split
+                </TTMenuItem>
+                <TTMenuItem
+                  disabled={true}
+                  onClick={() => handleMenuItemClick()}
+                >
+                  Pin as favorite
+                </TTMenuItem>
+                <TTMenuItem
+                  style={{ color: "red" }}
+                  onClick={() => handleMenuItemClick("DELETE")}
+                >
+                  Delete
+                </TTMenuItem>
+              </TTMenu>
+            </>
+          )}
         </Box>
       </Toolbar>
     </AppBar>

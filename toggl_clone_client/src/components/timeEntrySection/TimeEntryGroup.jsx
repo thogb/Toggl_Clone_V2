@@ -23,7 +23,6 @@ const TimeEntryGroup = ({
 }) => {
   const dispatch = useDispatch();
   const [isExpanded, setIsExpanded] = useState(false);
-  const [testBool, setTestBool] = useState(false);
 
   const checkedList = timeEntryChecked.checkedList;
 
@@ -34,7 +33,6 @@ const TimeEntryGroup = ({
       groupedEntry.entries.every(
         (entry) => checkedList.indexOf(entry.id) !== -1
       );
-    console.log("checked " + checked);
     const indeterminate =
       !checked &&
       checkedList.length > 0 &&
@@ -74,12 +72,10 @@ const TimeEntryGroup = ({
   const onDateInfoChange = (dateInfo) => {};
 
   const onDeleteClick = (e) => {
-    console.log("delte clciked group");
     dispatch(deleteGE({ dateGroupId, gId: groupedEntry.gId }));
   };
 
   const onCheckBoxClick = (e) => {
-    console.log(" in box click + " + checkboxInfo.isCheckOn);
     const idList = groupedEntry.entries.map((entry) => entry.id);
     timeEntryCheckedDispatch({
       type: timeEntryCheckedActions.TOGGLE_FROM_GROUP,

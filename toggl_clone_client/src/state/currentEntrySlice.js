@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { addDays, subDays } from "date-fns";
+import { addDays, addSeconds, subDays } from "date-fns";
 
 const initialState = {
   description: "",
@@ -71,6 +71,21 @@ const testState = {
   timerInterval: null,
 };
 
+export const getInitialCurrentEntryState = () => {
+  const newDate = Date.now();
+  return {
+    description: "",
+    projectId: null,
+    projectName: null,
+    tags: [],
+    tagsChecked: [],
+    duration: 0,
+    startDate: newDate,
+    stopDate: newDate,
+    timerStarted: false,
+  };
+};
+
 export const currentEntrySlice = createSlice({
   name: "currentEntry",
   initialState: testState,
@@ -111,10 +126,11 @@ export const currentEntrySlice = createSlice({
       state.stopDate = dateInfo.stopDate;
     },
     resetDateInfo: (state) => {
-      const newDate = new Date().getTime();
-      state.startDate = newDate;
-      state.stopDate = newDate;
-      state.duration = 0;
+      // const newDate = new Date().getTime();
+      // state.startDate = newDate;
+      // state.stopDate = newDate;
+      // state.duration = 0;
+      return getInitialCurrentEntryState();
     },
     // tags
     setTagsChecked: (state, action) => {
@@ -132,10 +148,16 @@ export const currentEntrySlice = createSlice({
       state.timerInterval = action.payload.timerInterval;
     },
     endTimer: (state) => {
-      state.stopDate = state.startDate + state.duration * 1000;
-
-      state.timerStarted = false;
       clearInterval(state.timerInterval);
+      state.stopDate = addSeconds(state.startDate, state.duration).getTime();
+
+      // Maybe perform some stuff
+
+      // Reset
+      // state = { ...getInitialCurrentEntryState() };
+      Object.assign(state, getInitialCurrentEntryState());
+      console.log(state);
+      // return getInitialCurrentEntryState();
     },
     toggleTimerStarted: (state, action) => {
       if (!state.timerStarted) {
