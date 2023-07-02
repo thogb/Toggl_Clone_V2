@@ -4,12 +4,17 @@ import {
   GroupedEntrySingleton,
   createDateGroupId,
   createGroupId,
+  findAllByIds,
   findGroupedEntry,
   findGroupedEntryAndTimeEntry,
+  findGroupedEntryByGId,
   findGroupedEntryByTE,
   findTimeEntry,
   isGroupEntryEqual,
+  moveTEFromGroupedEntry,
+  moveTEToGroupedEntry,
   moveTeFromToGroupedEntry,
+  sortGroupedEntriesByDateInfo,
   updateTEGroupData,
 } from "../utils/TimeEntryUtil";
 import { compareDesc } from "date-fns";
@@ -192,16 +197,59 @@ export const groupedEntryListSlice = createSlice({
       });
     },
     updateGEProjectId: (state, action) => {},
+
+    deleteTE: (state, action) => {
+      const { dateGroupId, gId, id } = action.payload;
+      const dateGroupedEntries = state.dateGroupedEntries;
+      const { dateGroupEntry, groupedEntry, timeEntry } = findAllByIds(
+        dateGroupedEntries,
+        dateGroupId,
+        gId,
+        id
+      );
+      const groupedEntries = dateGroupEntry.groupedEntries;
+
+      moveTEFromGroupedEntry(groupedEntries, groupedEntry, timeEntry);
+      if (groupedEntries.length === 0) {
+        delete dateGroupedEntries[dateGroupId];
+      } else {
+        dateGroupEntry.totalDuration -= timeEntry.duration;
+        sortGroupedEntriesByDateInfo(groupedEntries);
+      }
+    },
+    deleteGE: (state, action) => {
+      // Delete group entry from the dateGroup with id = dategroupId
+      const { dateGroupId, gId } = action.payload;
+      const dateGroupedEntries = state.dateGroupedEntries;
+      const dateGroupEntry = dateGroupedEntries[dateGroupId];
+      const groupedEntries = dateGroupEntry.groupedEntries;
+      const groupEntry = findGroupedEntryByGId(groupedEntries, gId);
+
+      // Delete groupEntry from groupedEntries
+      groupedEntries.splice(
+        groupedEntries.findIndex((ge) => ge.gId === gId),
+        1
+      );
+      if (groupedEntries.length === 0) {
+        delete dateGroupedEntries[dateGroupId];
+      } else {
+        dateGroupEntry.totalDuration -= groupEntry.totalDuration;
+      }
+    },
   },
 });
 
 export const {
   setDateGroupedEntries,
+
   updateTEDescription,
   updateGEDescription,
   updateTETags,
   updateGETags,
   updateTEProjectId,
   updateGEProjectId,
+
+  deleteTE,
+  deleteGE,
 } = groupedEntryListSlice.actions;
 export default groupedEntryListSlice.reducer;

@@ -2,6 +2,8 @@ import React, { memo, useMemo, useState } from "react";
 import TimeEntryItemRecord from "./TimeEntryItemRecord";
 import TimeEntryItem, { itemMenuData } from "./TimeEntryItem";
 import { timeEntryCheckedActions } from "./TimeEntryCheckedReducer";
+import { useDispatch } from "react-redux";
+import { deleteGE } from "../../state/groupedEntryListSlice";
 
 const groupMenuData = {
   PIN_AS_FAVORITE: itemMenuData.PIN_AS_FAVORITE,
@@ -19,6 +21,7 @@ const TimeEntryGroup = ({
   timeEntryChecked,
   timeEntryCheckedDispatch,
 }) => {
+  const dispatch = useDispatch();
   const [isExpanded, setIsExpanded] = useState(false);
   const [testBool, setTestBool] = useState(false);
 
@@ -70,7 +73,10 @@ const TimeEntryGroup = ({
 
   const onDateInfoChange = (dateInfo) => {};
 
-  const onDeleteClick = (e) => {};
+  const onDeleteClick = (e) => {
+    console.log("delte clciked group");
+    dispatch(deleteGE({ dateGroupId, gId: groupedEntry.gId }));
+  };
 
   const onCheckBoxClick = (e) => {
     console.log(" in box click + " + checkboxInfo.isCheckOn);
@@ -84,6 +90,24 @@ const TimeEntryGroup = ({
 
   const onExpandButonClick = (e) => {
     setIsExpanded((isExpanded) => !isExpanded);
+  };
+
+  const onMenuClick = (option) => {
+    switch (option.name) {
+      case itemMenuData.DUPLICATE.name:
+        break;
+      case itemMenuData.SPLIT.name:
+        break;
+      case itemMenuData.PIN_AS_FAVORITE.name:
+        break;
+      case itemMenuData.COPY_START_LINK.name:
+        break;
+      case itemMenuData.DELETE.name:
+        onDeleteClick();
+        break;
+      default:
+        break;
+    }
   };
 
   // const operations = useMemo(() => {
@@ -125,6 +149,7 @@ const TimeEntryGroup = ({
           onDateInfoChange,
           onDeleteClick,
           onExpandButonClick,
+          onMenuClick,
         }}
       />
       {isExpanded &&

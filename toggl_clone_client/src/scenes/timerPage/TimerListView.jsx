@@ -60,7 +60,7 @@ const TimerListView = () => {
         </Stack>
       </TimerPageToolBar>
       {sortedDateGroupEntries.length === 0 ? (
-        <div>None</div>
+        <Box sx={{ textAlign: "center" }}> Nothing left</Box>
       ) : (
         sortedDateGroupEntries.map((sectionData) => {
           return (

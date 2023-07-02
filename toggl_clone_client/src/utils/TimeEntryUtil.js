@@ -89,6 +89,16 @@ export const moveTEFromGroupedEntry = (
   }
 };
 
+export const deleteTEFromGroupedEntry = (
+  dateGroupEntry,
+  groupedEntries,
+  groupedEntry,
+  timeEntry
+) => {
+  moveTEToGroupedEntry(groupedEntries, groupedEntry, timeEntry);
+  sortGroupedEntriesByDateInfo(groupedEntries);
+};
+
 export const moveTEToGroupedEntry = (
   groupedEntries,
   groupedEntry,
@@ -270,4 +280,21 @@ export const sortGroupedEntriesByDateInfo = (groupedEntries) => {
 
 export const sortGroupedEntriesByStartDate = (groupedEntries) => {
   groupedEntries.sort((a, b) => compareDesc(a.startDate, b.startDate));
+};
+
+// find
+export const findAllByIds = (dateGroupedEntries, dateGroupId, gId, id) => {
+  const dateGroupEntry = dateGroupedEntries[dateGroupId];
+  // const groupedEntries = dateGroupEntry.groupedEntries;
+  const { groupedEntry, timeEntry } = findGroupedEntryAndTimeEntry(
+    dateGroupEntry.groupedEntries,
+    gId,
+    id
+  );
+
+  return {
+    dateGroupEntry: dateGroupEntry,
+    groupedEntry: groupedEntry,
+    timeEntry: timeEntry,
+  };
 };

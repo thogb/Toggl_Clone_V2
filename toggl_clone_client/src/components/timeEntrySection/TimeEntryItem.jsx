@@ -3,6 +3,7 @@ import TimeEntryItemRecord from "./TimeEntryItemRecord";
 import { timeEntryCheckedActions } from "./TimeEntryCheckedReducer";
 import { useDispatch } from "react-redux";
 import {
+  deleteTE,
   updateBatchTEDescription,
   updateTEDescription,
   updateTETags,
@@ -68,7 +69,10 @@ const TimeEntryItem = ({
 
   const onDateInfoChange = (dateInfo) => {};
 
-  const onDeleteClick = (e) => {};
+  const onDeleteClick = (e) => {
+    console.log("delete clicked");
+    dispatch(deleteTE({ dateGroupId, gId, id: timeEntry.id }));
+  };
 
   const onCheckBoxClick = () => {
     timeEntryCheckedDispatch({
@@ -78,7 +82,21 @@ const TimeEntryItem = ({
   };
 
   const onMenuClick = (option) => {
-    console.log(option);
+    switch (option.name) {
+      case itemMenuData.DUPLICATE.name:
+        break;
+      case itemMenuData.SPLIT.name:
+        break;
+      case itemMenuData.PIN_AS_FAVORITE.name:
+        break;
+      case itemMenuData.COPY_START_LINK.name:
+        break;
+      case itemMenuData.DELETE.name:
+        onDeleteClick();
+        break;
+      default:
+        break;
+    }
   };
 
   // const operations = useMemo(() => {
