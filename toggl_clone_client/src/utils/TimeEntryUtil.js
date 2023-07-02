@@ -8,8 +8,9 @@ export const GroupedEntrySingleton = {
   },
 };
 
-// Assumes tags are all sorted in order
+// #comparisions
 export const isTagDescriptionEqual = (a, b) => {
+  // Assumes tags are all sorted in order
   return a.description === b.description && isListEqual(a.tags, b.tags);
 };
 
@@ -29,6 +30,7 @@ export const isListEqual = (a, b) => {
   return true;
 };
 
+// #others
 export const createGroupId = (count) => {
   return `G${count}`;
 };
@@ -37,10 +39,12 @@ export const createDateGroupId = (date) => {
   return formatDateEEddMMMyyyy(date);
 };
 
+// #utils
 export const getTotalDurationOfADay = (dateGroupEntries, date) => {
   return dateGroupEntries[createDateGroupId(date)]?.totalTime ?? 0;
 };
 
+// #timeEntry
 export const moveTEFromGroupedEntry = (
   groupedEntries,
   groupedEntry,
@@ -48,7 +52,7 @@ export const moveTEFromGroupedEntry = (
 ) => {
   // Last item in groupedEntry so remove it
   if (groupedEntry.entries.length < 2) {
-    removeGroupedEntry(groupedEntries, groupedEntry);
+    removeGroupedEntry(groupedEntries, groupedEntry.gId);
   } else {
     // Remove timeEntry from groupedEntry
     groupedEntry.entries.splice(
@@ -65,31 +69,6 @@ export const moveTEFromGroupedEntry = (
       groupedEntry.stopDate = findMaxStopDateInGroupedEntry(groupedEntry);
     }
   }
-};
-
-export const deleteTEFromGroupedEntry = (
-  dateGroupedEntries,
-  dateGroupId,
-  gId,
-  id
-) => {
-  const { dateGroupEntry, groupedEntry, timeEntry } = findAllByIds(
-    dateGroupedEntries,
-    dateGroupId,
-    gId,
-    id
-  );
-  const groupedEntries = dateGroupEntry.groupedEntries;
-
-  moveTEFromGroupedEntry(groupedEntries, groupedEntry, timeEntry);
-  if (groupedEntries.length === 0) {
-    delete dateGroupedEntries[dateGroupId];
-  } else {
-    dateGroupEntry.totalDuration -= timeEntry.duration;
-    sortGroupedEntriesByDateInfo(groupedEntries);
-  }
-  // moveTEToGroupedEntry(groupedEntries, groupedEntry, timeEntry);
-  // sortGroupedEntriesByDateInfo(groupedEntries);
 };
 
 export const moveTEToGroupedEntry = (
@@ -128,23 +107,6 @@ export const moveTeFromToGroupedEntry = (
   moveTEToGroupedEntry(groupedEntries, toGroupedEntry, timeEntry);
 };
 
-export const checkedMoveTeFromToGroupedEntry = (
-  groupedEntries,
-  fromGroupedEntry,
-  toGroupedEntry,
-  timeEntry
-) => {
-  if (toGroupedEntry === undefined && fromGroupedEntry.entries.length < 2) {
-  } else {
-    moveTeFromToGroupedEntry(
-      groupedEntries,
-      fromGroupedEntry,
-      toGroupedEntry,
-      timeEntry
-    );
-  }
-};
-
 export const updateTEGroupData = (
   dateGroupedEntries,
   dateGroupId,
@@ -179,7 +141,7 @@ export const updateTEGroupData = (
   // If same groupEntry then it means that there are no actual changes
   if (groupedEntry !== newGroupedEntry) {
     if (newGroupedEntry === undefined && groupedEntry.entries.length < 2) {
-      refreshGroupedEntryData(groupedEntry);
+      refreshGroupedEntry(groupedEntry);
     } else {
       moveTeFromToGroupedEntry(
         groupedEntries,
@@ -192,6 +154,7 @@ export const updateTEGroupData = (
   }
 };
 
+// #groupedEntry
 export const createNewGroupedEntry = (timeEntry) => {
   return {
     gId: GroupedEntrySingleton.getNextGroupId(),
@@ -205,59 +168,14 @@ export const createNewGroupedEntry = (timeEntry) => {
   };
 };
 
-export const findMaxStopDateInGroupedEntry = (groupedEntry) => {
-  return groupedEntry.entries.reduce((prev, current) =>
-    prev.stopDate > current.stopDate ? prev : current
-  ).stopDate;
-};
-
-export const calcTotalDurationofGroupedEntry = (groupedEntry) => {
-  return groupedEntry.entries.reduce(
-    (prev, current) => prev + current.duration,
-    0
-  );
-};
-
-// entries
-export const sortEntriesByDateInfo = (entries) => {
-  entries.sort((a, b) => compareDesc(a.stopDate, b.stopDate));
-  sortEntriesByStartDate(entries);
-};
-
-export const sortEntriesByStartDate = (entries) => {
-  entries.sort((a, b) => compareDesc(a.startDate, b.startDate));
-};
-
-// groupedEntries
-export const removeGroupedEntry = (groupedEntries, groupedEntry) => {
-  groupedEntries.splice(
-    groupedEntries.findIndex((e) => e.gId === groupedEntry.gId),
-    1
-  );
-};
-
-export const addNewGroupedEntry = (groupedEntries, groupedEntry) => {
-  groupedEntries.push(groupedEntry);
-  sortGroupedEntriesByDateInfo(groupedEntries);
-};
-
-export const sortGroupedEntriesByDateInfo = (groupedEntries) => {
-  groupedEntries.sort((a, b) => compareDesc(a.stopDate, b.stopDate));
-  sortGroupedEntriesByStartDate(groupedEntries);
-};
-
-export const sortGroupedEntriesByStartDate = (groupedEntries) => {
-  groupedEntries.sort((a, b) => compareDesc(a.startDate, b.startDate));
-};
-
-export const refreshGroupedEntryData = (groupedEntry) => {
+export const refreshGroupedEntry = (groupedEntry, sort = true) => {
   if (groupedEntry.entries.length === 1) {
     updateGroupedEntryByTE(
       groupedEntry,
       groupedEntry.entries[groupedEntry.entries.length - 1]
     );
   } else {
-    sortEntriesByDateInfo(groupedEntry.entries);
+    if (sort) sortEntriesByDateInfo(groupedEntry.entries);
     updateGroupedEntryByTE(
       groupedEntry,
       groupedEntry.entries[groupedEntry.entries.length - 1]
@@ -276,24 +194,193 @@ export const updateGroupedEntryByTE = (groupedEntry, timeEntry) => {
   groupedEntry.totalDuration = timeEntry.duration;
 };
 
-export const deleteGEFromDateGroupEntry = (
-  dateGroupedEntries,
-  dateGroupId,
-  gId
-) => {
-  const dateGroupEntry = dateGroupedEntries[dateGroupId];
-  const groupedEntries = dateGroupEntry.groupedEntries;
-  const groupEntry = findGroupedEntryByGId(groupedEntries, gId);
+export const findMaxStopDateInGroupedEntry = (groupedEntry) => {
+  return groupedEntry.entries.reduce((prev, current) =>
+    prev.stopDate > current.stopDate ? prev : current
+  ).stopDate;
+};
 
-  removeGroupedEntry(groupedEntries, groupEntry);
-  if (groupedEntries.length === 0) {
-    delete dateGroupedEntries[dateGroupId];
+export const calcTotalDurationofGroupedEntry = (groupedEntry) => {
+  return groupedEntry.entries.reduce(
+    (prev, current) => prev + current.duration,
+    0
+  );
+};
+
+// #entries
+export const sortEntriesByDateInfo = (entries) => {
+  entries.sort((a, b) => compareDesc(a.stopDate, b.stopDate));
+  sortEntriesByStartDate(entries);
+};
+
+export const sortEntriesByStartDate = (entries) => {
+  entries.sort((a, b) => compareDesc(a.startDate, b.startDate));
+};
+
+// #groupedEntries
+export const addNewGroupedEntry = (groupedEntries, groupedEntry) => {
+  groupedEntries.push(groupedEntry);
+  sortGroupedEntriesByDateInfo(groupedEntries);
+};
+
+export const removeGroupedEntry = (groupedEntries, gId) => {
+  groupedEntries.splice(
+    groupedEntries.findIndex((e) => e.gId === gId),
+    1
+  );
+};
+export const sortGroupedEntriesByDateInfo = (groupedEntries) => {
+  groupedEntries.sort((a, b) => compareDesc(a.stopDate, b.stopDate));
+  sortGroupedEntriesByStartDate(groupedEntries);
+};
+
+export const sortGroupedEntriesByStartDate = (groupedEntries) => {
+  groupedEntries.sort((a, b) => compareDesc(a.startDate, b.startDate));
+};
+
+// #dateGroupEntries
+
+// #dateGroupEntry
+export const removeDateGroupedEntry = (dateGroupEntries, dateGroupId) => {
+  delete dateGroupEntries[dateGroupId];
+};
+
+export const refreshDateGroupedEntry = (
+  dateGroupEntries,
+  dateGroupId,
+  sort = true
+) => {
+  // Check if there are any groupedEntries left and delete if none
+  const dateGroupedEntry = dateGroupEntries[dateGroupId];
+  if (dateGroupedEntry.groupedEntries.length === 0) {
+    delete dateGroupEntries[dateGroupId];
   } else {
-    dateGroupEntry.totalDuration -= groupEntry.totalDuration;
+    // Update the totalDuration of the dateGroupedEntry
+    dateGroupEntries[dateGroupId].totalDuration =
+      calcTotalDurationofDGE(dateGroupedEntry);
+    if (sort) sortGroupedEntriesByDateInfo(dateGroupedEntry.groupedEntries);
   }
 };
 
-// find
+export const calcTotalDurationofDGE = (dateGroupedEntry) => {
+  return dateGroupedEntry.groupedEntries.reduce(
+    (prev, current) => prev + current.totalDuration,
+    0
+  );
+};
+
+// #mix
+export const removeBatchTEFromGE = (
+  dateGroupedEntries,
+  dateGroupId,
+  gId,
+  idList,
+  refreshDGE = true
+) => {
+  if (!Boolean(idList)) return false;
+
+  const dateGroupEntry = dateGroupedEntries[dateGroupId];
+  const groupedEntries = dateGroupEntry.groupedEntries;
+  const groupedEntry = findGroupedEntryByGId(groupedEntries, gId);
+  // const entries = groupedEntry.entries;
+
+  if (idList.length === 0 || idList.length === groupedEntry.entries.length) {
+    if (groupedEntries.length === 1) {
+      // Means this groupEntry is the last group in groupedEntries so delete
+      // the dateGroupEntry
+      delete dateGroupedEntries[dateGroupId];
+    } else {
+      // This to delete the group entry it self.
+      removeGroupedEntry(groupedEntries, groupedEntry.gId);
+      if (refreshDGE)
+        refreshDateGroupedEntry(dateGroupedEntries, dateGroupId, false);
+    }
+  } else {
+    if (idList.length === 1) {
+      // Deleting one item from group entry
+      groupedEntry.entries.splice(
+        groupedEntry.entries.findIndex((e) => e.id === idList[0]),
+        1
+      );
+    } else {
+      // Deleting multiple items from group entry
+      groupedEntry.entries = groupedEntry.entries.filter(
+        (e) => !idList.includes(e.id)
+      );
+    }
+    // Update the data of the group entry
+    // Delete, so there is no need to sort
+    refreshGroupedEntry(groupedEntry, false);
+    // Sort the groupedEntries since dateInfo might have changed
+    if (refreshDGE)
+      refreshDateGroupedEntry(dateGroupedEntries, dateGroupId, true);
+  }
+};
+
+/**
+ * Extracts the ids of the timeEntries from the dateGroupEntry. The extracted
+ * Array containst a Object with the following structure:
+ * { gId: string, entries: Array<Integer> }
+ *
+ * @param {DateGroupEntry} dateGroupEntry
+ *
+ * @returns {Array}
+ */
+export const extractGroupedTEIdsFromDGE = (dateGroupedEntry) => {
+  return dateGroupedEntry.groupedEntries.map((groupedEntry) => {
+    return {
+      gId: groupedEntry.gId,
+      entries: groupedEntry.entries.map((entry) => entry.id),
+    };
+  });
+};
+
+export const filterGroupedTEIdsFromIdList = (groupedTEIds, idList) => {
+  // Remove id from groupedTEIds where the id is not in the idList
+  return groupedTEIds
+    .map((groupedTEId) => {
+      return {
+        gId: groupedTEId.gId,
+        entries: groupedTEId.entries.filter((id) => idList.includes(id)),
+      };
+    })
+    .filter((groupedTEId) => groupedTEId.entries.length > 0);
+};
+
+export const removeBatchTEFromDGE = (
+  dateGroupedEntries,
+  dateGroupId,
+  idList
+) => {
+  const dateGroupedEntry = dateGroupedEntries[dateGroupId];
+  const filteredGroupedTEIds = filterGroupedTEIdsFromIdList(
+    extractGroupedTEIdsFromDGE(dateGroupedEntry),
+    idList
+  );
+
+  console.log(filteredGroupedTEIds);
+
+  // Remove the entries lot of time entry ids from group entry
+  filteredGroupedTEIds.forEach((groupedTEId) => {
+    // Do not need to refresh until the loop is finished
+    removeBatchTEFromGE(
+      dateGroupedEntries,
+      dateGroupId,
+      groupedTEId.gId,
+      groupedTEId.entries,
+      false
+    );
+  });
+
+  // Delete if dateGroupEntry is empty else refresh the dateGroupEntry and sort
+  if (dateGroupedEntry.groupedEntries.length === 0) {
+    delete dateGroupedEntries[dateGroupId];
+  } else {
+    refreshDateGroupedEntry(dateGroupedEntries, dateGroupId, true);
+  }
+};
+
+// #find
 export const findAllByIds = (dateGroupedEntries, dateGroupId, gId, id) => {
   const dateGroupEntry = dateGroupedEntries[dateGroupId];
   // const groupedEntries = dateGroupEntry.groupedEntries;

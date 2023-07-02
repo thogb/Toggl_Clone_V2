@@ -6,6 +6,9 @@ import {
   deleteGEFromDateGroupEntry,
   deleteTEFromGroupedEntry,
   isGroupEntryEqual,
+  removeBatchTEFromDGE,
+  removeBatchTEFromGE,
+  removeDateGroupedEntry,
   updateTEGroupData,
 } from "../utils/TimeEntryUtil";
 import { compareDesc } from "date-fns";
@@ -191,12 +194,23 @@ export const groupedEntryListSlice = createSlice({
 
     deleteTE: (state, action) => {
       const { dateGroupId, gId, id } = action.payload;
-      deleteTEFromGroupedEntry(state.dateGroupedEntries, dateGroupId, gId, id);
+      removeBatchTEFromGE(state.dateGroupedEntries, dateGroupId, gId, [id]);
     },
     deleteGE: (state, action) => {
       // Delete group entry from the dateGroup with id = dategroupId
       const { dateGroupId, gId } = action.payload;
-      deleteGEFromDateGroupEntry(state.dateGroupedEntries, dateGroupId, gId);
+      removeBatchTEFromGE(state.dateGroupedEntries, dateGroupId, gId, []);
+    },
+
+    deleteDGE: (state, action) => {
+      // extract dateGroupId
+      const { dateGroupId } = action.payload;
+      // delete dateGroupEntry with dateGroupId
+      removeDateGroupedEntry(state.dateGroupedEntries, dateGroupId);
+    },
+    deleteBatchTE: (state, action) => {
+      const { dateGroupId, idList } = action.payload;
+      removeBatchTEFromDGE(state.dateGroupedEntries, dateGroupId, idList);
     },
   },
 });
@@ -213,5 +227,9 @@ export const {
 
   deleteTE,
   deleteGE,
+
+  deleteBatchTE,
+
+  deleteDGE,
 } = groupedEntryListSlice.actions;
 export default groupedEntryListSlice.reducer;

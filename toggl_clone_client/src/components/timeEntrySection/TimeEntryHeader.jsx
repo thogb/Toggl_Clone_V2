@@ -12,6 +12,8 @@ import styled from "@emotion/styled";
 import { grey, red } from "@mui/material/colors";
 import { timeEntryCheckedActions } from "./TimeEntryCheckedReducer";
 import { formatSecondHMMSS } from "../../utils/TTDateUtil";
+import { useDispatch } from "react-redux";
+import { deleteBatchTE, deleteDGE } from "../../state/groupedEntryListSlice";
 
 const OutlinedIconButton = styled("button")(({ theme }) => ({
   border: "1px solid",
@@ -59,6 +61,8 @@ const TimeEntryHeader = ({
   timeEntryChecked,
   timeEntryCheckedDispatch,
 }) => {
+  const dispatch = useDispatch();
+
   const dateFormat = "EEE, dd MMM";
   const checked = timeEIdList.length === timeEntryChecked.checkedList.length;
   const indeterminate = !checked && timeEntryChecked.checkedList.length > 0;
@@ -66,7 +70,22 @@ const TimeEntryHeader = ({
 
   const handleBulkEdit = () => {};
 
-  const handleBulkDelete = () => {};
+  const handleBulkDelete = () => {
+    if (checked) {
+      dispatch(deleteDGE({ dateGroupId: dateGroupId }));
+    } else {
+      console.log(timeEntryChecked.checkedList);
+      dispatch(
+        deleteBatchTE({
+          dateGroupId: dateGroupId,
+          idList: timeEntryChecked.checkedList,
+        })
+      );
+    }
+    timeEntryCheckedDispatch({
+      type: timeEntryCheckedActions.RESET_CHECKED_LIST,
+    });
+  };
 
   const handleCheckBoxToggle = () => {
     timeEntryCheckedDispatch({
