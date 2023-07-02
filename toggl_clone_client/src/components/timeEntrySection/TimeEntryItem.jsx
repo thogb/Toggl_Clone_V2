@@ -8,6 +8,36 @@ import {
   updateTETags,
 } from "../../state/groupedEntryListSlice";
 
+export const itemMenuData = {
+  DUPLICATE: {
+    name: "Duplicate",
+    label: "Duplicate",
+  },
+  SPLIT: {
+    name: "Split",
+    label: "Split",
+    disabled: true,
+  },
+  PIN_AS_FAVORITE: {
+    name: "Pin",
+    label: "Pin",
+    disabled: true,
+  },
+  COPY_START_LINK: {
+    name: "Copy",
+    label: "Copy",
+  },
+  DELETE: {
+    name: "Delete",
+    label: "Delete",
+    style: {
+      color: "red",
+    },
+  },
+};
+
+const itemMenuOptions = Object.values(itemMenuData);
+
 const TimeEntryItem = ({
   dateGroupId,
   gId,
@@ -47,6 +77,10 @@ const TimeEntryItem = ({
     });
   };
 
+  const onMenuClick = (option) => {
+    console.log(option);
+  };
+
   // const operations = useMemo(() => {
   //   return {
   //     onCheckBoxClick,
@@ -73,6 +107,7 @@ const TimeEntryItem = ({
       isChildrenOfGroup={isChildrenOfGroup}
       checked={timeEntryChecked.checkedList.indexOf(timeEntry.id) !== -1}
       showCheckbox={timeEntryChecked.showCheckbox}
+      menuOptions={itemMenuOptions}
       operations={{
         onCheckBoxClick,
         onDescriptionEdit,
@@ -80,6 +115,7 @@ const TimeEntryItem = ({
         onTagsCheckedEdit,
         onDateInfoChange,
         onDeleteClick,
+        onMenuClick,
       }}
     />
   );

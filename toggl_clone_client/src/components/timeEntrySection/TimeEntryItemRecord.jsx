@@ -29,6 +29,8 @@ import TagsSelector from "../../scenes/timerPage/TagsSelector";
 import TimeEntryExpandButton from "./TimeEntryExpandButton";
 import classNames from "classnames";
 import { useTheme } from "@emotion/react";
+import { TTMenu } from "../ttMenu/TTMenu";
+import { TTMenuItem } from "../ttMenu/TTMenuItem";
 
 const StyledTimeEntryItemBase = styled(TimeEntryItemBase)(({ theme }) => ({
   "&:hover": {
@@ -85,6 +87,7 @@ const TimeEntryItemRecord = ({
   checked = false,
   indeterminate = false,
   showCheckbox = false,
+  menuOptions = [], // [{label: "a", name: "a", style: {}}]
   operations = {
     onCheckBoxClick: () => {},
     onDescriptionEdit: (description) => {},
@@ -94,11 +97,13 @@ const TimeEntryItemRecord = ({
     onDateInfoChange: (dateInfo) => {},
     onDeleteClick: (e) => {},
     onExpandButonClick: (e) => {},
+    onMenuClick: (option) => {},
   },
 }) => {
   const theme = useTheme();
   const [teDescription, setTeDescription] = useState(description);
   const [tagSelectorAnchor, setTagSelectorAnchor] = useState(null);
+  const [menuAnchor, setMenuAnchor] = useState(null);
 
   useEffect(() => {
     setTeDescription(description);
@@ -257,10 +262,35 @@ const TimeEntryItemRecord = ({
           <TTIconButton
             colorStrength={9}
             className={"TT-hidden"}
+            open={Boolean(menuAnchor)}
             style={{ padding: 0, fontSize: "1.8rem" }}
+            onClick={(e) => setMenuAnchor(e.currentTarget)}
           >
             <MoreVertIcon />
           </TTIconButton>
+          {menuOptions.length > 0 && (
+            <TTMenu
+              anchorEl={menuAnchor}
+              keepMounted
+              open={Boolean(menuAnchor)}
+              onClose={() => setMenuAnchor(null)}
+            >
+              {menuOptions.map((option) => (
+                <TTMenuItem
+                  key={option.name}
+                  disabled={option.disabled}
+                  selected={option.selected}
+                  style={option.style}
+                  onClick={(e) => {
+                    if (operations.onMenuClick) operations.onMenuClick(option);
+                    setMenuAnchor(null);
+                  }}
+                >
+                  {option.label}
+                </TTMenuItem>
+              ))}
+            </TTMenu>
+          )}
         </RightTools>
       </TimeEntryRightSection>
       {/* </TimeEntryMainSection> */}

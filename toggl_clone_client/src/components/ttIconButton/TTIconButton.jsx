@@ -22,6 +22,9 @@ const StyledButton = styled(Button)(({ theme }) => ({
   "&:disabled > svg": {
     color: "var(--color-disabled)",
   },
+  "&.TT-open": {
+    backgroundColor: theme.palette.action.focus,
+  },
   "&.TT-selected": {
     backgroundColor: alpha(theme.palette.secondary.main, 0.2),
     "&>svg": {
@@ -51,6 +54,7 @@ const TTIconButton = ({
   selected = false,
   className,
   style,
+  open = false,
   colorStrength = 6,
   ...other
 }) => {
@@ -64,6 +68,12 @@ const TTIconButton = ({
     ...style,
   };
 
+  const fClassName = classNames(
+    selected && "TT-selected",
+    open && "TT-open",
+    className
+  );
+
   return (
     <StyledButton
       disableElevation
@@ -71,7 +81,8 @@ const TTIconButton = ({
       disableTouchRipple
       disableFocusRipple
       onClick={onClick}
-      className={selected ? classNames("TT-selected", className) : className}
+      // className={selected ? classNames("TT-selected", className) : className}
+      className={fClassName}
       style={enchanedStyle}
       {...other}
     >

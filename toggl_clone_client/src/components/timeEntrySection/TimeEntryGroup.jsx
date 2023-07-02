@@ -1,7 +1,15 @@
 import React, { memo, useMemo, useState } from "react";
 import TimeEntryItemRecord from "./TimeEntryItemRecord";
-import TimeEntryItem from "./TimeEntryItem";
+import TimeEntryItem, { itemMenuData } from "./TimeEntryItem";
 import { timeEntryCheckedActions } from "./TimeEntryCheckedReducer";
+
+const groupMenuData = {
+  PIN_AS_FAVORITE: itemMenuData.PIN_AS_FAVORITE,
+  COPY_START_LINK: itemMenuData.COPY_START_LINK,
+  DELETE: itemMenuData.DELETE,
+};
+
+const groupMenuOptions = Object.values(groupMenuData);
 
 const TimeEntryGroup = ({
   dateGroupId,
@@ -108,6 +116,7 @@ const TimeEntryGroup = ({
         showCheckbox={timeEntryChecked.showCheckbox}
         timeEntryChecked={timeEntryChecked}
         timeEntryCheckedDispatch={timeEntryCheckedDispatch}
+        menuOptions={groupMenuOptions}
         operations={{
           onCheckBoxClick,
           onDescriptionEdit,

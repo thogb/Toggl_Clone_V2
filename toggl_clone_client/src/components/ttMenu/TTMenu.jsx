@@ -3,13 +3,20 @@ import { Menu } from "@mui/material";
 
 export const TTMenu = styled((props) => (
   <Menu
+    keepMounted
     disableScrollLock
+    disablePortal
     slotProps={{
       paper: {
         style: {
           width: 170,
+          borderRadius: 8,
         },
       },
+    }}
+    transitionDuration={{
+      enter: 100,
+      exit: 0,
     }}
     {...props}
   />
@@ -21,6 +28,7 @@ export const TTMenu = styled((props) => (
     padding: theme.spacing(1 / 2),
   },
   "& .MuiMenuItem-root": {
+    fontSize: "0.95rem",
     padding: theme.spacing(1 / 2, 1),
     borderRadius: "8px",
     "&:hover": {
