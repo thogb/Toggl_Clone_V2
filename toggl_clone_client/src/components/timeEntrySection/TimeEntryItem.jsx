@@ -1,10 +1,10 @@
-import React, { memo, useMemo } from "react";
+import React, { memo } from "react";
 import TimeEntryItemRecord from "./TimeEntryItemRecord";
 import { timeEntryCheckedActions } from "./TimeEntryCheckedReducer";
 import { useDispatch } from "react-redux";
 import {
   deleteTE,
-  updateBatchTEDescription,
+  updateTEDateInfo,
   updateTEDescription,
   updateTETags,
 } from "../../state/groupedEntryListSlice";
@@ -67,7 +67,11 @@ const TimeEntryItem = ({
     );
   };
 
-  const onDateInfoChange = (dateInfo) => {};
+  const onDateInfoChange = (dateInfo) => {
+    dispatch(
+      updateTEDateInfo({ dateGroupId, gId, id: timeEntry.id, dateInfo })
+    );
+  };
 
   const onDeleteClick = (e) => {
     console.log("delete clicked");

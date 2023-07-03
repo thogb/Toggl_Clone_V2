@@ -1,6 +1,10 @@
-import { Box, Stack, Typography, alpha } from "@mui/material";
+import { Badge, Box, Stack, Typography, alpha } from "@mui/material";
 import React from "react";
-import { formatDateHMA, formatSecondHMMSS } from "../../utils/TTDateUtil";
+import {
+  formatDateHMA,
+  formatSecondHMMSS,
+  getDaysBetween,
+} from "../../utils/TTDateUtil";
 import SubButton from "../subButton/SubButton";
 import { useTheme } from "@emotion/react";
 
@@ -13,7 +17,24 @@ const TimeEntryDateInfo = ({
 
   onDateButtonClick,
   onDurationButtonClick,
+  displayBadge = true,
 }) => {
+  const durationComponent = (
+    <SubButton
+      className="TimeEntryDurationBtn"
+      style={{
+        paddingTop: "2px",
+        paddingBottom: "2px",
+        ...durationButtonStyle,
+      }}
+      onClick={onDurationButtonClick}
+    >
+      <Typography variant="body2" fontWeight={"fontWeightMedium"} noWrap>
+        {formatSecondHMMSS(duration)}
+      </Typography>
+    </SubButton>
+  );
+
   return (
     <Stack
       direction={"row"}
@@ -41,19 +62,16 @@ const TimeEntryDateInfo = ({
         flexDirection={"row"}
         justifyContent={"end"}
       >
-        <SubButton
-          className="TimeEntryDurationBtn"
-          style={{
-            paddingTop: "2px",
-            paddingBottom: "2px",
-            ...durationButtonStyle,
-          }}
-          onClick={onDurationButtonClick}
-        >
-          <Typography variant="body2" fontWeight={"fontWeightMedium"} noWrap>
-            {formatSecondHMMSS(duration)}
-          </Typography>
-        </SubButton>
+        {displayBadge ? (
+          <Badge
+            color="primary"
+            badgeContent={getDaysBetween(startDate, stopDate)}
+          >
+            {durationComponent}
+          </Badge>
+        ) : (
+          durationComponent
+        )}
       </Box>
     </Stack>
   );

@@ -3,7 +3,7 @@ import React, { useMemo } from "react";
 import TimerPageToolBar from "./TimerPageToolBar";
 import ToolBarLinkButton from "./ToolBarLinkButton";
 import { useSelector } from "react-redux";
-import { startOfWeek } from "date-fns";
+import { compareDesc, startOfWeek } from "date-fns";
 import TimeEntrySection from "../../components/timeEntrySection/TimeEntrySection";
 import { getTotalDurationOfADay } from "../../utils/TimeEntryUtil";
 import { formatSecondHMMSS } from "../../utils/TTDateUtil";
@@ -18,7 +18,7 @@ const TimerListView = () => {
 
   const sortedDateGroupEntries = useMemo(() => {
     const dateGroupList = Object.values(dateGroupEntries);
-    dateGroupList.sort((a, b) => a.dateString <= b.dateString);
+    dateGroupList.sort((a, b) => compareDesc(a.date, b.date));
     return dateGroupList;
   }, [dateGroupEntries]);
 

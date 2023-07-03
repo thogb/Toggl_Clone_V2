@@ -10,6 +10,7 @@ import {
   removeBatchTEFromGE,
   removeDateGroupedEntry,
   updateTEGroupData,
+  updateTimeEntryDateInfo,
 } from "../utils/TimeEntryUtil";
 import { compareDesc } from "date-fns";
 
@@ -17,6 +18,7 @@ const exampleState = {
   dateGroupedEntries: {
     "Wed, 21 Jun 2023": {
       dateGroupId: "Wed, 21 Jun 2023",
+      date: Date.now(),
       totalDuration: 0,
       groupedEntries: [
         //sorted by {}.startDate
@@ -88,6 +90,7 @@ export const generateDateGroupedEntries = (timeEntries) => {
       // Create the date group and entry
       grouped[dateGroupId] = {
         dateGroupId: dateGroupId,
+        date: timeEntry.startDate,
         totalDuration: timeEntry.duration,
         groupedEntries: [
           {
@@ -191,6 +194,16 @@ export const groupedEntryListSlice = createSlice({
       });
     },
     updateGEProjectId: (state, action) => {},
+    updateTEDateInfo: (state, action) => {
+      const { dateGroupId, gId, id, dateInfo } = action.payload;
+      updateTimeEntryDateInfo(
+        state.dateGroupedEntries,
+        dateGroupId,
+        gId,
+        id,
+        dateInfo
+      );
+    },
 
     deleteTE: (state, action) => {
       const { dateGroupId, gId, id } = action.payload;
@@ -224,6 +237,7 @@ export const {
   updateGETags,
   updateTEProjectId,
   updateGEProjectId,
+  updateTEDateInfo,
 
   deleteTE,
   deleteGE,

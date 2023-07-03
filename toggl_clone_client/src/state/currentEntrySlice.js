@@ -97,7 +97,7 @@ export const currentEntrySlice = createSlice({
         ? state.stopDate - duration * 1000
         : state.startDate;
       state.stopDate = !staticStop
-        ? state.startDate - duration * 1000
+        ? state.startDate + duration * 1000
         : state.stopDate;
     },
     updateStartTime: (state, action) => {

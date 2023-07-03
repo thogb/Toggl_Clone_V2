@@ -2,29 +2,19 @@ import React, { memo, useEffect, useState } from "react";
 import TimeEntryItemBase, {
   RightTools,
   TimeEntryLeftSection,
-  TimeEntryMainSection,
   TimeEntryRightSection,
 } from "./TimeEntryItemBase";
 import styled from "@emotion/styled";
-import { grey, red } from "@mui/material/colors";
+import { grey } from "@mui/material/colors";
 import FolderIcon from "@mui/icons-material/Folder";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import {
-  Box,
-  IconButton,
-  InputBase,
-  Stack,
-  Typography,
-  alpha,
-} from "@mui/material";
+import { Box, Stack, Typography, alpha } from "@mui/material";
 import GrowingInput from "../growingInput/GrowingInput";
-import { timeEntryCheckedActions } from "./TimeEntryCheckedReducer";
 import TTIconButton from "../ttIconButton/TTIconButton";
 import SubButton from "../subButton/SubButton";
-import { formatDateHMA } from "../../utils/TTDateUtil";
 import TagsSelector from "../../scenes/timerPage/TagsSelector";
 import TimeEntryExpandButton from "./TimeEntryExpandButton";
 import classNames from "classnames";
@@ -266,6 +256,7 @@ const TimeEntryItemRecord = ({
               duration={duration}
               startDate={startDate}
               stopDate={stopDate}
+              onEditComplete={operations.onDateInfoChange}
             />
           )}
         </Stack>

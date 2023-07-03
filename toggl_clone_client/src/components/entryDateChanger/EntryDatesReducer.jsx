@@ -32,7 +32,7 @@ export const entryDatesReducer = (state, action) => {
           ? state.stopDate - newDuration * 1000
           : state.startDate,
         stopDate: !action.staticStop
-          ? state.startDate - newDuration * 1000
+          ? state.startDate + newDuration * 1000
           : state.stopDate,
       };
     case actions.UPDATE_START_TIME:

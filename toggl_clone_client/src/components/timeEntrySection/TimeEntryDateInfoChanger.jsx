@@ -1,7 +1,5 @@
-import { Box, Stack, Typography, alpha } from "@mui/material";
+import { Box, alpha } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
-import SubButton from "../subButton/SubButton";
-import { formatDateHMA } from "../../utils/TTDateUtil";
 import TimeEntryDateInfo from "./TimeEntryDateInfo";
 import EntryTimeTextField from "../entryTimeTextField/EntryTimeTextField";
 import TTTimeTextField from "../ttTimeTextField/TTTimeTextField";
@@ -11,15 +9,16 @@ import { grey } from "@mui/material/colors";
 const StyledTTTimeTextField = styled(TTTimeTextField)(({ theme }) => ({
   width: "10ch",
   fontSize: theme.typography.body2.fontSize,
-  color: alpha(theme.palette.primary.main, 0.8),
+  color: alpha(theme.palette.primary.main, 0.9),
   padding: theme.spacing(1 / 2, 1),
   paddingLeft: theme.spacing(1.5),
   border: "1px solid",
   borderColor: "transparent",
   borderRadius: "8px",
+  backgroundColor: grey[200],
 
   "&:focus-within": {
-    borderColor: grey[300],
+    borderColor: grey[200],
     backgroundColor: theme.palette.background.default,
   },
 
@@ -29,7 +28,7 @@ const StyledTTTimeTextField = styled(TTTimeTextField)(({ theme }) => ({
   },
 
   "& > input:focus": {
-    color: alpha(theme.palette.primary.main, 0.7),
+    color: alpha(theme.palette.primary.main, 0.9),
   },
 }));
 
@@ -95,6 +94,7 @@ const TimeEntryDateInfoChanger = ({
               duration={localDuration}
               startDate={localStartDate}
               stopDate={localStopDate}
+              displayBadge={false}
               durationButtonStyle={{ visibility: isPopperOpen && "hidden" }}
               onDateButtonClick={() => {
                 durationTFRef.current.focus();

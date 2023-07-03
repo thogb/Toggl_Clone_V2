@@ -1,4 +1,4 @@
-import { compareDesc } from "date-fns";
+import { compareDesc, differenceInMilliseconds } from "date-fns";
 import { formatDateEEddMMMyyyy } from "./TTDateUtil";
 
 export const GroupedEntrySingleton = {
@@ -154,6 +154,60 @@ export const updateTEGroupData = (
   }
 };
 
+export const updateTimeEntryDateInfo = (
+  dateGroupedEntries,
+  dateGroupId,
+  gId,
+  id,
+  dateInfo
+) => {
+  const { duration, startDate, stopDate } = dateInfo;
+  if (Math.abs(differenceInMilliseconds(startDate, stopDate)) < duration * 1000)
+    return;
+  const dateGroupEntry = dateGroupedEntries[dateGroupId];
+  const groupedEntries = dateGroupEntry.groupedEntries;
+  const { groupedEntry, timeEntry } = findGroupedEntryAndTimeEntry(
+    groupedEntries,
+    gId,
+    id
+  );
+
+  const newDateGroupId = createDateGroupId(startDate);
+
+  timeEntry.duration = duration;
+  timeEntry.startDate = startDate;
+  timeEntry.stopDate = stopDate;
+
+  if (newDateGroupId === dateGroupId) {
+    // This means the timEntry will remain in the same groupEntry.
+    // The only thing to do now is to refresh and update the groupedEntry.
+    refreshGroupedEntry(groupedEntry);
+    refreshDateGroupedEntry(dateGroupedEntries, newDateGroupId);
+  } else {
+    // This means timeEntry will be moved into a new dateGroupedEntry.
+    // First remove the timeEntry from the current groupedEntry.
+    removeBatchTEFromGE(dateGroupedEntries, dateGroupId, gId, [id]);
+    // Then search to see if the new dateGroupedEntry exists with newDateGroupId
+    if (dateGroupedEntries[newDateGroupId] === undefined) {
+      // Doesnt exist so create a new dateGroupedEntry and add to dateGroupedEntries
+      dateGroupedEntries[newDateGroupId] = createNewDGEFromGE(
+        createNewGroupedEntry(timeEntry),
+        startDate
+      );
+    } else {
+      // newDateGroupedEntry exists so search for the groupEntry it belongs to now
+      const newDateGroupedEntry = dateGroupedEntries[newDateGroupId];
+      const newGroupedEntries = newDateGroupedEntry.groupedEntries;
+      const newGroupedEntry = findGroupedEntryByTE(
+        newGroupedEntries,
+        timeEntry
+      );
+      moveTEToGroupedEntry(newGroupedEntries, newGroupedEntry, timeEntry);
+      refreshDateGroupedEntry(dateGroupedEntries, newDateGroupId);
+    }
+  }
+};
+
 // #groupedEntry
 export const createNewGroupedEntry = (timeEntry) => {
   return {
@@ -267,6 +321,16 @@ export const calcTotalDurationofDGE = (dateGroupedEntry) => {
     (prev, current) => prev + current.totalDuration,
     0
   );
+};
+
+export const createNewDGEFromGE = (groupedEntry, date) => {
+  const newDateGroupedEntry = {
+    dateGroupId: createDateGroupId(date),
+    date: date,
+    totalDuration: groupedEntry.totalDuration,
+    groupedEntries: [groupedEntry],
+  };
+  return newDateGroupedEntry;
 };
 
 // #mix
