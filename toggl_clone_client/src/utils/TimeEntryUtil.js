@@ -208,6 +208,32 @@ export const updateTimeEntryDateInfo = (
   }
 };
 
+export const updateAllTEGroupDateInGE = (groupedEntry, data) => {
+  const name = data.name;
+  const entries = groupedEntry.entries;
+
+  if (name === "description") {
+    const newDescription = data.description.trim();
+    if (groupedEntry.description !== newDescription) {
+      groupedEntry.description = newDescription;
+      entries.forEach((timeEntry) => (timeEntry.description = newDescription));
+    }
+  } else if (name === "projectId") {
+    const newProjectId = data.projectId;
+    if (groupedEntry.projectId !== newProjectId) {
+      groupedEntry.projectId = newProjectId;
+      entries.forEach((timeEntry) => (timeEntry.projectId = newProjectId));
+    }
+  } else if (name === "tags") {
+    const newTags = [...data.tags];
+    newTags.sort();
+    if (!isListEqual(groupedEntry.tags, newTags)) {
+      groupedEntry.tags = newTags;
+      entries.forEach((timeEntry) => (timeEntry.tags = [...newTags]));
+    }
+  }
+};
+
 // #groupedEntry
 export const createNewGroupedEntry = (timeEntry) => {
   return {

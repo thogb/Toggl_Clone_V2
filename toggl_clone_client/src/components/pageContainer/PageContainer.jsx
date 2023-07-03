@@ -5,7 +5,7 @@ const bgColor = "#FEF9F7";
 
 const PageContainer = ({ children, ...others }) => {
   return (
-    <Box bgcolor={bgColor} height={"100vh"} overflow={"scroll"} {...others}>
+    <Box bgcolor={bgColor} minHeight={"100vh"} {...others}>
       {children}
     </Box>
   );

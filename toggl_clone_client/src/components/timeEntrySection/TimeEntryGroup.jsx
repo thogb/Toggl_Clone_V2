@@ -3,7 +3,12 @@ import TimeEntryItemRecord from "./TimeEntryItemRecord";
 import TimeEntryItem, { itemMenuData } from "./TimeEntryItem";
 import { timeEntryCheckedActions } from "./TimeEntryCheckedReducer";
 import { useDispatch } from "react-redux";
-import { deleteGE } from "../../state/groupedEntryListSlice";
+import {
+  deleteGE,
+  updateGEDescription,
+  updateGEProjectId,
+  updateGETags,
+} from "../../state/groupedEntryListSlice";
 
 const groupMenuData = {
   PIN_AS_FAVORITE: itemMenuData.PIN_AS_FAVORITE,
@@ -63,11 +68,23 @@ const TimeEntryGroup = ({
 
   // const isCheckOn = checked || indeterminate;
 
-  const onDescriptionEdit = (description) => {};
+  const onDescriptionEdit = (description) => {
+    dispatch(
+      updateGEDescription({ dateGroupId, gId: groupedEntry.gId, description })
+    );
+  };
 
-  const onProjectEdit = (projectInfo) => {};
+  const onProjectEdit = (projectInfo) => {
+    dispatch(
+      updateGEProjectId({ dateGroupId, gId: groupedEntry.gId, projectInfo })
+    );
+  };
 
-  const onTagsCheckedEdit = (tagsChecked) => {};
+  const onTagsCheckedEdit = (tagsChecked) => {
+    dispatch(
+      updateGETags({ dateGroupId, gId: groupedEntry.gId, tags: tagsChecked })
+    );
+  };
 
   const onDateInfoChange = (dateInfo) => {};
 

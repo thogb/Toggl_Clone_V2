@@ -5,10 +5,12 @@ import {
   createDateGroupId,
   deleteGEFromDateGroupEntry,
   deleteTEFromGroupedEntry,
+  findGroupedEntryByGId,
   isGroupEntryEqual,
   removeBatchTEFromDGE,
   removeBatchTEFromGE,
   removeDateGroupedEntry,
+  updateAllTEGroupDateInGE,
   updateTEGroupData,
   updateTimeEntryDateInfo,
 } from "../utils/TimeEntryUtil";
@@ -177,7 +179,17 @@ export const groupedEntryListSlice = createSlice({
         description: description,
       });
     },
-    updateGEDescription: (state, action) => {},
+    updateGEDescription: (state, action) => {
+      const { dateGroupId, gId, description } = action.payload;
+      const groupedEntry = findGroupedEntryByGId(
+        state.dateGroupedEntries[dateGroupId].groupedEntries,
+        gId
+      );
+      updateAllTEGroupDateInGE(groupedEntry, {
+        name: "description",
+        description: description,
+      });
+    },
     updateTETags: (state, action) => {
       const { dateGroupId, gId, id, tags } = action.payload;
       updateTEGroupData(state.dateGroupedEntries, dateGroupId, gId, id, {
@@ -185,7 +197,17 @@ export const groupedEntryListSlice = createSlice({
         tags: tags,
       });
     },
-    updateGETags: (state, action) => {},
+    updateGETags: (state, action) => {
+      const { dateGroupId, gId, tags } = action.payload;
+      const groupedEntry = findGroupedEntryByGId(
+        state.dateGroupedEntries[dateGroupId].groupedEntries,
+        gId
+      );
+      updateAllTEGroupDateInGE(groupedEntry, {
+        name: "tags",
+        tags: tags,
+      });
+    },
     updateTEProjectId: (state, action) => {
       const { dateGroupId, gId, id, projectId } = action.payload;
       updateTEGroupData(state.dateGroupedEntries, dateGroupId, gId, id, {
@@ -193,7 +215,17 @@ export const groupedEntryListSlice = createSlice({
         projectId: projectId,
       });
     },
-    updateGEProjectId: (state, action) => {},
+    updateGEProjectId: (state, action) => {
+      const { dateGroupId, gId, projectId } = action.payload;
+      const groupedEntry = findGroupedEntryByGId(
+        state.dateGroupedEntries[dateGroupId].groupedEntries,
+        gId
+      );
+      updateAllTEGroupDateInGE(groupedEntry, {
+        name: "projectId",
+        projectId: projectId,
+      });
+    },
     updateTEDateInfo: (state, action) => {
       const { dateGroupId, gId, id, dateInfo } = action.payload;
       updateTimeEntryDateInfo(

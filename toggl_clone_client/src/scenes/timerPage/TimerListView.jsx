@@ -44,7 +44,7 @@ const TimerListView = () => {
   }, [dateGroupEntries]);
 
   return (
-    <Box>
+    <Box height={"100%"}>
       <TimerPageToolBar>
         <Stack direction={"row"} gap={4} alignItems={"center"} mx={4}>
           <ToolBarLinkButton
