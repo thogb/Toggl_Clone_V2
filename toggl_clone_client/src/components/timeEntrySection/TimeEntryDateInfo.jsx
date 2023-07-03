@@ -1,0 +1,62 @@
+import { Box, Stack, Typography, alpha } from "@mui/material";
+import React from "react";
+import { formatDateHMA, formatSecondHMMSS } from "../../utils/TTDateUtil";
+import SubButton from "../subButton/SubButton";
+import { useTheme } from "@emotion/react";
+
+const TimeEntryDateInfo = ({
+  duration,
+  startDate,
+  stopDate,
+
+  durationButtonStyle,
+
+  onDateButtonClick,
+  onDurationButtonClick,
+}) => {
+  return (
+    <Stack
+      direction={"row"}
+      alignItems={"center"}
+      justifyContent={"space-between"}
+    >
+      <SubButton
+        className="TimeEntryDateBtn"
+        style={{ paddingTop: "2px", paddingBottom: "2px" }}
+        onClick={onDateButtonClick}
+      >
+        <Typography
+          variant="body2"
+          color={(theme) => alpha(theme.palette.primary.main, 0.7)}
+          fontWeight={"fontWeightMedium"}
+          noWrap
+        >
+          {`${formatDateHMA(startDate)} - ${formatDateHMA(stopDate)}`}
+        </Typography>
+      </SubButton>
+      <Box
+        fontSize={"body2.fontSize"}
+        width={"10ch"}
+        display={"flex"}
+        flexDirection={"row"}
+        justifyContent={"end"}
+      >
+        <SubButton
+          className="TimeEntryDurationBtn"
+          style={{
+            paddingTop: "2px",
+            paddingBottom: "2px",
+            ...durationButtonStyle,
+          }}
+          onClick={onDurationButtonClick}
+        >
+          <Typography variant="body2" fontWeight={"fontWeightMedium"} noWrap>
+            {formatSecondHMMSS(duration)}
+          </Typography>
+        </SubButton>
+      </Box>
+    </Stack>
+  );
+};
+
+export default TimeEntryDateInfo;

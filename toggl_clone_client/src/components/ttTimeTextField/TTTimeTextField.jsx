@@ -3,6 +3,7 @@ import { InputBase } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import React, { useEffect, useMemo, useState } from "react";
 import { secondToTimeObj } from "../../utils/TTDateUtil";
+import classNames from "classnames";
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
   fontSize: theme.typography.h6.fontSize,
@@ -33,12 +34,17 @@ const DEFAULT_VALUE = "0:00:00";
 
 const TTTimeTextField = ({
   size,
-  withPopOver,
-  second,
-  onSecondChange,
   height,
+  second,
+  withPopOver,
+
+  inputRef,
+  className,
+
   onFocus,
   onBlur,
+  onSecondChange,
+  onEditComplete,
   ...others
 }) => {
   const [value, setValue] = useState(DEFAULT_VALUE);
@@ -47,15 +53,24 @@ const TTTimeTextField = ({
     formatSecond(second);
   }, [second]);
 
-  const className = useMemo(() => {
-    const classNames = [];
-    if (size) {
-      if (size === "sm") classNames.push("TTTimeTextField-small");
-    }
-    if (withPopOver) classNames.push("TTTimeTextField-withPopOver");
+  // Styled wrapper adds a className
 
-    return classNames.length > 0 ? classNames.join(" ") : null;
-  }, [size, withPopOver]);
+  // const className = useMemo(() => {
+  //   const classNames = [];
+  //   if (size) {
+  //     if (size === "sm") classNames.push("TTTimeTextField-small");
+  //   }
+  //   if (withPopOver) classNames.push("TTTimeTextField-withPopOver");
+
+  //   return classNames.length > 0 ? classNames.join(" ") : null;
+  // }, [size, withPopOver]);
+
+  const fClassName = classNames(
+    "TTTimeTextField",
+    size === "sm" && "TTTimeTextField-small",
+    withPopOver && "TTTimeTextField-withPopOver",
+    className
+  );
 
   const handleChange = (e) => {
     setValue(e.target.value);
@@ -113,6 +128,7 @@ const TTTimeTextField = ({
     }
 
     formatSecond(newSecond);
+    if (onEditComplete) onEditComplete(newSecond);
   };
 
   const handleKeyDown = (e) => {
@@ -127,13 +143,14 @@ const TTTimeTextField = ({
 
   return (
     <StyledInputBase
-      className={className}
+      className={fClassName}
       value={value}
       onChange={handleChange}
       onFocus={handleFocus}
       onBlur={handleBlur}
       onKeyDown={handleKeyDown}
       style={style}
+      inputRef={inputRef}
       {...others}
     />
   );

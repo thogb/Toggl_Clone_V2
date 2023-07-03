@@ -31,6 +31,8 @@ import classNames from "classnames";
 import { useTheme } from "@emotion/react";
 import { TTMenu } from "../ttMenu/TTMenu";
 import { TTMenuItem } from "../ttMenu/TTMenuItem";
+import TimeEntryDateInfo from "./TimeEntryDateInfo";
+import TimeEntryDateInfoChanger from "./TimeEntryDateInfoChanger";
 
 const StyledTimeEntryItemBase = styled(TimeEntryItemBase)(({ theme }) => ({
   "&:hover": {
@@ -83,7 +85,8 @@ const TimeEntryItemRecord = ({
   tagList,
 
   isChildrenOfGroup = false,
-  isTypeHeader = false,
+  // isTypeHeader = false,
+  variant = "item",
   isExpanded = false,
   groupSize = 0,
 
@@ -152,7 +155,8 @@ const TimeEntryItemRecord = ({
       indeterminate={indeterminate}
       onCheckBoxClick={handleCheckboxClick}
     >
-      {isTypeHeader && (
+      {/* Group item expand button */}
+      {variant === "group" && (
         <Box minWidth={"40px"}>
           <TimeEntryExpandButton
             isOpen={isExpanded}
@@ -162,7 +166,8 @@ const TimeEntryItemRecord = ({
           </TimeEntryExpandButton>
         </Box>
       )}
-      {/* <TimeEntryMainSection> */}
+
+      {/* Left section */}
       <TimeEntryLeftSection>
         <StyledGrowingInput
           value={teDescription}
@@ -233,29 +238,39 @@ const TimeEntryItemRecord = ({
           />
         </Box>
       </Stack>
+
+      {/* Right section */}
       <TimeEntryRightSection>
-        <Stack direction={"row"} alignItems={"center"} gap={2}>
+        <Stack direction={"row"} alignItems={"center"}>
           <TTIconButton
             disabled
             className={"TT-hidden"}
-            style={{ padding: 0, fontSize: "1.4rem" }}
+            style={{
+              padding: 0,
+              fontSize: "1.4rem",
+              marginRight: theme.spacing(2),
+            }}
           >
             <AttachMoneyIcon />
           </TTIconButton>
-          <SubButton
-            className="TimeEntryDateBtn"
-            style={{ paddingTop: "4px", paddingBottom: "4px" }}
-          >
-            <Typography
-              variant="body2"
-              color={commonTextColor}
-              fontWeight={"fontWeightMedium"}
-              noWrap
-            >
-              {`${formatDateHMA(startDate)} - ${formatDateHMA(stopDate)}`}
-            </Typography>
-          </SubButton>
+          {variant === "group" ? (
+            <TimeEntryDateInfo
+              duration={duration}
+              startDate={startDate}
+              stopDate={stopDate}
+              onDateButtonClick={operations.onExpandButonClick}
+              onDurationButtonClick={operations.onExpandButonClick}
+            />
+          ) : (
+            <TimeEntryDateInfoChanger
+              duration={duration}
+              startDate={startDate}
+              stopDate={stopDate}
+            />
+          )}
         </Stack>
+
+        {/* Tools */}
         <RightTools>
           <TTIconButton
             colorStrength={3}

@@ -25,11 +25,22 @@ const EntryTimeTextField = ({
   duration = 0,
   startDate = defaultDate,
   stopDate = defaultDate,
+
+  fadeTimeOut = 200,
+
   staticStop = true,
   disableStopInput = false,
   resetDatesOnZeroDuration = true,
+
   renderTextField = ({ second, onSecondChange, onFocus, onBlur }) => null,
+
+  onDateInfoChange, // (dateInfo) => {};
+
+  popperOffsetx,
+  popperOffsety,
+
   onFocus,
+  onPopperOpen,
   onPopperClose,
 }) => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -62,6 +73,15 @@ const EntryTimeTextField = ({
     }
   }, [duration, startDate, stopDate]);
 
+  useEffect(() => {
+    if (onDateInfoChange)
+      onDateInfoChange({
+        duration: localDuration,
+        startDate: localStartDate.getTime(),
+        stopDate: localStopDate.getTime(),
+      });
+  }, [localDuration, localStartDate.getTime(), localStopDate.getTime()]);
+
   const handleFocus = (e) => {
     let newInitialDateInfo = {
       duration: duration,
@@ -81,6 +101,7 @@ const EntryTimeTextField = ({
     setInitialDateInfo(newInitialDateInfo);
     setAnchorEl(e.currentTarget);
     if (onFocus != null) onFocus(e);
+    if (onPopperOpen != null) onPopperOpen(e);
   };
 
   const handleBlur = (e) => {};
@@ -131,6 +152,20 @@ const EntryTimeTextField = ({
     setAnchorEl(null);
   };
 
+  // const handleDurationEditComplete = (newDuration) => {
+  //   if (onDateInfoChange) onDateInfoChange({
+  //     duration: newDuration,
+  //     startDate: localStartDate,
+  //     stopDate: localStopDate,
+  //   });
+  // }
+
+  // const handleStartDateEditComplete = (newStartDate) => {
+  // }
+
+  // const handleStopDateEditComplete = (newStopDate) => {
+  // }
+
   const daysBetween = getDaysBetween(localStartDate, localStopDate);
 
   return (
@@ -156,13 +191,13 @@ const EntryTimeTextField = ({
       </Badge>
 
       {/* popper */}
-      <Fade in={Boolean(anchorEl)} timeout={200}>
+      <Fade in={Boolean(anchorEl)} timeout={fadeTimeOut}>
         <div>
           <TTPopper
             anchorEl={anchorEl}
             onClose={handlePopperClose}
             placement={"bottom"}
-            offset={[-40, 0]}
+            offset={[popperOffsetx ?? -40, popperOffsety ?? 0]}
           >
             <Stack
               direction={"row"}
