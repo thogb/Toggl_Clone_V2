@@ -35,6 +35,7 @@ import {
 import { getDiffInSeconds } from "../../utils/TTDateUtil";
 import { TTMenu } from "../ttMenu/TTMenu";
 import { TTMenuItem } from "../ttMenu/TTMenuItem";
+import TTTimeTextField from "../ttTimeTextField/TTTimeTextField";
 
 const timerStates = Object.freeze({
   STARTED: "STARTED",
@@ -294,6 +295,9 @@ const TimerTopBar = () => {
             stopDate={isTimerStarted ? startDate + duration * 1000 : stopDate}
             disableStopInput={isTimerStarted}
             onPopperClose={handleTimePopperClose}
+            renderTextField={(props) => {
+              return <TTTimeTextField withPopOver={true} {...props} />;
+            }}
           />
         ) : (
           <EntryDateChanger />
