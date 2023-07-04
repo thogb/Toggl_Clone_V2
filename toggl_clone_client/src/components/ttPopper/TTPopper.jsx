@@ -21,6 +21,10 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
 }));
 
 const PopperRoot = styled("div")(({ theme }) => ({
+  // height: "100%",
+  "& .TTPopper-trigger-wrapper": {
+    // height: "100%",
+  },
   "&.TTPopper-open > TTPopper-trigger": {
     "& > TTPopper-trigger-button": {
       backgroundColor: grey[500],
@@ -41,6 +45,8 @@ const TTPopper = ({
   triggerTouchable = false,
   children,
   style,
+  width,
+  sameWidthAsTrigger = false,
   gap,
   offset,
   ...other
@@ -61,6 +67,7 @@ const TTPopper = ({
         modifiers={[{ name: "offset", options: { offset: offset ?? [0, 8] } }]}
         style={{
           zIndex: theme.zIndex.modal + 2,
+          ...(sameWidthAsTrigger ? { width: "100%" } : {}),
           ...style,
         }}
         {...other}
@@ -70,6 +77,8 @@ const TTPopper = ({
           style={{
             margin: gap,
             ...(size !== "none" ? { width: `${SIZES[size]}px` } : {}),
+            ...(width ? { width: width } : {}),
+            ...(sameWidthAsTrigger ? { width: "100%" } : {}),
           }}
         >
           {children}
@@ -91,6 +100,9 @@ const TTPopper = ({
             ? classNames("TTPopper-root", "TTPopper-open")
             : "TTPopper-root"
         }
+        style={{
+          position: sameWidthAsTrigger && "relative",
+        }}
       >
         <div
           className={

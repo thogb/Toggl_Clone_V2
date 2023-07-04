@@ -12,14 +12,17 @@ import { grey } from "@mui/material/colors";
 
 const TagsSelector = ({
   tagList,
-  tagCheckedList,
+  tagCheckedList = [],
   onClose,
   onPopperClose,
   onSelectionComplete,
   popperAnchorEl,
   triggerComponent,
   triggerTouchable,
+  disableTrigerComponent = false,
   placement,
+  offset = [40, 20],
+  sameWidthAsTrigger,
   ...others
 }) => {
   const [anchorEl, setAnchorEl] = useState(popperAnchorEl);
@@ -27,6 +30,7 @@ const TagsSelector = ({
   const theme = useTheme();
 
   const [localList, setLocalList] = useState([...tagList]);
+  const [filteredLocalList, setFilteredLocalList] = useState([...tagList]);
   const [checkedList, setCheckedList] = useState([...tagCheckedList]);
 
   useEffect(() => {
@@ -39,12 +43,16 @@ const TagsSelector = ({
       .filter((v) => newCheckedList.indexOf(v) === -1)
       .sort();
     setLocalList([...newCheckedList, ...filteredList]);
+    setFilteredLocalList([...newCheckedList, ...filteredList]);
     setCheckedList(newCheckedList);
   };
 
   const handleSearchChange = (e) => {
     const newValue = e.target.value;
     setSearchValue(newValue);
+    setFilteredLocalList(
+      localList.filter((v) => v.toLowerCase().includes(newValue.toLowerCase()))
+    );
   };
 
   const handlePopperClose = () => {
@@ -52,8 +60,8 @@ const TagsSelector = ({
     if (onSelectionComplete) onSelectionComplete(newCheckedList);
     setAnchorEl(null);
     setCheckedList(newCheckedList);
+    setSearchValue("");
   };
-
   const handlePopperOpen = (e) => {
     setAnchorEl(e.currentTarget);
   };
@@ -61,7 +69,9 @@ const TagsSelector = ({
   const controlledClose = () => {
     const newCheckedList = [...checkedList].sort();
     if (onClose) onClose(newCheckedList);
+    if (onSelectionComplete) onSelectionComplete(newCheckedList);
     setCheckedList(newCheckedList);
+    setSearchValue("");
   };
 
   const searchIsNotEmpty = searchValue !== "";
@@ -76,16 +86,18 @@ const TagsSelector = ({
       <TTPopper
         size="sm"
         placement={placement ?? "bottom-end"}
-        offset={[40, 20]}
+        offset={offset}
         anchorEl={popperAnchorEl ?? anchorEl}
         onClose={popperAnchorEl ? controlledClose : handlePopperClose}
+        sameWidthAsTrigger={sameWidthAsTrigger}
         triggerTouchable={triggerTouchable}
         triggerComponent={
-          triggerComponent ?? (
+          !disableTrigerComponent &&
+          (triggerComponent ?? (
             <TTIconButton selected={hasTagsSelected} onClick={handlePopperOpen}>
               <LocalOfferIcon />
             </TTIconButton>
-          )
+          ))
         }
       >
         <Box p={2}>
@@ -96,10 +108,11 @@ const TagsSelector = ({
             onClear={() => setSearchValue("")}
           />
         </Box>
-        <Box maxHeight={"200px"} overflow={"auto"} px={0.5}>
+        <Box height={"200px"} maxHeight={"200px"} overflow={"auto"} px={0.5}>
           <CheckboxList
             checkedList={checkedList}
-            itemList={localList}
+            // itemList={localList}
+            itemList={filteredLocalList}
             setCheckedList={(v) => setCheckedList(v)}
           />
         </Box>

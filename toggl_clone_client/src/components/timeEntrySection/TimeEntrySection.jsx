@@ -53,6 +53,7 @@ const TimeEntrySection = ({ sectionData, ...other }) => {
     <TimeEntryList className="TimeEntryList-root">
       <TimeEntryHeader
         key={"test"}
+        tagList={tagList}
         dateGroupId={dateGroupId}
         timeEIdList={timeEIdList}
         totalDuration={totalDuration}
