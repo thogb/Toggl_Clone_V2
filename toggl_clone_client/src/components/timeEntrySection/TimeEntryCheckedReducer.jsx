@@ -15,6 +15,7 @@ const actions = {
   TOGGLE_OFF_FROM_LIST: "TOGGLE_OFF_FROM_LIST",
   APPEND_TO_CHECK_LIST: "APPEND_TO_CHECK_LIST",
   TOGGLE_FROM_GROUP: "TOGGLE_FROM_GROUP",
+  SYNC_AGAINST_LIST: "SYNC_AGAINST_LIST",
 };
 
 export const timeEntryCheckedReducer = (state, action) => {
@@ -64,6 +65,13 @@ export const timeEntryCheckedReducer = (state, action) => {
     //     ...state,
     //     checkedList: state.checkedList.filter((id) => )
     //   }
+    case actions.SYNC_AGAINST_LIST:
+      return {
+        ...state,
+        checkedList: state.checkedList.filter((item) =>
+          action.inList.includes(item)
+        ),
+      };
     case actions.TOGGLE_OFF_FROM_LIST:
       return {
         ...state,

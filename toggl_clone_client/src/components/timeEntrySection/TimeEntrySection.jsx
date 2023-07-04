@@ -3,6 +3,7 @@ import React, { memo, useMemo, useReducer } from "react";
 import TimeEntryHeader from "./TimeEntryHeader";
 import {
   getIntialTimeEntryCheckedData,
+  timeEntryCheckedActions,
   timeEntryCheckedReducer,
 } from "./TimeEntryCheckedReducer";
 import { useSelector } from "react-redux";
@@ -39,6 +40,12 @@ const TimeEntrySection = ({ sectionData, ...other }) => {
         list.push(groupedEntry.entry.id);
       }
     });
+    if (timeEntryChecked.checkedList.length > 0) {
+      timeEntryCheckedDispatch({
+        type: timeEntryCheckedActions.SYNC_AGAINST_LIST,
+        inList: list,
+      });
+    }
     return list;
   }, [groupedEntries]);
 
