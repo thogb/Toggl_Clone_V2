@@ -69,7 +69,16 @@ const TimeEntryItem = ({
 
   const onDateInfoChange = (dateInfo) => {
     dispatch(
-      updateTEDateInfo({ dateGroupId, gId, id: timeEntry.id, dateInfo })
+      updateTEDateInfo({
+        dateGroupId,
+        gId,
+        id: timeEntry.id,
+        dateInfo: {
+          duration: dateInfo.duration,
+          startDate: dateInfo.startDate.getTime(),
+          stopDate: dateInfo.stopDate.getTime(),
+        },
+      })
     );
   };
 

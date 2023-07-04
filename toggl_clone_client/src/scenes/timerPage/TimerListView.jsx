@@ -40,6 +40,7 @@ const TimerListView = () => {
   };
 
   const formattedTotalDurationThisWeek = useMemo(() => {
+    // console.log(getTotalDurationThisWeek());
     return formatSecondHMMSS(getTotalDurationThisWeek());
   }, [dateGroupEntries]);
 

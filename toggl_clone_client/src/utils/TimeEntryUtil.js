@@ -41,7 +41,7 @@ export const createDateGroupId = (date) => {
 
 // #utils
 export const getTotalDurationOfADay = (dateGroupEntries, date) => {
-  return dateGroupEntries[createDateGroupId(date)]?.totalTime ?? 0;
+  return dateGroupEntries[createDateGroupId(date)]?.totalDuration ?? 0;
 };
 
 // #timeEntry
