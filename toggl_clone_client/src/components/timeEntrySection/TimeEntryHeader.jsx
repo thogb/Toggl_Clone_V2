@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, useState } from "react";
 import TimeEntryItemBase, {
   RightTools,
   TimeEntryLeftSection,
@@ -14,6 +14,7 @@ import { timeEntryCheckedActions } from "./TimeEntryCheckedReducer";
 import { formatSecondHMMSS } from "../../utils/TTDateUtil";
 import { useDispatch } from "react-redux";
 import { deleteBatchTE, deleteDGE } from "../../state/groupedEntryListSlice";
+import TimeEntryInputModal from "../timeEntryInputModal/TimeEntryInputModal";
 
 const OutlinedIconButton = styled("button")(({ theme }) => ({
   border: "1px solid",
@@ -55,6 +56,7 @@ const DeleteTextButton = styled(TTTextButton)(({ theme }) => ({
 }));
 
 const TimeEntryHeader = ({
+  tagList,
   dateGroupId,
   timeEIdList,
   totalDuration,
@@ -62,13 +64,16 @@ const TimeEntryHeader = ({
   timeEntryCheckedDispatch,
 }) => {
   const dispatch = useDispatch();
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
 
-  const dateFormat = "EEE, dd MMM";
+  // const dateFormat = "EEE, dd MMM";
   const checked = timeEIdList.length === timeEntryChecked.checkedList.length;
   const indeterminate = !checked && timeEntryChecked.checkedList.length > 0;
   const isCheckOn = checked || indeterminate;
 
-  const handleBulkEdit = () => {};
+  const handleBulkEdit = (e) => {
+    setIsUpdateModalOpen(true);
+  };
 
   const handleBulkDelete = () => {
     if (checked) {
@@ -106,6 +111,12 @@ const TimeEntryHeader = ({
     }
   };
 
+  const handleInputModalComplete = (timeEntryData) => {
+    console.log(timeEntryData);
+  };
+
+  const nSelected = timeEntryChecked.checkedList.length;
+
   return (
     <StyledTimeEntryItemBase
       className={"TimeEntryHeader"}
@@ -130,11 +141,21 @@ const TimeEntryHeader = ({
               <Typography
                 variant="body2"
                 color={"GrayText"}
-              >{`${timeEntryChecked.checkedList.length}/${timeEIdList.length} items selected`}</Typography>
+              >{`${nSelected}/${timeEIdList.length} items selected`}</Typography>
               <TTTextButton
                 disabled={!isCheckOn}
                 text={"Bulk edit"}
                 onClick={handleBulkEdit}
+              />
+              <TimeEntryInputModal
+                tagList={tagList}
+                startDate={Date.now()}
+                title={`Bulk edit ${nSelected} time ${
+                  nSelected > 1 ? "entries" : "entry"
+                }`}
+                open={isUpdateModalOpen}
+                onClose={() => setIsUpdateModalOpen(false)}
+                onSave={handleInputModalComplete}
               />
               <DeleteTextButton
                 disabled={!isCheckOn}
