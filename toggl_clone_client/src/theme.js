@@ -30,6 +30,9 @@ export const themeSettings = (mode) => {
         hoverOpacity: 0.1,
         selectedOpacity: 0.2,
       },
+      text: {
+        placeholder: alpha("#2c1338", 0.8),
+      },
     },
     spacing: spacing,
     ttSpacings: {
@@ -40,6 +43,9 @@ export const themeSettings = (mode) => {
         px: 2,
       },
     },
+    shape: {
+      borderRadius: 8,
+    },
     components: {
       MuiBackdrop: {
         styleOverrides: {
@@ -49,13 +55,31 @@ export const themeSettings = (mode) => {
             }),
         },
       },
+      MuiButtonBase: {
+        defaultProps: {
+          disableRipple: true,
+        },
+      },
       MuiButton: {
+        defaultProps: {
+          disableElevation: true,
+        },
         styleOverrides: {
           root: ({ theme }) =>
             theme.unstable_sx({
               textTransform: "capitalize",
             }),
         },
+        // variants: [
+        //   {
+        //     props: { variant: "contained" },
+        //     style: ({ theme }) => {
+        //       return {
+        //         backgroundColor: theme.palette.secondary.main,
+        //       };
+        //     },
+        //   },
+        // ],
       },
     },
   };
