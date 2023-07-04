@@ -133,6 +133,9 @@ const TimeEntryItemRecord = ({
 
   const hasTags = tagsChecked.length > 0;
   const commonTextColor = alpha(theme.palette.primary.main, 0.7);
+
+  console.log("End time: " + Date.now());
+
   return (
     <StyledTimeEntryItemBase
       className={classNames(
@@ -279,7 +282,12 @@ const TimeEntryItemRecord = ({
           >
             <MoreVertIcon />
           </TTIconButton>
-          {menuOptions.length > 0 && (
+
+          {/* if only comparing with menuOptions.length > 0 && it will be slow */}
+          {/* The current comparision with a Boolean(menuAnchor) actually reduces */}
+          {/* TimerPage rendering time by 50ms for around 58 entries */}
+          {/* From 200ms to 150ms */}
+          {Boolean(menuAnchor) && menuOptions.length > 0 && (
             <TTMenu
               anchorEl={menuAnchor}
               open={Boolean(menuAnchor)}

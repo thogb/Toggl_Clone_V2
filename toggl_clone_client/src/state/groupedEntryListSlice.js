@@ -152,7 +152,6 @@ export const generateDateGroupedEntries = (timeEntries) => {
     const groupedEntries = grouped[dateGroupId].groupedEntries;
     groupedEntries.sort((a, b) => compareDesc(a.startDate, b.startDate));
     groupedEntries.forEach((groupedEntry) => {
-      console.log(groupedEntry.gId);
       if (groupedEntry.entries !== undefined) {
         groupedEntry.entries.sort((a, b) =>
           compareDesc(a.startDate, b.startDate)

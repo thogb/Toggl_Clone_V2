@@ -41,6 +41,8 @@ const TimerPage = () => {
     },
   });
 
+  console.log("Start time: " + Date.now());
+
   return (
     <ThemeProvider theme={newTheme}>
       <Box overflow={"hidden"}>

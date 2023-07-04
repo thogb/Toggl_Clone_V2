@@ -114,7 +114,7 @@ const TimeEntryItem = ({
   //   };
   // }, []);
 
-  console.log("rerender " + timeEntry.id);
+  // console.log("rerender " + timeEntry.id);
 
   return (
     <TimeEntryItemRecord

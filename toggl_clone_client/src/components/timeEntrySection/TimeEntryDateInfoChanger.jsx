@@ -65,7 +65,6 @@ const TimeEntryDateInfoChanger = ({
   };
 
   const handleDateInfoChange = (dateInfo) => {
-    console.log(dateInfo);
     setlocalDuration(dateInfo.duration);
     setlocalStartDate(dateInfo.startDate);
     setlocalStopDate(dateInfo.stopDate);
