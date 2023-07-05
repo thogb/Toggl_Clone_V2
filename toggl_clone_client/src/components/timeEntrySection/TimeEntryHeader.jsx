@@ -62,6 +62,7 @@ const DeleteTextButton = styled(TTTextButton)(({ theme }) => ({
 const TimeEntryHeader = ({
   tagList,
   dateGroupId,
+  sectionDate,
   timeEIdList,
   totalDuration,
   timeEntryChecked,
@@ -160,7 +161,7 @@ const TimeEntryHeader = ({
               />
               <TimeEntryInputModal
                 tagList={tagList}
-                startDate={Date.now()}
+                startDate={new Date(sectionDate)}
                 title={`Bulk edit ${nSelected} time ${
                   nSelected > 1 ? "entries" : "entry"
                 }`}

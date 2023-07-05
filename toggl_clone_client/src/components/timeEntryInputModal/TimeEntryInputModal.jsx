@@ -1,6 +1,5 @@
 import styled from "@emotion/styled";
 import {
-  Box,
   Button,
   Dialog,
   DialogActions,
@@ -8,19 +7,16 @@ import {
   DialogTitle,
   FormControl,
   Grow,
-  OutlinedInput,
   TextField,
   alpha,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
-import TTIconButton from "../ttIconButton/TTIconButton";
-import { grey } from "@mui/material/colors";
 import TimeEntryInputExpand from "./TimeEntryInputExpand";
 import TagsSelector from "../../scenes/timerPage/TagsSelector";
 import TTPopper from "../ttPopper/TTPopper";
 import TTDateCalender from "../TTDateCalender/TTDateCalender";
-import { format, parse, parseISO, set } from "date-fns";
+import { format } from "date-fns";
 import { useTheme } from "@emotion/react";
 
 // Using styled() to make a style component named StyledDialog with dialog

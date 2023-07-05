@@ -24,6 +24,7 @@ const TimeEntryList = styled("ul")(({ theme }) => ({
 const TimeEntrySection = ({ sectionData, ...other }) => {
   const tagList = useSelector((state) => state.currentEntry.tags);
   const { dateGroupId, groupedEntries, totalDuration } = sectionData;
+  const sectionDate = sectionData.date;
   const [timeEntryChecked, timeEntryCheckedDispatch] = useReducer(
     timeEntryCheckedReducer,
     getIntialTimeEntryCheckedData()
@@ -55,6 +56,7 @@ const TimeEntrySection = ({ sectionData, ...other }) => {
         key={"test"}
         tagList={tagList}
         dateGroupId={dateGroupId}
+        sectionDate={sectionDate}
         timeEIdList={timeEIdList}
         totalDuration={totalDuration}
         timeEntryChecked={timeEntryChecked}

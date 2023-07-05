@@ -575,8 +575,8 @@ export const editBatchTE = (
     const newStartDate = set(te.startDate, {
       year: newDate.getFullYear(),
       month: newDate.getMonth(),
-      day: newDate.getDate(),
-    });
+      date: newDate.getDate(),
+    }).getTime();
     te.description = description;
     te.projectId = projectId;
     te.startDate = newStartDate;
