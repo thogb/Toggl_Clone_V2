@@ -1,4 +1,9 @@
-import { compareDesc, differenceInMilliseconds } from "date-fns";
+import {
+  addSeconds,
+  compareDesc,
+  differenceInMilliseconds,
+  set,
+} from "date-fns";
 import { formatDateEEddMMMyyyy } from "./TTDateUtil";
 
 export const GroupedEntrySingleton = {
@@ -265,6 +270,15 @@ export const createNewGroupedEntry = (timeEntry) => {
   };
 };
 
+export const createNewGEFromTEList = (timeEntryList) => {
+  if (!Boolean(timeEntryList) || timeEntryList?.length === 0) return;
+  const groupedEntry = createNewGroupedEntry(timeEntryList[0]);
+  if (timeEntryList.length === 1) return groupedEntry;
+  groupedEntry.entries = [...timeEntryList];
+  refreshGroupedEntry(groupedEntry);
+  return groupedEntry;
+};
+
 export const refreshGroupedEntry = (groupedEntry, sort = true) => {
   if (groupedEntry.entries.length === 1) {
     updateGroupedEntryByTE(
@@ -321,7 +335,7 @@ export const addNewGroupedEntry = (groupedEntries, groupedEntry) => {
 };
 
 export const removeGroupedEntry = (groupedEntries, gId) => {
-  groupedEntries.splice(
+  return groupedEntries.splice(
     groupedEntries.findIndex((e) => e.gId === gId),
     1
   );
@@ -336,8 +350,22 @@ export const sortGroupedEntriesByStartDate = (groupedEntries) => {
 };
 
 // #dateGroupEntries
+export const addGEtoDGEList = (dateGroupEntries, groupedEntry) => {
+  console.log("start Date = ");
+  console.log(groupedEntry.startDate);
+  const dateGroupId = createDateGroupId(groupedEntry.startDate);
+  const dateGroupedEntry = dateGroupEntries[dateGroupId];
+  if (dateGroupedEntry === undefined) {
+    dateGroupEntries[dateGroupId] = createNewDGEFromGE(
+      groupedEntry,
+      groupedEntry.startDate
+    );
+  } else {
+    addGEtoDGE(dateGroupEntries, dateGroupedEntry, groupedEntry);
+  }
+};
 
-// #dateGroupEntry
+// #dateGroupedEntry
 export const removeDateGroupedEntry = (dateGroupEntries, dateGroupId) => {
   delete dateGroupEntries[dateGroupId];
 };
@@ -366,6 +394,16 @@ export const calcTotalDurationofDGE = (dateGroupedEntry) => {
   );
 };
 
+export const addGEtoDGE = (
+  dateGroupEntries,
+  dateGroupedEntry,
+  groupedEntry
+) => {
+  console.log(dateGroupedEntry.dateGroupId);
+  dateGroupedEntry.groupedEntries.push(groupedEntry);
+  refreshDateGroupedEntry(dateGroupEntries, dateGroupedEntry.dateGroupId);
+};
+
 export const createNewDGEFromGE = (groupedEntry, date) => {
   const newDateGroupedEntry = {
     dateGroupId: createDateGroupId(date),
@@ -390,6 +428,7 @@ export const removeBatchTEFromGE = (
   const groupedEntries = dateGroupEntry.groupedEntries;
   const groupedEntry = findGroupedEntryByGId(groupedEntries, gId);
   // const entries = groupedEntry.entries;
+  let delEntries = [];
 
   if (idList.length === 0 || idList.length === groupedEntry.entries.length) {
     if (groupedEntries.length === 1) {
@@ -402,14 +441,18 @@ export const removeBatchTEFromGE = (
       if (refreshDGE)
         refreshDateGroupedEntry(dateGroupedEntries, dateGroupId, false);
     }
+    delEntries = groupedEntry.entries;
   } else {
     if (idList.length === 1) {
       // Deleting one item from group entry
-      groupedEntry.entries.splice(
-        groupedEntry.entries.findIndex((e) => e.id === idList[0]),
-        1
-      );
+      delEntries = [
+        groupedEntry.entries.splice(
+          groupedEntry.entries.findIndex((e) => e.id === idList[0]),
+          1
+        ),
+      ];
     } else {
+      delEntries = groupedEntry.entries.filter((e) => idList.includes(e.id));
       // Deleting multiple items from group entry
       groupedEntry.entries = groupedEntry.entries.filter(
         (e) => !idList.includes(e.id)
@@ -422,6 +465,8 @@ export const removeBatchTEFromGE = (
     if (refreshDGE)
       refreshDateGroupedEntry(dateGroupedEntries, dateGroupId, true);
   }
+
+  return delEntries;
 };
 
 /**
@@ -433,7 +478,7 @@ export const removeBatchTEFromGE = (
  *
  * @returns {Array}
  */
-export const extractGroupedTEIdsFromDGE = (dateGroupedEntry) => {
+export const extractStructuredTEIdsFromDGE = (dateGroupedEntry) => {
   return dateGroupedEntry.groupedEntries.map((groupedEntry) => {
     return {
       gId: groupedEntry.gId,
@@ -442,7 +487,7 @@ export const extractGroupedTEIdsFromDGE = (dateGroupedEntry) => {
   });
 };
 
-export const filterGroupedTEIdsFromIdList = (groupedTEIds, idList) => {
+export const filterStructuredTEIdsFromIdList = (groupedTEIds, idList) => {
   // Remove id from groupedTEIds where the id is not in the idList
   return groupedTEIds
     .map((groupedTEId) => {
@@ -454,37 +499,93 @@ export const filterGroupedTEIdsFromIdList = (groupedTEIds, idList) => {
     .filter((groupedTEId) => groupedTEId.entries.length > 0);
 };
 
+export const removeBatchStructuredTEFromDGE = (
+  dateGroupedEntries,
+  dateGroupId,
+  filteredStructuredTEIds
+) => {
+  console.log(filteredStructuredTEIds);
+
+  const deletedTEList = [];
+  // Remove the entries lot of time entry ids from group entry
+  filteredStructuredTEIds.forEach((groupedTEId) => {
+    // Do not need to refresh until the loop is finished
+    deletedTEList.push(
+      ...removeBatchTEFromGE(
+        dateGroupedEntries,
+        dateGroupId,
+        groupedTEId.gId,
+        groupedTEId.entries,
+        false
+      )
+    );
+  });
+
+  // Delete if dateGroupEntry is empty else refresh the dateGroupEntry and sort
+  if (dateGroupedEntries[dateGroupId].groupedEntries.length === 0) {
+    delete dateGroupedEntries[dateGroupId];
+  } else {
+    refreshDateGroupedEntry(dateGroupedEntries, dateGroupId, true);
+  }
+
+  console.log(deletedTEList);
+
+  return deletedTEList;
+};
+
 export const removeBatchTEFromDGE = (
   dateGroupedEntries,
   dateGroupId,
   idList
 ) => {
   const dateGroupedEntry = dateGroupedEntries[dateGroupId];
-  const filteredGroupedTEIds = filterGroupedTEIdsFromIdList(
-    extractGroupedTEIdsFromDGE(dateGroupedEntry),
+  const filteredStructuredTEIds = filterStructuredTEIdsFromIdList(
+    extractStructuredTEIdsFromDGE(dateGroupedEntry),
     idList
   );
 
-  console.log(filteredGroupedTEIds);
+  removeBatchStructuredTEFromDGE(
+    dateGroupedEntries,
+    dateGroupId,
+    filteredStructuredTEIds
+  );
+};
 
-  // Remove the entries lot of time entry ids from group entry
-  filteredGroupedTEIds.forEach((groupedTEId) => {
-    // Do not need to refresh until the loop is finished
-    removeBatchTEFromGE(
-      dateGroupedEntries,
-      dateGroupId,
-      groupedTEId.gId,
-      groupedTEId.entries,
-      false
-    );
+export const editBatchTE = (
+  dateGroupedEntries,
+  dateGroupId,
+  idList,
+  editData
+) => {
+  const dateGroupedEntry = dateGroupedEntries[dateGroupId];
+  const filteredStructuredTEIds = filterStructuredTEIdsFromIdList(
+    extractStructuredTEIdsFromDGE(dateGroupedEntry),
+    idList
+  );
+
+  const deletedTEList = removeBatchStructuredTEFromDGE(
+    dateGroupedEntries,
+    dateGroupId,
+    filteredStructuredTEIds
+  );
+
+  const { description, projectId, startDate, tags } = editData;
+  const newDate = new Date(startDate);
+  deletedTEList.forEach((te) => {
+    const newStartDate = set(te.startDate, {
+      year: newDate.getFullYear(),
+      month: newDate.getMonth(),
+      day: newDate.getDate(),
+    });
+    te.description = description;
+    te.projectId = projectId;
+    te.startDate = newStartDate;
+    te.stopDate = addSeconds(newStartDate, te.duration).getTime();
+    te.tags = [...tags];
   });
 
-  // Delete if dateGroupEntry is empty else refresh the dateGroupEntry and sort
-  if (dateGroupedEntry.groupedEntries.length === 0) {
-    delete dateGroupedEntries[dateGroupId];
-  } else {
-    refreshDateGroupedEntry(dateGroupedEntries, dateGroupId, true);
-  }
+  const newGroupedEntry = createNewGEFromTEList(deletedTEList);
+  addGEtoDGEList(dateGroupedEntries, newGroupedEntry);
 };
 
 // #find

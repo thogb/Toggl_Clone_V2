@@ -13,7 +13,11 @@ import { grey, red } from "@mui/material/colors";
 import { timeEntryCheckedActions } from "./TimeEntryCheckedReducer";
 import { formatSecondHMMSS } from "../../utils/TTDateUtil";
 import { useDispatch } from "react-redux";
-import { deleteBatchTE, deleteDGE } from "../../state/groupedEntryListSlice";
+import {
+  deleteBatchTE,
+  deleteDGE,
+  updateBatchTE,
+} from "../../state/groupedEntryListSlice";
 import TimeEntryInputModal from "../timeEntryInputModal/TimeEntryInputModal";
 
 const OutlinedIconButton = styled("button")(({ theme }) => ({
@@ -111,8 +115,15 @@ const TimeEntryHeader = ({
     }
   };
 
-  const handleInputModalComplete = (timeEntryData) => {
-    console.log(timeEntryData);
+  const handleInputModalComplete = (editData) => {
+    console.log(editData);
+    dispatch(
+      updateBatchTE({
+        dateGroupId,
+        idList: timeEntryChecked.checkedList,
+        editData,
+      })
+    );
   };
 
   const nSelected = timeEntryChecked.checkedList.length;

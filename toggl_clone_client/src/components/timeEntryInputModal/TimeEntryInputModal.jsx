@@ -103,7 +103,7 @@ const TimeEntryInputModal = ({
   title,
 
   description = "",
-  projectId = 123,
+  projectId = null,
   startDate,
   checkedTagList = [],
 
@@ -151,7 +151,7 @@ const TimeEntryInputModal = ({
     if (onSave) {
       onSave({
         description: localDescription,
-        projectId: 123,
+        projectId: projectId,
         tags: localCheckedTagList,
         startDate: localStartDate,
       });

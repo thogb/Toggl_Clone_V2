@@ -5,6 +5,7 @@ import {
   createDateGroupId,
   deleteGEFromDateGroupEntry,
   deleteTEFromGroupedEntry,
+  editBatchTE,
   findGroupedEntryByGId,
   isGroupEntryEqual,
   removeBatchTEFromDGE,
@@ -235,6 +236,10 @@ export const groupedEntryListSlice = createSlice({
         dateInfo
       );
     },
+    updateBatchTE: (state, action) => {
+      const { dateGroupId, idList, editData } = action.payload;
+      editBatchTE(state.dateGroupedEntries, dateGroupId, idList, editData);
+    },
 
     deleteTE: (state, action) => {
       const { dateGroupId, gId, id } = action.payload;
@@ -269,6 +274,8 @@ export const {
   updateTEProjectId,
   updateGEProjectId,
   updateTEDateInfo,
+
+  updateBatchTE,
 
   deleteTE,
   deleteGE,
