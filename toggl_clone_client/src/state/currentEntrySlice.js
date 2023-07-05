@@ -153,10 +153,20 @@ export const currentEntrySlice = createSlice({
     },
     endTimer: (state) => {
       clearInterval(state.timerInterval);
-      state.stopDate = addSeconds(state.startDate, state.duration).getTime();
-
-      // Reset
-      Object.assign(state, getInitialCurrentEntryState());
+      return {
+        ...state,
+        ...{
+          description: "",
+          projectId: null,
+          projectName: null,
+          // tags: [],
+          tagsChecked: [],
+          duration: 0,
+          startDate: Date.now(),
+          stopDate: Date.now(),
+          timerStarted: false,
+        },
+      };
     },
     toggleTimerStarted: (state, action) => {
       if (!state.timerStarted) {

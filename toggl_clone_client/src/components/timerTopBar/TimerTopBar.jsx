@@ -38,6 +38,7 @@ import { TTMenu } from "../ttMenu/TTMenu";
 import { TTMenuItem } from "../ttMenu/TTMenuItem";
 import TTTimeTextField from "../ttTimeTextField/TTTimeTextField";
 import { addTE } from "../../state/groupedEntryListSlice";
+import { addSeconds } from "date-fns";
 
 const timerStates = Object.freeze({
   STARTED: "STARTED",
@@ -136,7 +137,7 @@ const TimerTopBar = () => {
               tags: tagCheckedList,
               duration: duration,
               startDate: startDate,
-              stopDate: stopDate,
+              stopDate: addSeconds(startDate, duration).getTime(),
             },
           })
         );
