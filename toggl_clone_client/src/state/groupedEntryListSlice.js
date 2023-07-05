@@ -180,14 +180,14 @@ export const groupedEntryListSlice = createSlice({
     },
     updateGEDescription: (state, action) => {
       const { dateGroupId, gId, description } = action.payload;
-      const groupedEntry = findGroupedEntryByGId(
+      updateAllTEGroupDateInGE(
         state.dateGroupedEntries[dateGroupId].groupedEntries,
-        gId
+        gId,
+        {
+          name: "description",
+          description: description,
+        }
       );
-      updateAllTEGroupDateInGE(groupedEntry, {
-        name: "description",
-        description: description,
-      });
     },
     updateTETags: (state, action) => {
       const { dateGroupId, gId, id, tags } = action.payload;
@@ -198,14 +198,14 @@ export const groupedEntryListSlice = createSlice({
     },
     updateGETags: (state, action) => {
       const { dateGroupId, gId, tags } = action.payload;
-      const groupedEntry = findGroupedEntryByGId(
+      updateAllTEGroupDateInGE(
         state.dateGroupedEntries[dateGroupId].groupedEntries,
-        gId
+        gId,
+        {
+          name: "tags",
+          tags: tags,
+        }
       );
-      updateAllTEGroupDateInGE(groupedEntry, {
-        name: "tags",
-        tags: tags,
-      });
     },
     updateTEProjectId: (state, action) => {
       const { dateGroupId, gId, id, projectId } = action.payload;

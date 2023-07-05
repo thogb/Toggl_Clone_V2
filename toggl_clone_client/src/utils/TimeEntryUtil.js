@@ -208,7 +208,8 @@ export const updateTimeEntryDateInfo = (
   }
 };
 
-export const updateAllTEGroupDateInGE = (groupedEntry, data) => {
+export const updateAllTEGroupDateInGE = (groupedEntries, gId, data) => {
+  const groupedEntry = findGroupedEntryByGId(groupedEntries, gId);
   const name = data.name;
   const entries = groupedEntry.entries;
 
@@ -231,6 +232,22 @@ export const updateAllTEGroupDateInGE = (groupedEntry, data) => {
       groupedEntry.tags = newTags;
       entries.forEach((timeEntry) => (timeEntry.tags = [...newTags]));
     }
+  }
+
+  // Check if there is already a group with the same grouping data as the new one
+  const sameGroupingDataGEs = groupedEntries.filter(
+    (ge) => ge.gId !== groupedEntry.gId && isGroupEntryEqual(ge, groupedEntry)
+  );
+
+  if (sameGroupingDataGEs.length > 0) {
+    const otherGroupedEntry = sameGroupingDataGEs[0];
+    removeGroupedEntry(groupedEntries, otherGroupedEntry.gId);
+    groupedEntry.entries = [
+      ...otherGroupedEntry.entries,
+      ...groupedEntry.entries,
+    ];
+    refreshGroupedEntry(groupedEntry);
+    sortGroupedEntriesByDateInfo(groupedEntries);
   }
 };
 
