@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import {} from "../utils/TTDateUtil";
 import {
   GroupedEntrySingleton,
+  addTEtoDGEList,
   createDateGroupId,
   deleteGEFromDateGroupEntry,
   deleteTEFromGroupedEntry,
@@ -261,6 +262,11 @@ export const groupedEntryListSlice = createSlice({
       const { dateGroupId, idList } = action.payload;
       removeBatchTEFromDGE(state.dateGroupedEntries, dateGroupId, idList);
     },
+
+    addTE: (state, action) => {
+      const { timeEntry } = action.payload;
+      addTEtoDGEList(state.dateGroupedEntries, timeEntry);
+    },
   },
 });
 
@@ -283,5 +289,7 @@ export const {
   deleteBatchTE,
 
   deleteDGE,
+
+  addTE,
 } = groupedEntryListSlice.actions;
 export default groupedEntryListSlice.reducer;

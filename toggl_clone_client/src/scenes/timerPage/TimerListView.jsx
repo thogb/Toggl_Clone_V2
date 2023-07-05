@@ -23,9 +23,7 @@ const TimerListView = () => {
   }, [dateGroupEntries]);
 
   const getTotalDurationToday = () => {
-    return (
-      getTotalDurationOfADay(dateGroupEntries, Date.now()) + currentDuration
-    );
+    return getTotalDurationOfADay(dateGroupEntries, Date.now());
   };
 
   const getTotalDurationThisWeek = () => {
@@ -39,9 +37,11 @@ const TimerListView = () => {
     return totalDuration;
   };
 
-  const formattedTotalDurationThisWeek = useMemo(() => {
-    // console.log(getTotalDurationThisWeek());
-    return formatSecondHMMSS(getTotalDurationThisWeek());
+  const durations = useMemo(() => {
+    return {
+      today: getTotalDurationToday(),
+      thisWeek: getTotalDurationThisWeek(),
+    };
   }, [dateGroupEntries]);
 
   return (
@@ -50,12 +50,12 @@ const TimerListView = () => {
         <Stack direction={"row"} gap={4} alignItems={"center"} mx={4}>
           <ToolBarLinkButton
             title={"Today"}
-            content={formatSecondHMMSS(getTotalDurationToday())}
+            content={formatSecondHMMSS(durations.today + currentDuration)}
             to={"/testing"}
           />
           <ToolBarLinkButton
             title={"Week"}
-            content={formattedTotalDurationThisWeek}
+            content={formatSecondHMMSS(durations.thisWeek + currentDuration)}
             to={"/theme"}
           />
         </Stack>

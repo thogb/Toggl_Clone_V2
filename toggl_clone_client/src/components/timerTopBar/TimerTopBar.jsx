@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import CircularStartButton from "../circularStartButton/CircularStartButton";
 import {
   AppBar,
@@ -31,11 +31,13 @@ import {
   setTagsChecked,
   startTimer,
   toggleTimerStarted,
+  updateDescription,
 } from "../../state/currentEntrySlice";
 import { getDiffInSeconds } from "../../utils/TTDateUtil";
 import { TTMenu } from "../ttMenu/TTMenu";
 import { TTMenuItem } from "../ttMenu/TTMenuItem";
 import TTTimeTextField from "../ttTimeTextField/TTTimeTextField";
+import { addTE } from "../../state/groupedEntryListSlice";
 
 const timerStates = Object.freeze({
   STARTED: "STARTED",
@@ -46,6 +48,7 @@ const timerStates = Object.freeze({
 
 const TimerTopBar = () => {
   const dispatch = useDispatch();
+  const description = useSelector((state) => state.currentEntry.description);
   const duration = useSelector((state) => state.currentEntry.duration);
   const startDate = useSelector((state) => state.currentEntry.startDate);
   const stopDate = useSelector((state) => state.currentEntry.stopDate);
@@ -115,14 +118,28 @@ const TimerTopBar = () => {
     ? timerStates.IDLE
     : timerStates.CHECK;
 
+  useEffect(() => {
+    desciptionInput.current.value = description;
+  }, [description]);
+
   const handleTimerButtonClick = () => {
-    console.log(timerState);
-    console.log(isTimerStarted);
     switch (timerState) {
       case timerStates.MANUAL:
         return;
       case timerStates.STARTED:
-        console.log(" end timer");
+        dispatch(
+          addTE({
+            timeEntry: {
+              id: Date.now(), // to be retrieved from api
+              description: desciptionInput.current.value.trim(),
+              projectId: null,
+              tags: tagCheckedList,
+              duration: duration,
+              startDate: startDate,
+              stopDate: stopDate,
+            },
+          })
+        );
         dispatch(endTimer());
         return;
       case timerStates.IDLE:
@@ -139,20 +156,8 @@ const TimerTopBar = () => {
     }
   };
 
-  const toggleLocalTimerStarted = () => {
-    if (isTimerMode) {
-      // dispatch(setTimerStarted({ timerStarted: !isTimerStarted }));
-      dispatch(toggleTimerStarted());
-      if (isTimerStarted) {
-        dispatch(endTimer());
-      } else {
-        const timerInterval = setInterval(() => {
-          dispatch(incrementDuration());
-        }, 1000);
-        dispatch(startTimer({ timerInterval: timerInterval }));
-        desciptionInput.current.focus();
-      }
-    }
+  const handleDescriptionBlur = (e) => {
+    dispatch(updateDescription({ description: e.target.value }));
   };
 
   const handleTimeModeChange = () => {
@@ -230,6 +235,7 @@ const TimerTopBar = () => {
       <Toolbar disableGutters>
         <InputBase
           inputRef={desciptionInput}
+          onBlur={handleDescriptionBlur}
           placeholder={
             isTimerStarted
               ? "(no description)"

@@ -134,7 +134,7 @@ const TimeEntryItemRecord = ({
   const hasTags = tagsChecked.length > 0;
   const commonTextColor = alpha(theme.palette.primary.main, 0.7);
 
-  console.log("End time: " + Date.now());
+  // console.log("End time: " + Date.now());
 
   return (
     <StyledTimeEntryItemBase

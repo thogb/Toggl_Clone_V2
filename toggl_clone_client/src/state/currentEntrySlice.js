@@ -90,6 +90,10 @@ export const currentEntrySlice = createSlice({
   name: "currentEntry",
   initialState: testState,
   reducers: {
+    updateDescription: (state, action) => {
+      const { description } = action.payload;
+      state.description = description.trim();
+    },
     updateDuration: (state, action) => {
       const { duration, staticStop = true } = action.payload;
       state.duration = duration;
@@ -151,13 +155,8 @@ export const currentEntrySlice = createSlice({
       clearInterval(state.timerInterval);
       state.stopDate = addSeconds(state.startDate, state.duration).getTime();
 
-      // Maybe perform some stuff
-
       // Reset
-      // state = { ...getInitialCurrentEntryState() };
       Object.assign(state, getInitialCurrentEntryState());
-      console.log(state);
-      // return getInitialCurrentEntryState();
     },
     toggleTimerStarted: (state, action) => {
       if (!state.timerStarted) {
@@ -169,6 +168,7 @@ export const currentEntrySlice = createSlice({
 });
 
 export const {
+  updateDescription,
   updateDuration,
   updateStartTime,
   updateStopTime,

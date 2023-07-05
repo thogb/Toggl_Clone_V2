@@ -349,7 +349,7 @@ export const sortGroupedEntriesByStartDate = (groupedEntries) => {
   groupedEntries.sort((a, b) => compareDesc(a.startDate, b.startDate));
 };
 
-// #dateGroupEntries
+// #dateGroupedEntries
 export const addGEtoDGEList = (dateGroupEntries, groupedEntry) => {
   console.log("start Date = ");
   console.log(groupedEntry.startDate);
@@ -362,6 +362,20 @@ export const addGEtoDGEList = (dateGroupEntries, groupedEntry) => {
     );
   } else {
     addGEtoDGE(dateGroupEntries, dateGroupedEntry, groupedEntry);
+  }
+};
+
+export const addTEtoDGEList = (dateGroupEntries, timeEntry) => {
+  const dateGroupId = createDateGroupId(timeEntry.startDate);
+  const dateGroupedEntry = dateGroupEntries[dateGroupId];
+  if (dateGroupedEntry === undefined) {
+    dateGroupEntries[dateGroupId] = createNewDGEFromGE(
+      createNewGroupedEntry(timeEntry),
+      timeEntry.startDate
+    );
+  } else {
+    // addGEtoDGE(dateGroupEntries, dateGroupedEntry, groupedEntry);
+    addTEtoDGE(dateGroupedEntry, timeEntry);
   }
 };
 
@@ -399,9 +413,34 @@ export const addGEtoDGE = (
   dateGroupedEntry,
   groupedEntry
 ) => {
-  console.log(dateGroupedEntry.dateGroupId);
-  dateGroupedEntry.groupedEntries.push(groupedEntry);
+  const otherGroupedEntry = findGroupedEntryByGroupData(
+    dateGroupedEntry.groupedEntries,
+    groupedEntry
+  );
+  if (otherGroupedEntry === undefined) {
+    dateGroupedEntry.groupedEntries.push(groupedEntry);
+  } else {
+    otherGroupedEntry.entries = [
+      ...otherGroupedEntry.entries,
+      ...groupedEntry.entries,
+    ];
+    refreshGroupedEntry(otherGroupedEntry);
+  }
   refreshDateGroupedEntry(dateGroupEntries, dateGroupedEntry.dateGroupId);
+};
+
+export const addTEtoDGE = (dateGroupedEntry, timeEntry) => {
+  const groupedEntry = findGroupedEntryByTE(
+    dateGroupedEntry.groupedEntries,
+    timeEntry
+  );
+  moveTEToGroupedEntry(
+    dateGroupedEntry.groupedEntries,
+    groupedEntry,
+    timeEntry
+  );
+  dateGroupedEntry.totalDuration = calcTotalDurationofDGE(dateGroupedEntry);
+  sortGroupedEntriesByDateInfo(dateGroupedEntry.groupedEntries);
 };
 
 export const createNewDGEFromGE = (groupedEntry, date) => {
@@ -522,10 +561,12 @@ export const removeBatchStructuredTEFromDGE = (
   });
 
   // Delete if dateGroupEntry is empty else refresh the dateGroupEntry and sort
-  if (dateGroupedEntries[dateGroupId].groupedEntries.length === 0) {
-    delete dateGroupedEntries[dateGroupId];
-  } else {
-    refreshDateGroupedEntry(dateGroupedEntries, dateGroupId, true);
+  if (dateGroupedEntries[dateGroupId] !== undefined) {
+    if (dateGroupedEntries[dateGroupId].groupedEntries.length === 0) {
+      delete dateGroupedEntries[dateGroupId];
+    } else {
+      refreshDateGroupedEntry(dateGroupedEntries, dateGroupId, true);
+    }
   }
 
   console.log(deletedTEList);
@@ -624,5 +665,11 @@ export const findGroupedEntryAndTimeEntry = (groupedEntries, gId, id) => {
 export const findGroupedEntryByTE = (groupedEntries, timeEntry) => {
   return groupedEntries.find((groupedEntry) =>
     isGroupEntryEqual(groupedEntry, timeEntry)
+  );
+};
+
+export const findGroupedEntryByGroupData = (groupedEntries, groupData) => {
+  return groupedEntries.find((groupedEntry) =>
+    isGroupEntryEqual(groupedEntry, groupData)
   );
 };
