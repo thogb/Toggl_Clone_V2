@@ -159,7 +159,21 @@ export const currentEntrySlice = createSlice({
           description: "",
           projectId: null,
           projectName: null,
-          // tags: [],
+          tagsChecked: [],
+          duration: 0,
+          startDate: Date.now(),
+          stopDate: Date.now(),
+          timerStarted: false,
+        },
+      };
+    },
+    resetCurrentEntryInfo: (state) => {
+      return {
+        ...state,
+        ...{
+          description: "",
+          projectId: null,
+          projectName: null,
           tagsChecked: [],
           duration: 0,
           startDate: Date.now(),
@@ -190,6 +204,7 @@ export const {
   incrementDuration,
   startTimer,
   endTimer,
+  resetCurrentEntryInfo,
   setDateInfo,
 } = currentEntrySlice.actions;
 export default currentEntrySlice.reducer;

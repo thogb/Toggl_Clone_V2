@@ -26,11 +26,11 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   endTimer,
   incrementDuration,
+  resetCurrentEntryInfo,
   resetDateInfo,
   setDateInfo,
   setTagsChecked,
   startTimer,
-  toggleTimerStarted,
   updateDescription,
 } from "../../state/currentEntrySlice";
 import { getDiffInSeconds } from "../../utils/TTDateUtil";
@@ -68,22 +68,6 @@ const TimerTopBar = () => {
 
   const mw620 = useMediaQuery("(min-width:620px)");
   const theme = useTheme();
-
-  // const [tagList, setTagList] = useState([
-  //   "C#",
-  //   "Java",
-  //   "net core",
-  //   "py",
-  //   "py1",
-  //   "py2",
-  //   "py3",
-  //   "py4",
-  //   "py5",
-  //   "py6",
-  //   "py7sssssssssssssssssssssssssa",
-  // ]);
-
-  // const [tagCheckedList, setTagCheckedList] = useState(["Java", "net core"]);
 
   const timerOptionStyle = {
     shadow: {
@@ -123,26 +107,20 @@ const TimerTopBar = () => {
     desciptionInput.current.value = description;
   }, [description]);
 
+  const getCurrentTimeEntry = () => {
+    return {
+      id: Date.now(), // to be retrieved from api
+      description: desciptionInput.current.value.trim(),
+      projectId: null,
+      tags: tagCheckedList,
+      duration: duration,
+      startDate: startDate,
+      stopDate: addSeconds(startDate, duration).getTime(),
+    };
+  };
+
   const handleTimerButtonClick = () => {
     switch (timerState) {
-      case timerStates.MANUAL:
-        return;
-      case timerStates.STARTED:
-        dispatch(
-          addTE({
-            timeEntry: {
-              id: Date.now(), // to be retrieved from api
-              description: desciptionInput.current.value.trim(),
-              projectId: null,
-              tags: tagCheckedList,
-              duration: duration,
-              startDate: startDate,
-              stopDate: addSeconds(startDate, duration).getTime(),
-            },
-          })
-        );
-        dispatch(endTimer());
-        return;
       case timerStates.IDLE:
         const timerInterval = setInterval(() => {
           dispatch(incrementDuration());
@@ -150,7 +128,22 @@ const TimerTopBar = () => {
         dispatch(startTimer({ timerInterval: timerInterval }));
         desciptionInput.current.focus();
         return;
+      case timerStates.STARTED:
+        dispatch(
+          addTE({
+            timeEntry: getCurrentTimeEntry(),
+          })
+        );
+        dispatch(endTimer());
+        return;
+      case timerStates.MANUAL:
       case timerStates.CHECK:
+        dispatch(
+          addTE({
+            timeEntry: getCurrentTimeEntry(),
+          })
+        );
+        dispatch(resetCurrentEntryInfo());
         return;
       default:
         return;
