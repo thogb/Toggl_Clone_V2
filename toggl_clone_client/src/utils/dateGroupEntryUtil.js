@@ -44,9 +44,12 @@ const updateTEGroupingData = (dateGroupedEntry, gId, id, groupingData) => {
     gId
   );
 
+  console.log(groupingData);
+
   if (!groupedEntry) return;
 
   const timeEntry = geUtil.findTimeEntryById(groupedEntry.entries, id);
+  console.log({ ...timeEntry });
 
   geUtil.updateTEWithGroupingData(timeEntry, groupingData);
 
@@ -55,6 +58,9 @@ const updateTEGroupingData = (dateGroupedEntry, gId, id, groupingData) => {
     dateGroupedEntry.groupedEntries,
     timeEntry
   );
+
+  console.log(newGroupedEntry);
+  console.log(groupedEntry === newGroupedEntry);
 
   // If same groupEntry then it means that there are no actual changes
   if (groupedEntry === newGroupedEntry) return;

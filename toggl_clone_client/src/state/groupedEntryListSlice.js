@@ -7,6 +7,8 @@ import {
   groupedEntryUtil,
 } from "../utils/groupedEntryUtil";
 import { dateGroupEntryUtil } from "../utils/dateGroupEntryUtil";
+import { validateSections } from "@mui/x-date-pickers/internals/hooks/useField/useField.utils";
+import { validateDateTime } from "@mui/x-date-pickers/internals";
 
 const exampleState = {
   dateGroupedEntries: {
@@ -92,6 +94,7 @@ export const generateDateGroupedEntries = (timeEntries) => {
           {
             gId: GroupedEntrySingleton.getNextGroupId(),
             description: timeEntry.description,
+            projectId: timeEntry.projectId,
             tags: timeEntry.tags,
             startDate: timeEntry.startDate,
             stopDate: timeEntry.stopDate,
@@ -104,9 +107,9 @@ export const generateDateGroupedEntries = (timeEntries) => {
     } else {
       const dateGroup = grouped[dateGroupId];
 
-      const descTagGroup = dateGroup.groupedEntries.find((v) =>
-        groupedEntryUtil.isEqualByGroupingData(v, timeEntry)
-      );
+      const descTagGroup = dateGroup.groupedEntries.find((v) => {
+        return groupedEntryUtil.isEqualByGroupingData(v, timeEntry);
+      });
 
       // Desc tag group not found
       if (descTagGroup === undefined) {
@@ -123,12 +126,13 @@ export const generateDateGroupedEntries = (timeEntries) => {
         });
       } else {
         let entries = descTagGroup.entries;
-        if (entries === undefined) {
-          descTagGroup.entries = [timeEntry, descTagGroup.entry];
-          delete descTagGroup.entry;
-        } else {
-          entries.push(timeEntry);
-        }
+        // if (entries === undefined) {
+        //   descTagGroup.entries = [timeEntry, descTagGroup.entry];
+        //   delete descTagGroup.entry;
+        // } else {
+        //   entries.push(timeEntry);
+        // }
+        entries.push(timeEntry);
         // Update desc tag group data
         if (timeEntry.startDate < descTagGroup.startDate) {
           descTagGroup.startDate = timeEntry.startDate;
