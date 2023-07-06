@@ -3,10 +3,10 @@ import React, { useMemo } from "react";
 import TimerPageToolBar from "./TimerPageToolBar";
 import ToolBarLinkButton from "./ToolBarLinkButton";
 import { useSelector } from "react-redux";
-import { compareDesc, startOfWeek } from "date-fns";
+import { compareDesc } from "date-fns";
 import TimeEntrySection from "../../components/timeEntrySection/TimeEntrySection";
-import { getTotalDurationOfADay } from "../../utils/TimeEntryUtil";
 import { formatSecondHMMSS } from "../../utils/TTDateUtil";
+import { groupedEntryListSliceUtil } from "../../utils/groupedEntryListSliceUtil";
 
 const dateFormat = "EEE, dd MMM";
 
@@ -23,18 +23,17 @@ const TimerListView = () => {
   }, [dateGroupEntries]);
 
   const getTotalDurationToday = () => {
-    return getTotalDurationOfADay(dateGroupEntries, Date.now());
+    return groupedEntryListSliceUtil.getTotalDurationOfADay(
+      dateGroupEntries,
+      Date.now()
+    );
   };
 
   const getTotalDurationThisWeek = () => {
-    const startDate = startOfWeek(Date.now(), { weekStartsOn: 1 });
-    let totalDuration = 0;
-    for (let i = 0; i < 7; i++) {
-      totalDuration += getTotalDurationOfADay(dateGroupEntries, startDate);
-      startDate.setDate(startDate.getDate() + 1);
-    }
-
-    return totalDuration;
+    return groupedEntryListSliceUtil.getTotalDurationOfAWeek(
+      dateGroupEntries,
+      Date.now()
+    );
   };
 
   const durations = useMemo(() => {

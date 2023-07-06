@@ -1,22 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {} from "../utils/TTDateUtil";
+import { compareDesc } from "date-fns";
+import { groupedEntryListSliceUtil as gelsUtil } from "../utils/groupedEntryListSliceUtil";
 import {
   GroupedEntrySingleton,
-  addTEtoDGEList,
-  createDateGroupId,
-  deleteGEFromDateGroupEntry,
-  deleteTEFromGroupedEntry,
-  editBatchTE,
-  findGroupedEntryByGId,
-  isGroupEntryEqual,
-  removeBatchTEFromDGE,
-  removeBatchTEFromGE,
-  removeDateGroupedEntry,
-  updateAllTEGroupDateInGE,
-  updateTEGroupData,
-  updateTimeEntryDateInfo,
-} from "../utils/TimeEntryUtil";
-import { compareDesc } from "date-fns";
+  groupedEntryUtil,
+} from "../utils/groupedEntryUtil";
+import { dateGroupEntryUtil } from "../utils/dateGroupEntryUtil";
 
 const exampleState = {
   dateGroupedEntries: {
@@ -86,7 +76,9 @@ const initialState = {
 export const generateDateGroupedEntries = (timeEntries) => {
   const grouped = {};
   timeEntries.timeEntries.forEach((timeEntry) => {
-    const dateGroupId = createDateGroupId(timeEntry.startDate);
+    const dateGroupId = dateGroupEntryUtil.createDateGroupId(
+      timeEntry.startDate
+    );
     timeEntry.tags.sort();
 
     // Date group not created
@@ -113,7 +105,7 @@ export const generateDateGroupedEntries = (timeEntries) => {
       const dateGroup = grouped[dateGroupId];
 
       const descTagGroup = dateGroup.groupedEntries.find((v) =>
-        isGroupEntryEqual(v, timeEntry)
+        groupedEntryUtil.isEqualByGroupingData(v, timeEntry)
       );
 
       // Desc tag group not found
@@ -174,98 +166,60 @@ export const groupedEntryListSlice = createSlice({
     },
     updateTEDescription: (state, action) => {
       const { dateGroupId, gId, id, description } = action.payload;
-
-      updateTEGroupData(state.dateGroupedEntries, dateGroupId, gId, id, {
-        name: "description",
-        description: description,
+      gelsUtil.updateTEGroupingData(state, dateGroupId, gId, id, {
+        description,
       });
     },
     updateGEDescription: (state, action) => {
       const { dateGroupId, gId, description } = action.payload;
-      updateAllTEGroupDateInGE(
-        state.dateGroupedEntries[dateGroupId].groupedEntries,
-        gId,
-        {
-          name: "description",
-          description: description,
-        }
-      );
+      gelsUtil.updateGroupingDataInGE(state, dateGroupId, gId, { description });
     },
     updateTETags: (state, action) => {
       const { dateGroupId, gId, id, tags } = action.payload;
-      updateTEGroupData(state.dateGroupedEntries, dateGroupId, gId, id, {
-        name: "tags",
-        tags: tags,
-      });
+      gelsUtil.updateTEGroupingData(state, dateGroupId, gId, id, { tags });
     },
     updateGETags: (state, action) => {
       const { dateGroupId, gId, tags } = action.payload;
-      updateAllTEGroupDateInGE(
-        state.dateGroupedEntries[dateGroupId].groupedEntries,
-        gId,
-        {
-          name: "tags",
-          tags: tags,
-        }
-      );
+      gelsUtil.updateGroupingDataInGE(state, dateGroupId, gId, { tags });
     },
     updateTEProjectId: (state, action) => {
       const { dateGroupId, gId, id, projectId } = action.payload;
-      updateTEGroupData(state.dateGroupedEntries, dateGroupId, gId, id, {
-        name: "projectId",
-        projectId: projectId,
-      });
+      gelsUtil.updateTEGroupingData(state, dateGroupId, gId, id, { projectId });
     },
     updateGEProjectId: (state, action) => {
       const { dateGroupId, gId, projectId } = action.payload;
-      const groupedEntry = findGroupedEntryByGId(
-        state.dateGroupedEntries[dateGroupId].groupedEntries,
-        gId
-      );
-      updateAllTEGroupDateInGE(groupedEntry, {
-        name: "projectId",
-        projectId: projectId,
-      });
+      gelsUtil.updateGroupingDataInGE(state, dateGroupId, gId, { projectId });
     },
     updateTEDateInfo: (state, action) => {
       const { dateGroupId, gId, id, dateInfo } = action.payload;
-      updateTimeEntryDateInfo(
-        state.dateGroupedEntries,
-        dateGroupId,
-        gId,
-        id,
-        dateInfo
-      );
+      gelsUtil.updateTEDateInfo(state, dateGroupId, gId, id, dateInfo);
     },
     updateBatchTE: (state, action) => {
       const { dateGroupId, idList, editData } = action.payload;
-      editBatchTE(state.dateGroupedEntries, dateGroupId, idList, editData);
+      gelsUtil.updateBatchTEInDGE(state, dateGroupId, idList, editData);
     },
 
     deleteTE: (state, action) => {
       const { dateGroupId, gId, id } = action.payload;
-      removeBatchTEFromGE(state.dateGroupedEntries, dateGroupId, gId, [id]);
+      gelsUtil.removeBatchTimeEntryFromGE(state, dateGroupId, gId, [id]);
     },
     deleteGE: (state, action) => {
-      // Delete group entry from the dateGroup with id = dategroupId
       const { dateGroupId, gId } = action.payload;
-      removeBatchTEFromGE(state.dateGroupedEntries, dateGroupId, gId, []);
+      gelsUtil.removeBatchTimeEntryFromGE(state, dateGroupId, gId, []);
     },
 
     deleteDGE: (state, action) => {
-      // extract dateGroupId
       const { dateGroupId } = action.payload;
-      // delete dateGroupEntry with dateGroupId
-      removeDateGroupedEntry(state.dateGroupedEntries, dateGroupId);
+      gelsUtil.removeDateGroupedEntry(state, dateGroupId);
     },
     deleteBatchTE: (state, action) => {
       const { dateGroupId, idList } = action.payload;
-      removeBatchTEFromDGE(state.dateGroupedEntries, dateGroupId, idList);
+      gelsUtil.removeBatchTimeEntryFromDGE(state, dateGroupId, idList);
     },
 
     addTE: (state, action) => {
       const { timeEntry } = action.payload;
-      addTEtoDGEList(state.dateGroupedEntries, timeEntry);
+      gelsUtil.addTimeEntry(state, timeEntry);
     },
   },
 });

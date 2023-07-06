@@ -122,7 +122,10 @@ const TimeEntryHeader = ({
       updateBatchTE({
         dateGroupId,
         idList: timeEntryChecked.checkedList,
-        editData,
+        editData: {
+          ...editData,
+          startDate: new Date(editData.startDate).getTime(),
+        },
       })
     );
   };
