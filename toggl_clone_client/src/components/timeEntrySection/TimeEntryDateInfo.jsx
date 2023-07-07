@@ -41,7 +41,7 @@ const TimeEntryDateInfo = ({
       alignItems={"center"}
       justifyContent={"end"}
       fontSize={"body2.fontSize"}
-      width={"28ch"}
+      width={"27ch"}
     >
       <SubButton
         className="TimeEntryDateBtn"
