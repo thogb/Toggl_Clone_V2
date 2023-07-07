@@ -8,6 +8,8 @@ import {
   updateTEDescription,
   updateTETags,
 } from "../../state/groupedEntryListSlice";
+import { startTimer } from "../../state/currentEntrySlice";
+import { timeEntryUtil } from "../../utils/timeEntryUtil";
 
 export const itemMenuData = {
   DUPLICATE: {
@@ -94,6 +96,13 @@ const TimeEntryItem = ({
     });
   };
 
+  const onStartButtonClick = async () => {
+    // dispatch(startTimer({entryData:}));
+    dispatch(
+      startTimer({ entryData: timeEntryUtil.cloneTimeEntry(timeEntry) })
+    );
+  };
+
   const onMenuClick = (option) => {
     switch (option.name) {
       case itemMenuData.DUPLICATE.name:
@@ -147,6 +156,7 @@ const TimeEntryItem = ({
         onDateInfoChange,
         onDeleteClick,
         onMenuClick,
+        onStartButtonClick,
       }}
     />
   );

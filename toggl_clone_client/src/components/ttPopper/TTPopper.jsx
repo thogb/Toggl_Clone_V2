@@ -66,7 +66,7 @@ const TTPopper = ({
         placement={placement ?? "bottom-start"}
         modifiers={[{ name: "offset", options: { offset: offset ?? [0, 8] } }]}
         style={{
-          zIndex: theme.zIndex.modal + 2,
+          zIndex: theme.zIndex.popper + 2,
           ...(sameWidthAsTrigger ? { width: "100%" } : {}),
           ...style,
         }}
@@ -85,7 +85,7 @@ const TTPopper = ({
         </StyledPaper>
       </Popper>
       <Backdrop
-        style={{ backgroundColor: "transparent", zIndex: theme.zIndex.modal }}
+        style={{ backgroundColor: "transparent", zIndex: theme.zIndex.popper }}
         open={openPopper}
         onClick={() => onClose()}
       ></Backdrop>
@@ -112,7 +112,7 @@ const TTPopper = ({
           }
           style={
             triggerTouchable && Boolean(anchorEl)
-              ? { zIndex: theme.zIndex.modal + 100, position: "relative" }
+              ? { zIndex: theme.zIndex.popper + 3, position: "relative" }
               : {}
           }
         >

@@ -31,16 +31,16 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <div className="app">
-        <div className="mainContent">
-          <Routes>
-            <Route path="/" element={<NavBar />}>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/timer" element={<TimerPage />} />
-              <Route path="/theme" element={<ThemePage />} />
-              <Route path="/testing" element={<TestingPage />} />
-            </Route>
-          </Routes>
-        </div>
+        {/* <div className="mainContent"> */}
+        <Routes>
+          <Route path="/" element={<NavBar />}>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/timer" element={<TimerPage />} />
+            <Route path="/theme" element={<ThemePage />} />
+            <Route path="/testing" element={<TestingPage />} />
+          </Route>
+        </Routes>
+        {/* </div> */}
       </div>
     </ThemeProvider>
   );

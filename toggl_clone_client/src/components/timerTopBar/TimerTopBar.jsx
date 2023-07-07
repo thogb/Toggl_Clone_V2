@@ -25,7 +25,6 @@ import TagsSelector from "../../scenes/timerPage/TagsSelector";
 import { useDispatch, useSelector } from "react-redux";
 import {
   endTimer,
-  incrementDuration,
   resetCurrentEntryInfo,
   resetDateInfo,
   setDateInfo,
@@ -122,18 +121,20 @@ const TimerTopBar = () => {
   const handleTimerButtonClick = () => {
     switch (timerState) {
       case timerStates.IDLE:
-        const timerInterval = setInterval(() => {
-          dispatch(incrementDuration());
-        }, 1000);
-        dispatch(startTimer({ timerInterval: timerInterval }));
+        // const timerInterval = setInterval(() => {
+        //   dispatch(incrementDuration());
+        // }, 1000);
+        // dispatch(startTimer({ timerInterval: timerInterval }));
+        console.log("idle");
+        dispatch(startTimer({}));
         desciptionInput.current.focus();
         return;
       case timerStates.STARTED:
-        dispatch(
-          addTE({
-            timeEntry: getCurrentTimeEntry(),
-          })
-        );
+        // dispatch(
+        //   addTE({
+        //     timeEntry: getCurrentTimeEntry(),
+        //   })
+        // );
         dispatch(endTimer());
         return;
       case timerStates.MANUAL:
@@ -221,8 +222,6 @@ const TimerTopBar = () => {
         return <CheckIcon style={{ fontSize: "30px" }} />;
     }
   };
-
-  console.log("top bar render");
 
   return (
     <AppBar position="sticky" sx={{ height: APPBAR_HEIGHT }} color="background">

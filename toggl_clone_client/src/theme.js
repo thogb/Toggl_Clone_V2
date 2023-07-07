@@ -46,6 +46,9 @@ export const themeSettings = (mode) => {
     shape: {
       borderRadius: 8,
     },
+    zIndex: {
+      popper: 1050,
+    },
     components: {
       MuiBackdrop: {
         styleOverrides: {

@@ -44,17 +44,15 @@ const TimerPage = () => {
   console.log("Start time: " + Date.now());
 
   return (
-    <ThemeProvider theme={newTheme}>
-      <Box overflow={"hidden"}>
-        <PageContainer minWidth={"720px"}>
-          {/* top bar */}
-          <TimerTopBar />
-          {/* views */}
-          <Box pt={theme.spacing(2)}>{/* tool bar */}</Box>
-          {viewType === "LIST" && <TimerListView />}
-        </PageContainer>
-      </Box>
-    </ThemeProvider>
+    <PageContainer minWidth={"720px"}>
+      <ThemeProvider theme={newTheme}>
+        {/* top bar */}
+        <TimerTopBar />
+        {/* views */}
+        <Box pt={2}>{/* tool bar */}</Box>
+        {viewType === "LIST" && <TimerListView />}
+      </ThemeProvider>
+    </PageContainer>
   );
 };
 

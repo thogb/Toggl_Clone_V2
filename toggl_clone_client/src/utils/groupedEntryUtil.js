@@ -67,7 +67,7 @@ const updateObjWithGroupingData = (obj, groupingData) => {
     obj.description = groupingData.description;
   }
 
-  if (!groupingData.projectId !== undefined) {
+  if (groupingData.projectId !== undefined) {
     obj.projectId = groupingData.projectId;
   }
 
@@ -178,6 +178,14 @@ const mergeWithGroupedEntry = (groupedEntry, otherGroupedEntry) => {
   refresh(groupedEntry);
 };
 
+const getEntryData = (groupedEntry) => {
+  return {
+    description: groupedEntry.description,
+    projectId: groupedEntry.projectId,
+    tags: [...groupedEntry.tags],
+  };
+};
+
 export const GroupedEntrySingleton = {
   groupCount: 0,
   getNextGroupId: () => {
@@ -205,4 +213,5 @@ export const groupedEntryUtil = {
 
   refresh,
   mergeWithGroupedEntry,
+  getEntryData,
 };

@@ -128,6 +128,9 @@ const TimeEntryHeader = ({
         },
       })
     );
+    timeEntryCheckedDispatch({
+      type: timeEntryCheckedActions.TOGGLE_AND_RESET_CHECKED_LIST,
+    });
   };
 
   const nSelected = timeEntryChecked.checkedList.length;

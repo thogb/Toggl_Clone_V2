@@ -254,7 +254,11 @@ const NavBar = () => {
   );
 
   return (
-    <Box>
+    <Box
+    // height={"100%"}
+    // minHeight={"100%"}
+    // overflow={"hidden"}
+    >
       {/* Drawer */}
       {belowMd && (
         <Drawer
@@ -285,41 +289,24 @@ const NavBar = () => {
       >
         {drawer}
       </Drawer>
-      {/* {belowMd ? (
-        <Drawer
-          variant="temporary"
-          open={isMDrawerOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{ keepMounted: true }}
-          sx={{
-            "& .MuiDrawer-paper": {
-              boxSizing: "border-box",
-              width: { xs: drawerWidth * 1.5, md: drawerWidth },
-            },
-          }}
-        >
-          {drawer}
-        </Drawer>
-      ) : (
-        <Drawer
-          variant="permanent"
-          sx={{
-            "& .MuiDrawer-paper": {
-              boxSizing: "border-box",
-              width: { xs: 0, md: drawerWidth },
-              transition: "all 0.2s linear",
-              borderRight: "none",
-            },
-          }}
-        >
-          {drawer}
-        </Drawer>
-      )} */}
 
       {/* Main Page */}
-      <Box pl={{ xs: "0", md: `${drawerWidth}px` }}>
+      <Box
+        pl={{ xs: "0", md: `${drawerWidth}px` }}
+        pt={{ xs: `${appbarHeight}px`, md: "0px" }}
+        sx={{
+          // minHeight: "100vh",
+          // height: "100%",
+          position: "relative",
+          [theme.breakpoints.down("md")]: {
+            "&>:nth-of-type(n+1) header:first-of-type": {
+              top: `${appbarHeight}px`,
+            },
+          },
+        }}
+      >
         {/* Topbar */}
-        <AppBar position="sticky" sx={{ display: { xs: "block", md: "none" } }}>
+        <AppBar position="fixed" sx={{ display: { xs: "block", md: "none" } }}>
           <Toolbar sx={{ height: `${appbarHeight}px` }}>
             <IconButton
               sx={{ color: "white", mr: (theme) => theme.spacing(1) }}
@@ -340,6 +327,7 @@ const NavBar = () => {
             </Typography>
           </Toolbar>
         </AppBar>
+
         {/* main content */}
         <Outlet />
       </Box>

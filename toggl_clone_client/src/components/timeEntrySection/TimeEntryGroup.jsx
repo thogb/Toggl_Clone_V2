@@ -9,6 +9,8 @@ import {
   updateGEProjectId,
   updateGETags,
 } from "../../state/groupedEntryListSlice";
+import { startTimer } from "../../state/currentEntrySlice";
+import { groupedEntryUtil } from "../../utils/groupedEntryUtil";
 
 const groupMenuData = {
   PIN_AS_FAVORITE: itemMenuData.PIN_AS_FAVORITE,
@@ -101,6 +103,12 @@ const TimeEntryGroup = ({
     });
   };
 
+  const onStartButtonClick = (e) => {
+    dispatch(
+      startTimer({ entryData: groupedEntryUtil.getEntryData(groupedEntry) })
+    );
+  };
+
   const onExpandButonClick = (e) => {
     setIsExpanded((isExpanded) => !isExpanded);
   };
@@ -163,6 +171,7 @@ const TimeEntryGroup = ({
           onDeleteClick,
           onExpandButonClick,
           onMenuClick,
+          onStartButtonClick,
         }}
       />
       {isExpanded &&

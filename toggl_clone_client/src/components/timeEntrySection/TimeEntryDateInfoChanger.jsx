@@ -78,6 +78,7 @@ const TimeEntryDateInfoChanger = ({
       staticStop={false}
       fadeTimeOut={0}
       popperOffsety={10}
+      resetDatesOnZeroDuration={false}
       onPopperOpen={handlePopperOpen}
       onPopperClose={handlePopperClose}
       onDateInfoChange={handleDateInfoChange}

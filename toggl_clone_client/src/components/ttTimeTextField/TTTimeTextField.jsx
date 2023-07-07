@@ -17,7 +17,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     color: theme.palette.text.primary,
   },
   "&.TTTimeTextField-withPopOver": {
-    zIndex: theme.zIndex.modal + 1,
+    zIndex: theme.zIndex.popper + 1,
   },
   "& > input": {
     textAlign: "center",

@@ -1,5 +1,6 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { addDays, addSeconds, subDays } from "date-fns";
+import { addTE, addTimeEntry } from "./groupedEntryListSlice";
 
 const initialState = {
   description: "",
@@ -86,8 +87,27 @@ export const getInitialCurrentEntryState = () => {
   };
 };
 
+const name = "currentEntry";
+const getIntialEntryData = () => {
+  return {
+    description: "",
+    projectId: null,
+    projectName: null,
+    tagsChecked: [],
+    duration: 0,
+    startDate: Date.now(),
+    stopDate: Date.now(),
+  };
+};
+
+const createTimerInterval = (dispatch) => {
+  return setInterval(() => {
+    dispatch(incrementDuration());
+  }, 1000);
+};
+
 export const currentEntrySlice = createSlice({
-  name: "currentEntry",
+  name: name,
   initialState: testState,
   reducers: {
     updateDescription: (state, action) => {
@@ -124,17 +144,15 @@ export const currentEntrySlice = createSlice({
     },
     setDateInfo: (state, action) => {
       const { dateInfo } = action.payload;
-      console.log(dateInfo);
       state.duration = dateInfo.duration;
       state.startDate = dateInfo.startDate;
       state.stopDate = dateInfo.stopDate;
     },
     resetDateInfo: (state) => {
-      // const newDate = new Date().getTime();
-      // state.startDate = newDate;
-      // state.stopDate = newDate;
-      // state.duration = 0;
-      return getInitialCurrentEntryState();
+      const newDate = Date.now();
+      state.startDate = newDate;
+      state.stopDate = newDate;
+      state.duration = 0;
     },
     // tags
     setTagsChecked: (state, action) => {
@@ -146,27 +164,50 @@ export const currentEntrySlice = createSlice({
     incrementDuration: (state) => {
       state.duration += 1;
     },
-    startTimer: (state, action) => {
-      state.startDate = new Date().getTime();
-      state.timerStarted = true;
-      state.timerInterval = action.payload.timerInterval;
-    },
-    endTimer: (state) => {
-      clearInterval(state.timerInterval);
+    resetEntryData: (state) => {
       return {
         ...state,
-        ...{
-          description: "",
-          projectId: null,
-          projectName: null,
-          tagsChecked: [],
-          duration: 0,
-          startDate: Date.now(),
-          stopDate: Date.now(),
-          timerStarted: false,
-        },
+        ...getIntialEntryData(),
       };
     },
+    resetEntryDataAndTimer: (state) => {
+      return {
+        ...state,
+        ...getIntialEntryData(),
+        timerStarted: false,
+        timerInterval: null,
+      };
+    },
+    setStartTimerData: (state, action) => {
+      const { entryData, timerInterval } = action.payload;
+      if (entryData !== undefined) {
+        state.description = entryData.description;
+        state.projectId = entryData.projectId;
+        state.tagsChecked = [...entryData.tags];
+        // state.duration = entryData.duration;
+        // state.startDate = entryData.startDate;
+        // state.stopDate = entryData.startDate;
+      }
+      state.startDate = new Date().getTime();
+      state.timerStarted = true;
+      state.timerInterval = timerInterval;
+    },
+    // endTimer: (state) => {
+    //   clearInterval(state.timerInterval);
+    //   return {
+    //     ...state,
+    //     ...{
+    //       description: "",
+    //       projectId: null,
+    //       projectName: null,
+    //       tagsChecked: [],
+    //       duration: 0,
+    //       startDate: Date.now(),
+    //       stopDate: Date.now(),
+    //       timerStarted: false,
+    //     },
+    //   };
+    // },
     resetCurrentEntryInfo: (state) => {
       return {
         ...state,
@@ -182,6 +223,7 @@ export const currentEntrySlice = createSlice({
         },
       };
     },
+    completeCurrentEntr: (state) => {},
     toggleTimerStarted: (state, action) => {
       if (!state.timerStarted) {
       } else {
@@ -190,6 +232,57 @@ export const currentEntrySlice = createSlice({
     },
   },
 });
+
+const createExtraActions = () => {
+  const startTimer = () => {
+    return createAsyncThunk(
+      `${name}/startTimer`,
+      async function (arg, { getState, dispatch }) {
+        const state = getState();
+        const currentEntry = state.currentEntry;
+        const entryData = arg?.entryData;
+        if (currentEntry.timerStarted) {
+          dispatch(reducers.endTimer());
+        }
+        const timerInterval = createTimerInterval(dispatch);
+        dispatch(setStartTimerData({ entryData: entryData, timerInterval }));
+      }
+    );
+  };
+
+  const endTimer = () => {
+    return createAsyncThunk(
+      `${name}/endTimer`,
+      async (arg, { getState, dispatch }) => {
+        const state = getState();
+        const currentEntry = state.currentEntry;
+        const entryData = {
+          description: currentEntry.description,
+          projectId: currentEntry.projectId,
+          tags: [...currentEntry.tagsChecked],
+          duration: currentEntry.duration,
+          startDate: currentEntry.startDate,
+          stopDate: addSeconds(
+            currentEntry.startDate,
+            currentEntry.duration
+          ).getTime(),
+        };
+        clearInterval(currentEntry.timerInterval);
+        dispatch(resetEntryDataAndTimer());
+        dispatch(addTimeEntry({ entryData: entryData }));
+      }
+    );
+  };
+
+  const reducers = {
+    startTimer: startTimer(),
+    endTimer: endTimer(),
+  };
+
+  return reducers;
+};
+
+const allActions = { ...currentEntrySlice.actions, ...createExtraActions() };
 
 export const {
   updateDescription,
@@ -202,9 +295,13 @@ export const {
   setTimerStarted,
   toggleTimerStarted,
   incrementDuration,
-  startTimer,
-  endTimer,
   resetCurrentEntryInfo,
   setDateInfo,
-} = currentEntrySlice.actions;
+  setStartTimerData,
+  resetEntryDataAndTimer,
+  resetEntryData,
+
+  startTimer,
+  endTimer,
+} = allActions;
 export default currentEntrySlice.reducer;

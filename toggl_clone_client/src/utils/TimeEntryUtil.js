@@ -24,4 +24,19 @@ const updateDateInfo = (timeEntry, dateInfo) => {
   ).getTime();
 };
 
-export const timeEntryUtil = { updateDateInfo };
+const cloneTimeEntry = (timeEntry) => {
+  return {
+    ...timeEntry,
+    tags: [...timeEntry.tags],
+  };
+};
+
+const getEntryData = (timeEntry) => {
+  return {
+    description: timeEntry.description,
+    projectId: timeEntry.projectId,
+    tags: [...timeEntry.tags],
+  };
+};
+
+export const timeEntryUtil = { updateDateInfo, cloneTimeEntry, getEntryData };

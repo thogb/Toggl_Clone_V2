@@ -39,7 +39,9 @@ const TimeEntryDateInfo = ({
     <Stack
       direction={"row"}
       alignItems={"center"}
-      justifyContent={"space-between"}
+      justifyContent={"end"}
+      fontSize={"body2.fontSize"}
+      width={"25ch"}
     >
       <SubButton
         className="TimeEntryDateBtn"

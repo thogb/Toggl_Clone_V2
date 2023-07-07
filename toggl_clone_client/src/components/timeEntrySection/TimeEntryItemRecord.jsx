@@ -11,7 +11,7 @@ import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { Box, Stack, Typography, alpha } from "@mui/material";
+import { Box, Button, Stack, Typography, alpha } from "@mui/material";
 import GrowingInput from "../growingInput/GrowingInput";
 import TTIconButton from "../ttIconButton/TTIconButton";
 import SubButton from "../subButton/SubButton";
@@ -96,6 +96,7 @@ const TimeEntryItemRecord = ({
     onDeleteClick: (e) => {},
     onExpandButonClick: (e) => {},
     onMenuClick: (option) => {},
+    onStartButtonClick: (e) => {},
   },
 }) => {
   const theme = useTheme();
@@ -270,6 +271,7 @@ const TimeEntryItemRecord = ({
             colorStrength={3}
             className={"TT-hidden"}
             style={{ padding: 0, fontSize: "1.8rem", marginRight: 8 }}
+            onClick={operations.onStartButtonClick}
           >
             <PlayArrowIcon />
           </TTIconButton>

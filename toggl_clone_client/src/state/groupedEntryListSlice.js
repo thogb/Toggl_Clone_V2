@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {} from "../utils/TTDateUtil";
 import { compareDesc } from "date-fns";
 import { groupedEntryListSliceUtil as gelsUtil } from "../utils/groupedEntryListSliceUtil";
@@ -161,8 +161,10 @@ export const generateDateGroupedEntries = (timeEntries) => {
   return grouped;
 };
 
+const name = "groupedEntryList";
+
 export const groupedEntryListSlice = createSlice({
-  name: "groupedEntryList",
+  name: name,
   initialState: initialState,
   reducers: {
     setDateGroupedEntries: (state, action) => {
@@ -228,6 +230,40 @@ export const groupedEntryListSlice = createSlice({
   },
 });
 
+const createExtraActions = () => {
+  const addTimeEntry = () => {
+    return createAsyncThunk(
+      `${name}/addTimeEntry`,
+      async function (arg, { getState, dispatch }) {
+        console.log("start await");
+        const entryData = arg?.entryData;
+        if (!Boolean(entryData)) return;
+        // Api put to the database, id should be contain in entryData.
+        const result = await new Promise((resolve) =>
+          setTimeout(() => {
+            resolve();
+          }, 2000)
+        );
+        console.log("end await");
+        entryData.id = Date.now();
+
+        dispatch(addTE({ timeEntry: entryData }));
+      }
+    );
+  };
+
+  const reducers = {
+    addTimeEntry: addTimeEntry(),
+  };
+
+  return reducers;
+};
+
+const allActions = {
+  ...groupedEntryListSlice.actions,
+  ...createExtraActions(),
+};
+
 export const {
   setDateGroupedEntries,
 
@@ -249,5 +285,8 @@ export const {
   deleteDGE,
 
   addTE,
-} = groupedEntryListSlice.actions;
+
+  // async
+  addTimeEntry,
+} = allActions;
 export default groupedEntryListSlice.reducer;

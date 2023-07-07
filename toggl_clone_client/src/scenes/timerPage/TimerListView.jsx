@@ -59,6 +59,7 @@ const TimerListView = () => {
           />
         </Stack>
       </TimerPageToolBar>
+      <Box pt={1} />
       {sortedDateGroupEntries.length === 0 ? (
         <Box sx={{ textAlign: "center" }}> Nothing left</Box>
       ) : (
@@ -71,6 +72,7 @@ const TimerListView = () => {
           );
         })
       )}
+      <Box pt={1} />
     </Box>
   );
 };
