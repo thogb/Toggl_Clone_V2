@@ -1,4 +1,8 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using TogglTrackCloneApi.Models;
 
 namespace TogglTrackCloneApi.Controllers
 {
@@ -18,9 +22,14 @@ namespace TogglTrackCloneApi.Controllers
             _logger = logger;
         }
 
+        [Authorize]
         [HttpGet(Name = "GetWeatherForecast")]
         public IEnumerable<WeatherForecast> Get()
         {
+            Console.WriteLine("test");
+            Console.WriteLine(User.FindFirst(ClaimTypes.Name)!.Value);
+            Console.WriteLine(Request.Headers.Authorization);
+            Request.Cookies.ToList().ForEach((kp) => { Console.WriteLine(kp.ToString()); });
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
                 Date = DateTime.Now.AddDays(index),
