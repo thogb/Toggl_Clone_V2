@@ -188,3 +188,24 @@ const project = {
   wid: 7169665,
   cid: null,
 };
+
+const me = {
+  id: 9280720,
+  api_token: "8668d9aafdf2eb7f743ce1f0f2942d16",
+  email: "taohu2222@gmail.com",
+  fullname: "Tao Hu",
+  timezone: "Australia/Perth",
+  default_workspace_id: 7169665,
+  beginning_of_week: 1,
+  image_url: "https://assets.track.toggl.com/images/profile.png",
+  created_at: "2023-03-24T05:39:31.043774Z",
+  updated_at: "2023-03-24T05:39:44.859209Z",
+  openid_email: null,
+  openid_enabled: true,
+  country_id: 14,
+  has_password: false,
+  at: "2023-07-11T02:50:34.457729Z",
+  intercom_hash:
+    "dd7d459087702b21bc7884a4342cd99ecff0df78f7ef125ec735e079f630c587",
+  oauth_providers: ["google"],
+};

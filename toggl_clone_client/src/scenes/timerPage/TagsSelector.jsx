@@ -7,7 +7,7 @@ import { Box, Button, Typography } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import TTPopperDivider from "../../components/ttPopper/TTPopperDivider";
 import CheckboxList from "../../components/checkboxList/CheckboxList";
-import SearchTextField from "../../components/searchTextField.jsx/SearchTextField";
+import SearchTextField from "../../components/searchTextField/SearchTextField";
 import { grey } from "@mui/material/colors";
 
 const TagsSelector = ({

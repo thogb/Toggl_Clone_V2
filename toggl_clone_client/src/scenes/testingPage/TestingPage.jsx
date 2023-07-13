@@ -51,7 +51,7 @@ import {
 } from "../../components/entryDateChanger/EntryDatesReducer";
 import EntryDateChanger from "../../components/entryDateChanger/EntryDateChanger";
 import EntryTimeTextField from "../../components/entryTimeTextField/EntryTimeTextField";
-import SearchTextField from "../../components/searchTextField.jsx/SearchTextField";
+import SearchTextField from "../../components/searchTextField/SearchTextField";
 import TimeEntryItemBase from "../../components/timeEntrySection/TimeEntryItemBase";
 import TTTextButton from "../../components/ttTextButton/TTTextButton";
 import styled from "@emotion/styled";

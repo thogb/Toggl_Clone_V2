@@ -14,12 +14,26 @@ import {
 } from "./state/groupedEntryListSlice";
 import { getRawEntryList } from "./state/entryListSlice";
 import { useDispatch } from "react-redux";
+import SignUpPage from "./scenes/trackPage/SignUpPage";
 
 function App() {
   const mode = "light";
   // const mode = "dark";
   const dispatch = useDispatch();
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
+  const trackTheme = useMemo(
+    () =>
+      createTheme(theme, {
+        palette: {
+          secondary: {
+            ...theme.palette.secondary,
+            dark: theme.palette.primary.light,
+          },
+          buttonWhite: theme.palette.augmentColor({ color: { main: "#fff" } }),
+        },
+      }),
+    [mode]
+  );
 
   useEffect(() => {
     const dateGroupedEntries = generateDateGroupedEntries(getRawEntryList());
@@ -33,6 +47,14 @@ function App() {
       <div className="app">
         {/* <div className="mainContent"> */}
         <Routes>
+          <Route
+            path="/track/signup"
+            element={
+              <ThemeProvider theme={trackTheme}>
+                <SignUpPage />
+              </ThemeProvider>
+            }
+          />
           <Route path="/" element={<NavBar />}>
             <Route path="/" element={<HomePage />} />
             <Route path="/timer" element={<TimerPage />} />
