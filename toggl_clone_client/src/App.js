@@ -46,6 +46,15 @@ function App() {
       <CssBaseline />
       <div className="app">
         {/* <div className="mainContent"> */}
+        {/* <ThemeProvider theme={trackTheme}>
+          <Routes>
+            <Route
+              path="/track/signup"
+              element={
+                  <SignUpPage />
+            }/>
+          </Routes>
+        </ThemeProvider> */}
         <Routes>
           <Route
             path="/track/signup"

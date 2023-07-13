@@ -224,7 +224,8 @@ const TimerTopBar = () => {
   };
 
   return (
-    <AppBar position="sticky" sx={{ height: APPBAR_HEIGHT }} color="background">
+    // <AppBar position="sticky" sx={{ height: APPBAR_HEIGHT }} color="background">
+    <AppBar position="fixed" sx={{ height: APPBAR_HEIGHT, width: "auto"}} color="background">
       <Toolbar disableGutters>
         <InputBase
           inputRef={desciptionInput}

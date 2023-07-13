@@ -10,6 +10,7 @@ import { grey, orange } from "@mui/material/colors";
 import TimerTopBar from "../../components/timerTopBar/TimerTopBar";
 import TimerListView from "./TimerListView";
 import PageContainer from "../../components/pageContainer/PageContainer";
+import { APPBAR_HEIGHT } from "../../utils/constants";
 
 export const viewTypes = {
   LIST: "LIST",
@@ -49,6 +50,7 @@ const TimerPage = () => {
         {/* top bar */}
         <TimerTopBar />
         {/* views */}
+        <Box pt={`${APPBAR_HEIGHT}px`}>{/* tool bar */}</Box>
         <Box pt={2}>{/* tool bar */}</Box>
         {viewType === "LIST" && <TimerListView />}
       </ThemeProvider>

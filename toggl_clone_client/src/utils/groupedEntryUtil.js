@@ -1,6 +1,6 @@
 import { compareDesc } from "date-fns";
 import { isListEqual } from "./listUtil";
-import { timeEntryUtil } from "./timeEntryUtil";
+import { timeEntryUtil } from "./TimeEntryUtil";
 
 // #example
 const groupedEntryExample = {

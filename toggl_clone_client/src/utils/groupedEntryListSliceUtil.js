@@ -1,7 +1,7 @@
 import { addSeconds, set, startOfWeek } from "date-fns";
 import { dateGroupEntryUtil as dgeUtil } from "./dateGroupEntryUtil";
 import { groupedEntryUtil as geUtil } from "./groupedEntryUtil";
-import { timeEntryUtil } from "./timeEntryUtil";
+import { timeEntryUtil } from "./TimeEntryUtil";
 
 // #update
 const updateTEGroupingData = (state, dateGroupId, gId, id, groupingData) => {
