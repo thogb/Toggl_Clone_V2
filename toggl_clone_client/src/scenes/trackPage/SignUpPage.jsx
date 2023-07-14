@@ -1,6 +1,5 @@
 import React from "react";
 import { AppBar, Box, Stack, Toolbar, Typography } from "@mui/material";
-import NameIcon from "../../fromTogglTrack/nameIcon";
 import { amber } from "@mui/material/colors";
 import { Link } from "react-router-dom";
 import styled from "@emotion/styled";
@@ -8,6 +7,8 @@ import { useTheme } from "@emotion/react";
 import SignInForm from "./components/SignInForm";
 import TrackFooter from "./components/TrackFooter";
 import TrackCopyright from "./components/TrackCopyright";
+import TTNameIcon from "../../fromTogglTrack/TTNameIcon";
+import { relativeURL } from "../../utils/constants";
 
 const StyledLink = styled(Link)(({ theme }) => ({
   color: "inherit",
@@ -31,7 +32,7 @@ const SignUpPage = () => {
         }}
       >
         <Toolbar sx={{ mx: theme.ttSpacings.page.px * 2 }}>
-          <NameIcon size="lg" />
+          <TTNameIcon size="lg" />
         </Toolbar>
       </AppBar>
       <Stack maxWidth={{ xs: 800, lg: 1150 }} mx={"auto"}>
@@ -63,7 +64,7 @@ const SignUpPage = () => {
             Already have an account?&nbsp;
             <span style={{ color: theme.palette.secondary.light }}>
               <StyledLink
-                to="/login"
+                to={relativeURL.LOGIN}
                 style={{
                   "--hover-color": amber[50],
                 }}

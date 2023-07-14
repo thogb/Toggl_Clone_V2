@@ -12,11 +12,13 @@ import {
   alpha,
 } from "@mui/material";
 import React, { useState } from "react";
-import GoogleIcon from "../../../fromTogglTrack/googleIcon";
 import AppleIcon from "@mui/icons-material/Apple";
+import GoogleIcon from "../../../fromTogglTrack/GoogleIcon";
 import { amber, red } from "@mui/material/colors";
 import * as yup from "yup";
 import { Form, Formik } from "formik";
+import HttpsIcon from "@mui/icons-material/Https";
+import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { Link } from "react-router-dom";
@@ -85,6 +87,23 @@ const StyledLink = styled(Link)(({ theme }) => ({
   },
 }));
 
+const CompanySSOLink = styled(Link)(({ theme }) => ({
+  textDecoration: "none",
+  color: amber[50],
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center",
+  width: "fit-content",
+  transition: "color 0.2s ease-in-out",
+  margin: "0px auto",
+  "&>svg:nth-of-type(1)": {
+    marginRight: 6,
+  },
+  "&:hover": {
+    color: theme.palette.secondary.light,
+  },
+}));
+
 const registerSchema = yup.object().shape({
   email: yup.string().email("Invalid email address").required("Required"),
   password: yup
@@ -102,7 +121,7 @@ const registerSchema = yup.object().shape({
 
 const loginSchema = yup.object().shape({
   email: yup.string().email("Invalid email address").required(),
-  password: yup.string().required(""),
+  password: yup.string().required("Password cannot be empty"),
 });
 
 const initialValues = {
@@ -110,7 +129,7 @@ const initialValues = {
   password: "",
 };
 
-const SignInForm = ({ loginMode = false, onComplete }) => {
+const SignInForm = ({ loginMode = false, onComplete, style }) => {
   const theme = useTheme();
   const [showPassword, setShowPassword] = useState(false);
 
@@ -122,7 +141,14 @@ const SignInForm = ({ loginMode = false, onComplete }) => {
     setShowPassword(!showPassword);
   };
   return (
-    <Box bgcolor={"primary.dark"} px={4.5} py={5} pt={5.5} width={"100%"}>
+    <Box
+      bgcolor={"primary.dark"}
+      px={4.5}
+      py={5}
+      pt={5.5}
+      width={"100%"}
+      style={style}
+    >
       <Stack
         direction={{ xs: "column", sm: "row" }}
         spacing={2}
@@ -235,18 +261,27 @@ const SignInForm = ({ loginMode = false, onComplete }) => {
           );
         }}
       </Formik>
-      <Typography
-        variant="caption"
-        sx={{
-          color: textColor,
-          lineHeight: 1.6,
-        }}
-      >
-        By signing up, you agree to our{" "}
-        <StyledLink>terms of services</StyledLink>,{" "}
-        <StyledLink>privacy policy</StyledLink> and to receiving marketing
-        communication from Toggl Track. You can opt out anytime.
-      </Typography>
+      {!loginMode && (
+        <Typography
+          variant="caption"
+          sx={{
+            color: textColor,
+            lineHeight: 1.6,
+          }}
+        >
+          By signing up, you agree to our{" "}
+          <StyledLink>terms of services</StyledLink>,{" "}
+          <StyledLink>privacy policy</StyledLink> and to receiving marketing
+          communication from Toggl Track. You can opt out anytime.
+        </Typography>
+      )}
+      {loginMode && (
+        <CompanySSOLink>
+          <HttpsIcon />
+          <span>{"Company Login (SSO)"}</span>
+          <ArrowRightIcon />
+        </CompanySSOLink>
+      )}
     </Box>
   );
 };

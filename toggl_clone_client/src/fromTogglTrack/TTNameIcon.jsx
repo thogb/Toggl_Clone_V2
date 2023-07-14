@@ -8,7 +8,7 @@ const SIZE = {
   xl: "50px",
 };
 
-const NameIcon = ({ size = SIZE.lg, style, ...other }) => {
+const TTNameIcon = ({ size = "lg", style, ...other }) => {
   return (
     <svg
       viewBox="0 0 167 33"
@@ -67,4 +67,4 @@ const NameIcon = ({ size = SIZE.lg, style, ...other }) => {
   );
 };
 
-export default NameIcon;
+export default TTNameIcon;

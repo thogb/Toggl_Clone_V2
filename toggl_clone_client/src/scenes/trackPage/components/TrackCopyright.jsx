@@ -3,7 +3,7 @@ import { Stack, Typography } from "@mui/material";
 import React from "react";
 import { Link } from "react-router-dom";
 
-const TrackCopyright = () => {
+const TrackCopyright = ({ showTerms = true }) => {
   const theme = useTheme();
 
   return (
@@ -15,18 +15,22 @@ const TrackCopyright = () => {
       alignItems={"center"}
       justifyContent={"space-between"}
     >
-      <Typography>© 2023 Toggl. All rights reserved.</Typography>
-      <Link>
-        <Typography
-          sx={{
-            "&:hover": {
-              color: "white",
-            },
-          }}
-        >
-          Legal Terms
-        </Typography>
-      </Link>
+      <Typography color={"black"}>
+        © 2023 Toggl. All rights reserved.
+      </Typography>
+      {showTerms && (
+        <Link>
+          <Typography
+            sx={{
+              "&:hover": {
+                color: "white",
+              },
+            }}
+          >
+            Legal Terms
+          </Typography>
+        </Link>
+      )}
     </Stack>
   );
 };
