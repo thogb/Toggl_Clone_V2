@@ -118,7 +118,10 @@ const SignUpPage = () => {
               — Verified G2Crowd review. 5/5 stars.
             </Typography>
             <Box mt={8} mb={4}>
-              <img src="https://public-assets.toggl.com/b/static/6b5c09dd5baafcca069103cd517b38c9/2fffe/review-badges.png" />
+              <img
+                alt=""
+                src="https://public-assets.toggl.com/b/static/6b5c09dd5baafcca069103cd517b38c9/2fffe/review-badges.png"
+              />
             </Box>
           </Box>
         </Stack>

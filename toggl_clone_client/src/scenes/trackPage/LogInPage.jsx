@@ -17,7 +17,6 @@ const LogInPage = () => {
   const theme = useTheme();
   const navigate = useNavigate();
   const below800 = useMediaQuery("(max-width:800px)");
-  const belowLg = useMediaQuery(theme.breakpoints.down("lg"));
 
   return (
     <Box minHeight={"100vh"} color={"white"}>
