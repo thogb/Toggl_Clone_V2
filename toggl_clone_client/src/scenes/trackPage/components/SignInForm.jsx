@@ -219,7 +219,9 @@ const SignInForm = ({ loginMode = false, onComplete, style }) => {
                 error={Boolean(touched.email) && Boolean(errors.email)}
                 style={{ fontSize: theme.typography.subtitle1.fontSize }}
               >
-                {errors.email}
+                {Boolean(touched.email) &&
+                  Boolean(errors.email) &&
+                  errors.email}
               </FormHelperText>
               <StyledInputLabel>Password</StyledInputLabel>
               <StyledInput
@@ -241,7 +243,9 @@ const SignInForm = ({ loginMode = false, onComplete, style }) => {
                 error={Boolean(touched.password) && Boolean(errors.password)}
                 style={{ fontSize: theme.typography.subtitle1.fontSize }}
               >
-                {errors.password}
+                {Boolean(touched.password) &&
+                  Boolean(errors.password) &&
+                  errors.password}
               </FormHelperText>
               <Button
                 fullWidth
