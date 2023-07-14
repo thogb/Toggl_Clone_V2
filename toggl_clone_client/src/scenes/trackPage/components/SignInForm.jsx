@@ -4,31 +4,31 @@ import {
   Box,
   Button,
   Divider,
-  FormControlLabel,
   FormHelperText,
   Input,
-  InputBase,
   InputLabel,
   Stack,
-  TextField,
   Typography,
   alpha,
 } from "@mui/material";
 import React, { useState } from "react";
-import GoogleIcon from "../../fromTogglTrack/googleIcon";
+import GoogleIcon from "../../../fromTogglTrack/googleIcon";
 import AppleIcon from "@mui/icons-material/Apple";
 import { amber, red } from "@mui/material/colors";
 import * as yup from "yup";
-import { Field, Form, Formik } from "formik";
+import { Form, Formik } from "formik";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { Link } from "react-router-dom";
+
+const textColor = amber[50];
 
 const StyledButton = styled(Button)(({ theme }) => ({
   //   backgroundColor: "#fff",
   borderRadius: "100px",
   color: "black",
   ...theme.typography.h6,
+  fontSize: theme.typography.button.fontSize,
   padding: theme.spacing(1.5),
   "& .MuiButton-startIcon>:nth-of-type(1)": {
     fontSize: "1.875rem",
@@ -73,7 +73,7 @@ const StyledInput = styled(Input)(({ theme }) => ({
 }));
 
 const StyledInputLabel = styled(InputLabel)(({ theme }) => ({
-  color: amber[100],
+  color: textColor,
   marginTop: theme.spacing(3),
   ...theme.typography.subtitle1,
 }));
@@ -114,13 +114,15 @@ const SignInForm = ({ loginMode = false, onComplete }) => {
   const theme = useTheme();
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleSubmit = (values, formikHelpers) => {};
+  const handleSubmit = (values, formikHelpers) => {
+    console.log(values);
+  };
 
   const handleVisibilityClick = () => {
     setShowPassword(!showPassword);
   };
   return (
-    <Box bgcolor={"primary.dark"} px={3} py={4} pt={5} width={"100%"}>
+    <Box bgcolor={"primary.dark"} px={4.5} py={5} pt={5.5} width={"100%"}>
       <Stack
         direction={{ xs: "column", sm: "row" }}
         spacing={2}
@@ -236,7 +238,7 @@ const SignInForm = ({ loginMode = false, onComplete }) => {
       <Typography
         variant="caption"
         sx={{
-          color: amber[200],
+          color: textColor,
           lineHeight: 1.6,
         }}
       >
