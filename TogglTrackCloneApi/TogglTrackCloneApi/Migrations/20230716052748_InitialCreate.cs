@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace TogglTrackCloneApi.Migrations
 {
-    public partial class InitalCreate : Migration
+    public partial class InitialCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -13,50 +13,50 @@ namespace TogglTrackCloneApi.Migrations
                 name: "Organisations",
                 columns: table => new
                 {
-                    OrganisationId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Organisations", x => x.OrganisationId);
+                    table.PrimaryKey("PK_Organisations", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Email = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    FirstName = table.Column<string>(type: "nvarchar(46)", maxLength: 46, nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(46)", maxLength: 46, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(46)", maxLength: 46, nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.UserId);
+                    table.PrimaryKey("PK_Users", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Workspaces",
                 columns: table => new
                 {
-                    WorkspaceId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
-                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    OrganisationId = table.Column<int>(type: "int", nullable: false)
+                    OrganisationId = table.Column<int>(type: "int", nullable: false),
+                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Workspaces", x => x.WorkspaceId);
+                    table.PrimaryKey("PK_Workspaces", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Workspaces_Organisations_OrganisationId",
                         column: x => x.OrganisationId,
                         principalTable: "Organisations",
-                        principalColumn: "OrganisationId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -66,22 +66,23 @@ namespace TogglTrackCloneApi.Migrations
                 {
                     UserId = table.Column<int>(type: "int", nullable: false),
                     OrganisationId = table.Column<int>(type: "int", nullable: false),
-                    JoinDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    JoinDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
+                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_OrganisationUser", x => new { x.UserId, x.OrganisationId });
+                    table.PrimaryKey("PK_OrganisationUser", x => new { x.OrganisationId, x.UserId });
                     table.ForeignKey(
                         name: "FK_OrganisationUser_Organisations_OrganisationId",
                         column: x => x.OrganisationId,
                         principalTable: "Organisations",
-                        principalColumn: "OrganisationId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_OrganisationUser_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "UserId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -89,21 +90,27 @@ namespace TogglTrackCloneApi.Migrations
                 name: "Projects",
                 columns: table => new
                 {
-                    ProjectId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: true),
-                    WorkspaceId = table.Column<int>(type: "int", nullable: false)
+                    DeleteDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    WorkspaceId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: true),
+                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Projects", x => x.ProjectId);
+                    table.PrimaryKey("PK_Projects", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Projects_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Projects_Workspaces_WorkspaceId",
                         column: x => x.WorkspaceId,
                         principalTable: "Workspaces",
-                        principalColumn: "WorkspaceId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -111,27 +118,27 @@ namespace TogglTrackCloneApi.Migrations
                 name: "Tags",
                 columns: table => new
                 {
-                    TagId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: false),
-                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: true),
-                    WorkspaceId = table.Column<int>(type: "int", nullable: false)
+                    WorkspaceId = table.Column<int>(type: "int", nullable: false),
+                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Tags", x => x.TagId);
+                    table.PrimaryKey("PK_Tags", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Tags_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "UserId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
                         name: "FK_Tags_Workspaces_WorkspaceId",
                         column: x => x.WorkspaceId,
                         principalTable: "Workspaces",
-                        principalColumn: "WorkspaceId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -141,7 +148,7 @@ namespace TogglTrackCloneApi.Migrations
                 {
                     UserId = table.Column<int>(type: "int", nullable: false),
                     WorkspaceId = table.Column<int>(type: "int", nullable: false),
-                    JoinDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    JoinDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()")
                 },
                 constraints: table =>
                 {
@@ -150,13 +157,13 @@ namespace TogglTrackCloneApi.Migrations
                         name: "FK_WorkspaceUser_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "UserId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_WorkspaceUser_Workspaces_WorkspaceId",
                         column: x => x.WorkspaceId,
                         principalTable: "Workspaces",
-                        principalColumn: "WorkspaceId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -164,38 +171,38 @@ namespace TogglTrackCloneApi.Migrations
                 name: "TimeEntries",
                 columns: table => new
                 {
-                    TimeEntryId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     Duration = table.Column<int>(type: "int", nullable: false),
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     StopDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: true),
+                    DeleteDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     WorkspaceId = table.Column<int>(type: "int", nullable: false),
                     ProjectId = table.Column<int>(type: "int", nullable: true),
-                    UserId = table.Column<int>(type: "int", nullable: true)
+                    UserId = table.Column<int>(type: "int", nullable: true),
+                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TimeEntries", x => x.TimeEntryId);
+                    table.PrimaryKey("PK_TimeEntries", x => x.Id);
                     table.ForeignKey(
                         name: "FK_TimeEntries_Projects_ProjectId",
                         column: x => x.ProjectId,
                         principalTable: "Projects",
-                        principalColumn: "ProjectId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
                         name: "FK_TimeEntries_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "UserId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
                         name: "FK_TimeEntries_Workspaces_WorkspaceId",
                         column: x => x.WorkspaceId,
                         principalTable: "Workspaces",
-                        principalColumn: "WorkspaceId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -208,25 +215,30 @@ namespace TogglTrackCloneApi.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TimeEntryTag", x => new { x.TimeEntryId, x.TagId });
+                    table.PrimaryKey("PK_TimeEntryTag", x => new { x.TagId, x.TimeEntryId });
                     table.ForeignKey(
                         name: "FK_TimeEntryTag_Tags_TagId",
                         column: x => x.TagId,
                         principalTable: "Tags",
-                        principalColumn: "TagId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_TimeEntryTag_TimeEntries_TimeEntryId",
                         column: x => x.TimeEntryId,
                         principalTable: "TimeEntries",
-                        principalColumn: "TimeEntryId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_OrganisationUser_OrganisationId",
+                name: "IX_OrganisationUser_UserId",
                 table: "OrganisationUser",
-                column: "OrganisationId");
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Projects_UserId",
+                table: "Projects",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Projects_WorkspaceId",
@@ -259,9 +271,9 @@ namespace TogglTrackCloneApi.Migrations
                 column: "WorkspaceId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TimeEntryTag_TagId",
+                name: "IX_TimeEntryTag_TimeEntryId",
                 table: "TimeEntryTag",
-                column: "TagId");
+                column: "TimeEntryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Workspaces_OrganisationId",

@@ -27,7 +27,8 @@ namespace TogglTrackCloneApi.Controllers
         public IEnumerable<WeatherForecast> Get()
         {
             Console.WriteLine("test");
-            Console.WriteLine(User.FindFirst(ClaimTypes.Name)!.Value);
+            Console.WriteLine(User.FindFirst(ClaimTypes.Email)!.Value);
+            Console.WriteLine(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
             Console.WriteLine(Request.Headers.Authorization);
             Request.Cookies.ToList().ForEach((kp) => { Console.WriteLine(kp.ToString()); });
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast

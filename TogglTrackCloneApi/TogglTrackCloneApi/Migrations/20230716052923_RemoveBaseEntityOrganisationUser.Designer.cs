@@ -12,25 +12,25 @@ using TogglTrackCloneApi.Data;
 namespace TogglTrackCloneApi.Migrations
 {
     [DbContext(typeof(TTCloneContext))]
-    [Migration("20230711120431_InitalCreate")]
-    partial class InitalCreate
+    [Migration("20230716052923_RemoveBaseEntityOrganisationUser")]
+    partial class RemoveBaseEntityOrganisationUser
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.19")
+                .HasAnnotation("ProductVersion", "6.0.20")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
             modelBuilder.Entity("TogglTrackCloneApi.Models.Organisation", b =>
                 {
-                    b.Property<int>("OrganisationId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrganisationId"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
@@ -40,52 +40,59 @@ namespace TogglTrackCloneApi.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.HasKey("OrganisationId");
+                    b.HasKey("Id");
 
                     b.ToTable("Organisations");
                 });
 
             modelBuilder.Entity("TogglTrackCloneApi.Models.OrganisationUser", b =>
                 {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
                     b.Property<int>("OrganisationId")
                         .HasColumnType("int");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("JoinDate")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.HasKey("UserId", "OrganisationId");
+                    b.HasKey("OrganisationId", "UserId");
 
-                    b.HasIndex("OrganisationId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("OrganisationUser");
                 });
 
             modelBuilder.Entity("TogglTrackCloneApi.Models.Project", b =>
                 {
-                    b.Property<int>("ProjectId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProjectId"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool?>("IsDeleted")
-                        .HasColumnType("bit");
+                    b.Property<DateTime?>("DeleteDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
                     b.Property<int>("WorkspaceId")
                         .HasColumnType("int");
 
-                    b.HasKey("ProjectId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.HasIndex("WorkspaceId");
 
@@ -94,11 +101,11 @@ namespace TogglTrackCloneApi.Migrations
 
             modelBuilder.Entity("TogglTrackCloneApi.Models.Tag", b =>
                 {
-                    b.Property<int>("TagId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TagId"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
@@ -114,7 +121,7 @@ namespace TogglTrackCloneApi.Migrations
                     b.Property<int>("WorkspaceId")
                         .HasColumnType("int");
 
-                    b.HasKey("TagId");
+                    b.HasKey("Id");
 
                     b.HasIndex("UserId");
 
@@ -125,13 +132,16 @@ namespace TogglTrackCloneApi.Migrations
 
             modelBuilder.Entity("TogglTrackCloneApi.Models.TimeEntry", b =>
                 {
-                    b.Property<int>("TimeEntryId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TimeEntryId"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeleteDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
@@ -141,9 +151,6 @@ namespace TogglTrackCloneApi.Migrations
 
                     b.Property<int>("Duration")
                         .HasColumnType("int");
-
-                    b.Property<bool?>("IsDeleted")
-                        .HasColumnType("bit");
 
                     b.Property<int?>("ProjectId")
                         .HasColumnType("int");
@@ -160,7 +167,7 @@ namespace TogglTrackCloneApi.Migrations
                     b.Property<int>("WorkspaceId")
                         .HasColumnType("int");
 
-                    b.HasKey("TimeEntryId");
+                    b.HasKey("Id");
 
                     b.HasIndex("ProjectId");
 
@@ -173,26 +180,26 @@ namespace TogglTrackCloneApi.Migrations
 
             modelBuilder.Entity("TogglTrackCloneApi.Models.TimeEntryTag", b =>
                 {
-                    b.Property<int>("TimeEntryId")
-                        .HasColumnType("int");
-
                     b.Property<int>("TagId")
                         .HasColumnType("int");
 
-                    b.HasKey("TimeEntryId", "TagId");
+                    b.Property<int>("TimeEntryId")
+                        .HasColumnType("int");
 
-                    b.HasIndex("TagId");
+                    b.HasKey("TagId", "TimeEntryId");
+
+                    b.HasIndex("TimeEntryId");
 
                     b.ToTable("TimeEntryTag");
                 });
 
             modelBuilder.Entity("TogglTrackCloneApi.Models.User", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
@@ -202,28 +209,27 @@ namespace TogglTrackCloneApi.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<string>("FirstName")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(46)
                         .HasColumnType("nvarchar(46)");
 
-                    b.Property<string>("LastName")
+                    b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasMaxLength(46)
-                        .HasColumnType("nvarchar(46)");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("UserId");
+                    b.HasKey("Id");
 
                     b.ToTable("Users");
                 });
 
             modelBuilder.Entity("TogglTrackCloneApi.Models.Workspace", b =>
                 {
-                    b.Property<int>("WorkspaceId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("WorkspaceId"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
@@ -236,7 +242,7 @@ namespace TogglTrackCloneApi.Migrations
                     b.Property<int>("OrganisationId")
                         .HasColumnType("int");
 
-                    b.HasKey("WorkspaceId");
+                    b.HasKey("Id");
 
                     b.HasIndex("OrganisationId");
 
@@ -252,7 +258,9 @@ namespace TogglTrackCloneApi.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("JoinDate")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
 
                     b.HasKey("UserId", "WorkspaceId");
 
@@ -263,25 +271,25 @@ namespace TogglTrackCloneApi.Migrations
 
             modelBuilder.Entity("TogglTrackCloneApi.Models.OrganisationUser", b =>
                 {
-                    b.HasOne("TogglTrackCloneApi.Models.Organisation", "Organisation")
-                        .WithMany("OrganisationUsers")
+                    b.HasOne("TogglTrackCloneApi.Models.Organisation", null)
+                        .WithMany()
                         .HasForeignKey("OrganisationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TogglTrackCloneApi.Models.User", "User")
-                        .WithMany("OrganisationUsers")
+                    b.HasOne("TogglTrackCloneApi.Models.User", null)
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Organisation");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("TogglTrackCloneApi.Models.Project", b =>
                 {
+                    b.HasOne("TogglTrackCloneApi.Models.User", null)
+                        .WithMany("Projects")
+                        .HasForeignKey("UserId");
+
                     b.HasOne("TogglTrackCloneApi.Models.Workspace", "Workspace")
                         .WithMany("Projects")
                         .HasForeignKey("WorkspaceId")
@@ -336,21 +344,17 @@ namespace TogglTrackCloneApi.Migrations
 
             modelBuilder.Entity("TogglTrackCloneApi.Models.TimeEntryTag", b =>
                 {
-                    b.HasOne("TogglTrackCloneApi.Models.Tag", "Tag")
-                        .WithMany("TimeEntryTags")
+                    b.HasOne("TogglTrackCloneApi.Models.Tag", null)
+                        .WithMany()
                         .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TogglTrackCloneApi.Models.TimeEntry", "TimeEntry")
-                        .WithMany("TimeEntryTags")
+                    b.HasOne("TogglTrackCloneApi.Models.TimeEntry", null)
+                        .WithMany()
                         .HasForeignKey("TimeEntryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Tag");
-
-                    b.Navigation("TimeEntry");
                 });
 
             modelBuilder.Entity("TogglTrackCloneApi.Models.Workspace", b =>
@@ -366,27 +370,21 @@ namespace TogglTrackCloneApi.Migrations
 
             modelBuilder.Entity("TogglTrackCloneApi.Models.WorkspaceUser", b =>
                 {
-                    b.HasOne("TogglTrackCloneApi.Models.User", "User")
-                        .WithMany("WorkspaceUsers")
+                    b.HasOne("TogglTrackCloneApi.Models.User", null)
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TogglTrackCloneApi.Models.Workspace", "Workspace")
-                        .WithMany("WorkspaceUsers")
+                    b.HasOne("TogglTrackCloneApi.Models.Workspace", null)
+                        .WithMany()
                         .HasForeignKey("WorkspaceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("User");
-
-                    b.Navigation("Workspace");
                 });
 
             modelBuilder.Entity("TogglTrackCloneApi.Models.Organisation", b =>
                 {
-                    b.Navigation("OrganisationUsers");
-
                     b.Navigation("Workspaces");
                 });
 
@@ -395,25 +393,13 @@ namespace TogglTrackCloneApi.Migrations
                     b.Navigation("TimeEntries");
                 });
 
-            modelBuilder.Entity("TogglTrackCloneApi.Models.Tag", b =>
-                {
-                    b.Navigation("TimeEntryTags");
-                });
-
-            modelBuilder.Entity("TogglTrackCloneApi.Models.TimeEntry", b =>
-                {
-                    b.Navigation("TimeEntryTags");
-                });
-
             modelBuilder.Entity("TogglTrackCloneApi.Models.User", b =>
                 {
-                    b.Navigation("OrganisationUsers");
+                    b.Navigation("Projects");
 
                     b.Navigation("Tags");
 
                     b.Navigation("TimeEntries");
-
-                    b.Navigation("WorkspaceUsers");
                 });
 
             modelBuilder.Entity("TogglTrackCloneApi.Models.Workspace", b =>
@@ -423,8 +409,6 @@ namespace TogglTrackCloneApi.Migrations
                     b.Navigation("Tags");
 
                     b.Navigation("TimeEntries");
-
-                    b.Navigation("WorkspaceUsers");
                 });
 #pragma warning restore 612, 618
         }

@@ -2,17 +2,17 @@
 
 namespace TogglTrackCloneApi.Models
 {
-    public class Tag
+    public class Tag : BaseEntity
     {
-        public int TagId { get; set; }
+        public int Id { get; set; }
         [Required]
         [StringLength(32, MinimumLength = 1)]
         public string Name { get; set; } = string.Empty;
-        public DateTime CreationDate { get; set; }
+        /*public DateTime CreationDate { get; set; }*/
         public int? UserId { get; set; } // Restrict delete of User
         public User? User { get; set; }
-        /*public ICollection<TimeEntry>? TimeEntries { get; set; }*/
-        public ICollection<TimeEntryTag> TimeEntryTags { get; set; }
+        public ICollection<TimeEntry>? TimeEntries { get; set; }
+        /*public ICollection<TimeEntryTag> TimeEntryTags { get; set; }*/
         [Required]
         public int WorkspaceId { get; set; }
         public Workspace? Workspace { get; set; }

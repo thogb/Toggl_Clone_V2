@@ -2,9 +2,9 @@
 
 namespace TogglTrackCloneApi.Models
 {
-    public class TimeEntry
+    public class TimeEntry : BaseEntity
     {
-        public int TimeEntryId { get; set; }
+        public int Id { get; set; }
         [Required]
         [StringLength(255, MinimumLength = 0)]
         public string Description { get; set; } = string.Empty;
@@ -12,9 +12,9 @@ namespace TogglTrackCloneApi.Models
         public int Duration { get; set; }
         [Required]
         public DateTime StartDate { get; set; }
-        public DateTime CreationDate { get; set; }
+        /*public DateTime CreationDate { get; set; }*/
         public DateTime? StopDate { get; set; }
-        public bool? IsDeleted { get; set; }
+        public DateTime? DeleteDate { get; set; }
         [Required]
         public int WorkspaceId { get; set; }
         public Workspace? Workspace { get; set; }
@@ -22,7 +22,7 @@ namespace TogglTrackCloneApi.Models
         public Project? Project { get; set; }
         public int? UserId { get; set; }
         public User? User { get; set; }
-        /*public ICollection<Tag>? Tags { get; set; }*/
-        public ICollection<TimeEntryTag> TimeEntryTags { get; set; }
+        public ICollection<Tag>? Tags { get; set; }
+        /*  public ICollection<TimeEntryTag> TimeEntryTags { get; set; }*/
     }
 }

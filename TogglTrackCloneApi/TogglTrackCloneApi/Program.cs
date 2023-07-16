@@ -4,12 +4,20 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Reflection;
 using System.Text;
 using TogglTrackCloneApi.Data;
+using TogglTrackCloneApi.Repositories;
+using TogglTrackCloneApi.Repositories.IRepositories;
+using TogglTrackCloneApi.Services;
+using TogglTrackCloneApi.Services.IServices;
 using TogglTrackCloneApi.Swagger;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
+
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
 
 // Add services to the container.
 
@@ -30,9 +38,22 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options => builder.Configuration.Bind("CookieSettings", options));*/
 builder.Services.AddAuthorization();
 
+builder.Services.AddCors();
+
+builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
+
 builder.Services.AddControllers();
 
 builder.Services.AddDbContext<TTCloneContext>();
+
+// Repositories
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IWorkspaceRepository, WorkspaceRepository>();
+builder.Services.AddScoped<IOrganisationRepository, OrganisationRepository>();
+builder.Services.AddScoped<IOrganisationUsersRepository, OrganisationUserRepository>();
+
+// Services
+builder.Services.AddScoped<IOrganisationService, OrganisationService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -50,9 +71,13 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthentication();
-app.UseAuthorization();
+app.UseCors(options => options
+.WithOrigins(new[] { "http://localhost:3000"})
+    .AllowAnyHeader()
+    .AllowAnyMethod()
+    .AllowCredentials());
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
