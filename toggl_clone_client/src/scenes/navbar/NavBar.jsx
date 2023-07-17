@@ -50,7 +50,7 @@ const NavBar = () => {
   const appbarHeight = APPBAR_HEIGHT;
   const leftDrawerWidth = 47;
 
-  const username = "Tao Hu";
+  const username = "Test";
 
   const handleDrawerToggle = () => {
     setIsMDrawerOpen(!isMDrawerOpen);
@@ -301,8 +301,8 @@ const NavBar = () => {
           "&>:nth-of-type(n+1) header:first-of-type": {
             left: `${DRAWER_WIDTH}px`,
             [theme.breakpoints.down("md")]: {
-                top: `${appbarHeight}px`,
-                left: 0,
+              top: `${appbarHeight}px`,
+              left: 0,
             },
           },
         }}
