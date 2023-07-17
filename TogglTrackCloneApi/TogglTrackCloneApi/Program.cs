@@ -55,6 +55,8 @@ builder.Services.AddDbContext<TTCloneContext>();
 // Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ITagRepository, TagRepository>();
+builder.Services.AddScoped<ITimeEntryRepository, TimeEntryRepository>();
+builder.Services.AddScoped<ITimeEntryTagRepository, TimeEntryTagRepository>();
 builder.Services.AddScoped<IWorkspaceRepository, WorkspaceRepository>();
 builder.Services.AddScoped<IWorkspaceUserRepository, WorkspaceUserRepository>();
 builder.Services.AddScoped<IOrganisationRepository, OrganisationRepository>();
@@ -63,6 +65,7 @@ builder.Services.AddScoped<IOrganisationUsersRepository, OrganisationUserReposit
 // Services
 builder.Services.AddScoped<IOrganisationService, OrganisationService>();
 builder.Services.AddScoped<IWorkspaceService, WorkspaceService>();
+builder.Services.AddScoped<ITimeEntryService, TimeEntryService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

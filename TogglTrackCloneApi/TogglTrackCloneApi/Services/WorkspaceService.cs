@@ -58,19 +58,49 @@ namespace TogglTrackCloneApi.Services
             return _mapper.Map<TagResponseDTO>(tag);
         }
 
-        public async Task ValidateUserCanEditTag(int workspaceId, int userId)
+        private async Task ValidateUserCanEditTag(int workspaceId, int userId)
         {
             if (!(await _workspaceUserRepository.RecordExistsAsync(workspaceId, userId))) throw new TTNoPermissionException("user is not part of the workspace");
         }
 
-        public async Task ValidateTagInWorkSpace(int workspaceId, int tagId)
+        private async Task ValidateTagInWorkSpace(int workspaceId, int tagId)
         {
             if (!await _tagRepository.IsTagInWorkSpace(tagId, workspaceId)) throw new TTNotFoundException("tag is not found in workspace");
         }
 
-        public Task ValidateUserCanEditTimeEntry(int workspaceId, int userId)
+        private Task ValidateUserCanEditTimeEntry(int workspaceId, int userId)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<bool> CanUserEditTag(int workspaceId, int userId)
+        {
+            bool userCan = await IsUserInWorkspace(workspaceId, userId);
+
+            return userCan;
+        }
+
+        public Task<bool> IsTagInWorkspace(int workspaceId, int userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<bool> CanUserEditTimeEntry(int workspaceId, int userId)
+        {
+            bool userCan = await IsUserInWorkspace(workspaceId, userId);
+
+            return userCan;
+        }
+
+        public async Task<bool> IsUserInWorkspace(int workspaceId, int userId)
+        {
+            return await _workspaceUserRepository.RecordExistsAsync(workspaceId, userId);
+        }
+
+        public async Task ValidateWorkspaceAndUserCanEditTimeEntry(int workspaceId, int userId)
+        {
+            if (!await _workspaceRepository.Exists(workspaceId)) throw new TTNotFoundException("workspace does not exist");
+            if (!await CanUserEditTimeEntry(workspaceId, userId)) throw new TTNoPermissionException("no permission to edit in workspace");
         }
     }
 }

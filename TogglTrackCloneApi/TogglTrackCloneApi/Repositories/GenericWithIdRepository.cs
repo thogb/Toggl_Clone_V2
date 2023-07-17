@@ -21,5 +21,10 @@ namespace TogglTrackCloneApi.Repositories
         {
             return await _context.Set<T>().AnyAsync(t => t.Id == id);
         }
+
+        public async Task<List<T>> GetByIdList(IEnumerable<int> ids)
+        {
+            return await _context.Set<T>().Where(t => ids.Contains(t.Id)).ToListAsync();
+        }
     }
 }

@@ -20,6 +20,7 @@ namespace TogglTrackCloneApi.Data
         public DbSet<Workspace> Workspaces { get; set; }
         public DbSet<OrganisationUser> OrganisationUser { get; set; }
         public DbSet<WorkspaceUser> WorkspaceUser { get; set; }
+        public DbSet<TimeEntryTag> TimeEntryTag { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
