@@ -9,7 +9,7 @@ import {
   updateTETags,
 } from "../../state/groupedEntryListSlice";
 import { startTimer } from "../../state/currentEntrySlice";
-import { timeEntryUtil } from "../../utils/timeEntryUtil";
+import { timeEntryUtil } from "../../utils/TimeEntryUtil";
 
 export const itemMenuData = {
   DUPLICATE: {

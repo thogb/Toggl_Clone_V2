@@ -17,6 +17,7 @@ export const themeSettings = (mode) => {
             secondary: {
               main: "#c95ebe",
             },
+            yellowShade: augmentColor({ color: { main: "#FFDE91" } }),
             primary1: augmentColor({ color: { main: "#95899a" } }),
           }
         : {

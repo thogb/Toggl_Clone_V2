@@ -298,9 +298,11 @@ const NavBar = () => {
           // minHeight: "100vh",
           // height: "100%",
           position: "relative",
-          [theme.breakpoints.down("md")]: {
-            "&>:nth-of-type(n+1) header:first-of-type": {
-              top: `${appbarHeight}px`,
+          "&>:nth-of-type(n+1) header:first-of-type": {
+            left: `${DRAWER_WIDTH}px`,
+            [theme.breakpoints.down("md")]: {
+                top: `${appbarHeight}px`,
+                left: 0,
             },
           },
         }}
