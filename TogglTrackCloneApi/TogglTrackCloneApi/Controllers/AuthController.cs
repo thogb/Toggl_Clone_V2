@@ -34,11 +34,11 @@ namespace TogglTrackCloneApi.Controllers
 
             try
             {
-                if ((await _userRepository.GetUserByEmailAsync(request.Email)) != null) return BadRequest("user with this email already exists.");
+                if ((await _userRepository.GetByEmailAsync(request.Email)) != null) return BadRequest("user with this email already exists.");
 
                 User user = _mapper.Map<User>(request);
                 user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
-                _userRepository.AddUser(user);
+                _userRepository.Add(user);
 
                 if (!(await _userRepository.SaveChangesAsync())) return BadRequest("failed in creating the account.");
 
@@ -57,7 +57,7 @@ namespace TogglTrackCloneApi.Controllers
 
             try
             {
-                User? user = await _userRepository.GetUserByEmailAsync(request.Email);
+                User? user = await _userRepository.GetByEmailAsync(request.Email);
 
                 if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash)) return BadRequest("Invalid login credentials.");
 

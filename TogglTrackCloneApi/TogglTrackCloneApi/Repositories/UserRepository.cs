@@ -5,30 +5,16 @@ using TogglTrackCloneApi.Repositories.IRepositories;
 
 namespace TogglTrackCloneApi.Repositories
 {
-    public class UserRepository : BaseRepository, IUserRepository
+    public class UserRepository : GenericWithIdRepository<User>, IUserRepository
     {
-  /*      private readonly TTCloneContext _context;*/
 
         public UserRepository(TTCloneContext context) : base(context)
         {
-     /*       _context = context;*/
         }
 
-        public void AddUser(User user)
-        {
-            _context.Users.Add(user);
-        }
-
-        public async Task<User?> GetUserByEmailAsync(string email)
+        public async Task<User?> GetByEmailAsync(string email)
         {
             User? user = await _context.Users.FirstOrDefaultAsync(x => x.Email == email);
-
-            return user;
-        }
-
-        public async Task<User?> GetUserByUserId(int userId)
-        {
-            User? user = await _context.Users.FindAsync(userId);
 
             return user;
         }

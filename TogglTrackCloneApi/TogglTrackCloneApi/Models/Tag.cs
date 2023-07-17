@@ -2,7 +2,7 @@
 
 namespace TogglTrackCloneApi.Models
 {
-    public class Tag : BaseEntity
+    public class Tag : EntityWithId
     {
         public int Id { get; set; }
         [Required]

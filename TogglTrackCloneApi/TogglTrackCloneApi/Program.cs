@@ -7,6 +7,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
 using System.Text;
 using TogglTrackCloneApi.Data;
+using TogglTrackCloneApi.Filters;
 using TogglTrackCloneApi.Repositories;
 using TogglTrackCloneApi.Repositories.IRepositories;
 using TogglTrackCloneApi.Services;
@@ -42,18 +43,26 @@ builder.Services.AddCors();
 
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(
+    options =>
+    {
+        options.Filters.Add<ApiExceptionFilter>();
+    }
+);
 
 builder.Services.AddDbContext<TTCloneContext>();
 
 // Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ITagRepository, TagRepository>();
 builder.Services.AddScoped<IWorkspaceRepository, WorkspaceRepository>();
+builder.Services.AddScoped<IWorkspaceUserRepository, WorkspaceUserRepository>();
 builder.Services.AddScoped<IOrganisationRepository, OrganisationRepository>();
 builder.Services.AddScoped<IOrganisationUsersRepository, OrganisationUserRepository>();
 
 // Services
 builder.Services.AddScoped<IOrganisationService, OrganisationService>();
+builder.Services.AddScoped<IWorkspaceService, WorkspaceService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

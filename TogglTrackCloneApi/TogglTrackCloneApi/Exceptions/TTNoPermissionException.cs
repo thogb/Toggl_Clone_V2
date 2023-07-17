@@ -2,7 +2,7 @@
 {
     public class TTNoPermissionException : APIException
     {
-        public TTNoPermissionException(string message) : base(message)
+        public TTNoPermissionException(string message) : base(StatusCodes.Status401Unauthorized, message)
         {
             
         }

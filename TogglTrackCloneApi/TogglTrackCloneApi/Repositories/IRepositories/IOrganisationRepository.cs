@@ -2,8 +2,7 @@
 
 namespace TogglTrackCloneApi.Repositories.IRepositories
 {
-    public interface IOrganisationRepository : IBaseRepository
+    public interface IOrganisationRepository : IGenericWIthIDRepository<Organisation>
     {
-        void AddOrganisation(Organisation organisation);
     }
 }

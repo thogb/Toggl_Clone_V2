@@ -51,10 +51,8 @@ namespace TogglTrackCloneApi.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("JoinDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETUTCDATE()");
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("OrganisationId", "UserId");
 
@@ -255,10 +253,8 @@ namespace TogglTrackCloneApi.Migrations
                     b.Property<int>("WorkspaceId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("JoinDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETUTCDATE()");
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("UserId", "WorkspaceId");
 

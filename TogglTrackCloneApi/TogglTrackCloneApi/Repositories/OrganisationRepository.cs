@@ -4,15 +4,11 @@ using TogglTrackCloneApi.Repositories.IRepositories;
 
 namespace TogglTrackCloneApi.Repositories
 {
-    public class OrganisationRepository : BaseRepository, IOrganisationRepository
+    public class OrganisationRepository : GenericWithIdRepository<Organisation>, IOrganisationRepository
     {
         public OrganisationRepository(TTCloneContext context) : base(context)
         {
             
-        }
-        public void AddOrganisation(Organisation organisation)
-        {
-            _context.Organisations.Add(organisation);
         }
     }
 }

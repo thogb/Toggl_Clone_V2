@@ -11,7 +11,7 @@ using TogglTrackCloneApi.Services.IServices;
 namespace TogglTrackCloneApi.Controllers
 {
     [Authorize]
-    [Route("api/Organisation")]
+    [Route("api/Organisations")]
     [ApiController]
     public class OrganisationController : ControllerBase
     {
@@ -25,13 +25,13 @@ namespace TogglTrackCloneApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddOrganisation([FromBody] OrganisationAddDTO organisationAddDTO)
+        public async Task<ActionResult<OrganisationAddResponseDTO>> AddOrganisation([FromBody] OrganisationAddDTO organisationAddDTO)
         {
             try
             {
                 int userId = ControllerHelper.GetUserId(User);
-                await _organisationService.AddOrganisation(organisationAddDTO, userId);
-                return Ok("Success");
+                var response = await _organisationService.AddOrganisation(organisationAddDTO, userId);
+                return Ok(response);
             } catch (APIException apiE) { 
                 return BadRequest(apiE.Message);
             } catch (Exception ex) {

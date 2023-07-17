@@ -2,7 +2,7 @@
 
 namespace TogglTrackCloneApi.Models
 {
-    public class Workspace : BaseEntity
+    public class Workspace : EntityWithId
     {
         public int Id { get; set; }
         [Required]

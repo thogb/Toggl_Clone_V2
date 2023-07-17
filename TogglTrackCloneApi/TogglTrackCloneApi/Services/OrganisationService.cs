@@ -30,9 +30,9 @@ namespace TogglTrackCloneApi.Services
             this._mapper = mapper;
         }
 
-        public async Task AddOrganisation(OrganisationAddDTO organisationAddDTO, int userId)
+        public async Task<OrganisationAddResponseDTO> AddOrganisation(OrganisationAddDTO organisationAddDTO, int userId)
         {
-            User? user = await _userRepository.GetUserByUserId(userId);
+            User? user = await _userRepository.GetByIdAsync(userId);
             if (user == null) throw new TTServiceException("user does not exist");
 
             await CanUserAddOrganisation(userId);
@@ -45,31 +45,17 @@ namespace TogglTrackCloneApi.Services
             organisation.Workspaces = new List<Workspace>() { workspace };
             organisation.Users = new List<User>() { user };
 
-            _organisationRepository.AddOrganisation(organisation);
-            await _organisationRepository.SaveChangesAsync();
-/*
-            Organisation organisation = _mapper.Map<Organisation>(organisationAddDTO);
-            _organisationRepository.AddOrganisation(organisation);
+            _organisationRepository.Add(organisation);
             await _organisationRepository.SaveChangesAsync();
 
-            WorkspaceAddDTO workspaceAddDTO = new() {Name= "Default Workspace", OrganisationId = organisation.Id};
-            Workspace workspace = _mapper.Map<Workspace>(workspaceAddDTO);
-            _workspaceRepository.addWorkspace(workspace);
-            await _workspaceRepository.SaveChangesAsync();
-
-            await Console.Out.WriteLineAsync(user.Id.ToString());*/
-
-            /* organisation.OrganisationUsers = new List<OrganisationUser>() { new OrganisationUser() { OrganisationId = organisation.OrganisationId, UserId = userId, JoinDate = DateTime.UtcNow } };
-            user.WorkspaceUsers = new List<WorkspaceUser>() { new WorkspaceUser() { UserId = userId, WorkspaceId = workspace.WorkspaceId, JoinDate = DateTime.UtcNow } };*/
-
-            /*await _organisationRepository.SaveChangesAsync();*/
+            return new OrganisationAddResponseDTO() { OrganisationId=organisation.Id, OrganisationName=organisation.Name, WorkspaceId=workspace.Id, WorkspaceName=workspace.Name };
         }
 
         public async Task CanUserAddOrganisation(int userId)
         {
             int userCount = await _organisationUsersRepository.GetUserRecordCount(userId);
             await Console.Out.WriteLineAsync(userCount.ToString());
-            if (userCount >= 5) throw new APIException("User cannot be part of more than 5 organisations.");
+            if (userCount >= 5) throw new TTRuleException("User cannot be part of more than 5 organisations.");
         }
     }
 }

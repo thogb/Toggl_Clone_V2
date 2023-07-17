@@ -2,7 +2,7 @@
 {
     public class TTServiceException : APIException
     {
-        public TTServiceException(string message) : base(message)
+        public TTServiceException(string message) : base(StatusCodes.Status400BadRequest, message)
         {
         }
     }

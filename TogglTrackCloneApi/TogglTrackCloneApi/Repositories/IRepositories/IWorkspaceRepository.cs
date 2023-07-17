@@ -2,8 +2,7 @@
 
 namespace TogglTrackCloneApi.Repositories.IRepositories
 {
-    public interface IWorkspaceRepository : IBaseRepository
+    public interface IWorkspaceRepository : IGenericWIthIDRepository<Workspace>
     {
-        void addWorkspace(Workspace workspace);
     }
 }

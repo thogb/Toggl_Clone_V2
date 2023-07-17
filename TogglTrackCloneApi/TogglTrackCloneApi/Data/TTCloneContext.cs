@@ -19,6 +19,7 @@ namespace TogglTrackCloneApi.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Workspace> Workspaces { get; set; }
         public DbSet<OrganisationUser> OrganisationUser { get; set; }
+        public DbSet<WorkspaceUser> WorkspaceUser { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -98,17 +99,17 @@ namespace TogglTrackCloneApi.Data
             .WithMany(o => o.Users)
             .UsingEntity<OrganisationUser>
                 (ou => ou.HasOne<Organisation>().WithMany().HasForeignKey(ou => ou.OrganisationId),
-                ou => ou.HasOne<User>().WithMany().HasForeignKey(ou => ou.UserId))
-            .Property(ou => ou.JoinDate)
-            .HasDefaultValueSql("GETUTCDATE()");
+                ou => ou.HasOne<User>().WithMany().HasForeignKey(ou => ou.UserId));
+/*            .Property(ou => ou.JoinDate)
+            .HasDefaultValueSql("GETUTCDATE()");*/
             modelBuilder.Entity<User>()
                 .HasMany(u => u.Workspaces)
                 .WithMany(w => w.Users)
                 .UsingEntity<WorkspaceUser>
                     (wu => wu.HasOne<Workspace>().WithMany().HasForeignKey(wu => wu.WorkspaceId),
-                    wu => wu.HasOne<User>().WithMany().HasForeignKey(wu => wu.UserId))
-                .Property(wu => wu.JoinDate)
-                .HasDefaultValueSql("GETUTCDATE()");
+                    wu => wu.HasOne<User>().WithMany().HasForeignKey(wu => wu.UserId));
+/*                .Property(wu => wu.JoinDate)
+                .HasDefaultValueSql("GETUTCDATE()");*/
 
             // #userWorkspace
             // User may join many workspace.

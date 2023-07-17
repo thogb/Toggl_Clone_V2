@@ -2,10 +2,8 @@
 
 namespace TogglTrackCloneApi.Repositories.IRepositories
 {
-    public interface IUserRepository : IBaseRepository
+    public interface IUserRepository : IGenericWIthIDRepository<User>
     {
-        void AddUser(User user);
-        Task<User?> GetUserByEmailAsync(string email);
-        Task<User?> GetUserByUserId(int userId);
+        Task<User?> GetByEmailAsync(string email);
     }
 }

@@ -8,8 +8,8 @@ namespace TogglTrackCloneApi.Mappers
     {
         public TagProfile()
         {
-            this.CreateMap<TagDTO, Tag>()
-                .ReverseMap();
+            this.CreateMap<TagDTO, Tag>();
+            this.CreateMap<Tag, TagResponseDTO>();
         }
     }
 }
