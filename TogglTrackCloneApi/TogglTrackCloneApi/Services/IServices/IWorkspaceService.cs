@@ -15,5 +15,6 @@ namespace TogglTrackCloneApi.Services.IServices
         Task<bool> IsUserInWorkspace(int workspaceId, int userId);
         Task<bool> CanUserEditTimeEntry(int workspaceId, int userId);
         Task ValidateWorkspaceAndUserCanEditTimeEntry(int workspaceId, int userId);
+        Task<bool> isTagNameInWorkspace(int workspaceId, string tagName);
     }
 }

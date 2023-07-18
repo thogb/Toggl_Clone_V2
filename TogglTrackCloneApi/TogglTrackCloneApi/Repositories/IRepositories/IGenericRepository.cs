@@ -1,4 +1,6 @@
-﻿namespace TogglTrackCloneApi.Repositories.IRepositories
+﻿using System.Linq.Expressions;
+
+namespace TogglTrackCloneApi.Repositories.IRepositories
 {
     public interface IGenericRepository<T> : IBaseRepository
     {
@@ -8,5 +10,7 @@
         void Add(T entity);
         void Remove(T entity);
         void Update(T entity);
+        Task<T?> GetByFilterAsync(Expression<Func<T, bool>>? filter, bool tracked);
+        Task<List<T>> GetAllByFilterAsync(Expression<Func<T, bool>> filter, bool tracked = true);
     }
 }

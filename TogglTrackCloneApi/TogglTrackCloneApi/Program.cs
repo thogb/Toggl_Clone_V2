@@ -47,8 +47,8 @@ builder.Services.AddControllers(
     options =>
     {
         options.Filters.Add<ApiExceptionFilter>();
-    }
-);
+    })
+    .AddNewtonsoftJson();
 
 builder.Services.AddDbContext<TTCloneContext>();
 

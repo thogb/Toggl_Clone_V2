@@ -1,8 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using TogglTrackCloneApi.Data;
+using TogglTrackCloneApi.DTOs.BatchResponse;
 using TogglTrackCloneApi.DTOs.TimeEntry;
 using TogglTrackCloneApi.Helper;
+using TogglTrackCloneApi.ModelBinders;
 using TogglTrackCloneApi.Services.IServices;
 
 namespace TogglTrackCloneApi.Controllers
@@ -12,10 +17,12 @@ namespace TogglTrackCloneApi.Controllers
     public class TimeEntryController : ControllerBase
     {
         private readonly ITimeEntryService _timeEntryService;
+        private readonly TTCloneContext tTCloneContext;
 
-        public TimeEntryController(ITimeEntryService timeEntryService)
+        public TimeEntryController(ITimeEntryService timeEntryService, TTCloneContext tTCloneContext)
         {
             this._timeEntryService = timeEntryService;
+            this.tTCloneContext = tTCloneContext;
         }
 
         [Authorize]
@@ -53,6 +60,32 @@ namespace TogglTrackCloneApi.Controllers
             int userId = ControllerHelper.GetUserId(User);
             await _timeEntryService.UnRemoveTimeEntryAsync(tId, userId);
             return Ok();
+        }
+
+        [Authorize]
+        [HttpPatch("{tId:int}")]
+        public async Task<ActionResult<TimeEntryResponseDTO>> PatchTimeEntry(int tId, [FromBody] JsonPatchDocument<TimeEntryDTO> request)
+        {
+            int userId = ControllerHelper.GetUserId(User);
+            TimeEntryDTO timeEntryDTO  = new();
+            request.ApplyTo(timeEntryDTO, ModelState);
+            if (!ModelState.IsValid) return BadRequest("not valid");
+
+            TimeEntryResponseDTO response = await _timeEntryService.PatchTimeEntryAsync(tId, request, userId);
+            return Ok(response);
+        }
+
+        [Authorize]
+        [HttpPatch("patch")]
+        public async Task<ActionResult> PatchTimeEntries([FromQuery] int[] id, [FromBody] JsonPatchDocument<TimeEntryDTO> request)
+        {
+            int userId = ControllerHelper.GetUserId(User);
+            TimeEntryDTO timeEntryDTO = new();
+            request.ApplyTo(timeEntryDTO, ModelState);
+            if (!ModelState.IsValid) return BadRequest("not valid");
+
+            BatchResponseDTO response = await _timeEntryService.PatchTimeEntriesAsync(id, request, userId);
+            return Ok(response);
         }
     }
 }
