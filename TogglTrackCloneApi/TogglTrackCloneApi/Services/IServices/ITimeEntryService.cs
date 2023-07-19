@@ -9,7 +9,9 @@ namespace TogglTrackCloneApi.Services.IServices
         Task<TimeEntryResponseDTO> AddTimeEntry(TimeEntryDTO timeEntryDTO, int userId);
         Task<TimeEntryResponseDTO> UpdateTimeEntry(int timeEntryId, TimeEntryDTO timeEntryDTO, int userId);
         Task<bool> SoftRemoveTimeEntryAsync(int timeEntryId, int userId);
-        Task<bool> UnRemoveTimeEntryAsync(int timeEntryId, int userId);
+        Task<BatchResponseDTO> SoftRemoveTimeEntriesAsync(int[] timeEntryIds, int userId);
+        Task<bool> RecoverTimeEntryAsync(int timeEntryId, int userId);
+        Task<BatchResponseDTO> RecoverTimeEntriesAsync(int[] timeEntryIds, int userId);
         Task<TimeEntryResponseDTO> PatchTimeEntryAsync(int timeEntryId, JsonPatchDocument<TimeEntryDTO> request, int userId);
         Task<BatchResponseDTO> PatchTimeEntriesAsync(int[] timeEntryIds, JsonPatchDocument<TimeEntryDTO> request, int userId);
     }

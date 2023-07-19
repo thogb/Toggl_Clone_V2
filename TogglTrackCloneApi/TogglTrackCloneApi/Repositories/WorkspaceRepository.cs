@@ -13,6 +13,12 @@ namespace TogglTrackCloneApi.Repositories
         {
         }
 
+        public override void Update(Workspace entity)
+        {
+            base.Update(entity);
+            _context.Entry(entity).Property(w => w.OrganisationId).IsModified = false;
+        }
+
         public async Task<ICollection<Tag>> GetTagsFromTagIdList(int workspaceId, IEnumerable<int> tagIdList)
         {
             var workspace = await _context.Workspaces
@@ -28,10 +34,11 @@ namespace TogglTrackCloneApi.Repositories
             var workspace = await _context.Workspaces
                 .Where(w => w.Id == workspaceId)
                         .Include(w => w.Tags
-                    .Where(t => tagNameList.Contains(t.Name)))
+                            .Where(t => tagNameList.Contains(t.Name)))
                 .FirstOrDefaultAsync();
 
-            return workspace?.Tags ?? new List<Tag>();
+            var tags = workspace?.Tags ?? new List<Tag>();
+            return tags;
         }
     }
 }

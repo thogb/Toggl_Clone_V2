@@ -54,11 +54,11 @@ namespace TogglTrackCloneApi.Controllers
         }
 
         [Authorize]
-        [HttpPatch("{tId}/undo")]
-        public async Task<ActionResult> UndoDeletedTimeEntry(int tId)
+        [HttpPatch("recover/{tId}")]
+        public async Task<ActionResult> RecoverTimeEntry(int tId)
         {
             int userId = ControllerHelper.GetUserId(User);
-            await _timeEntryService.UnRemoveTimeEntryAsync(tId, userId);
+            await _timeEntryService.RecoverTimeEntryAsync(tId, userId);
             return Ok();
         }
 
@@ -76,8 +76,22 @@ namespace TogglTrackCloneApi.Controllers
         }
 
         [Authorize]
-        [HttpPatch("patch")]
-        public async Task<ActionResult> PatchTimeEntries([FromQuery] int[] id, [FromBody] JsonPatchDocument<TimeEntryDTO> request)
+        [HttpDelete("batch")]
+        public async Task<ActionResult<BatchResponseDTO>> DeleteTimeEntries([FromQuery] int[] id)
+        {
+            return Ok();
+        }
+
+        [Authorize]
+        [HttpPatch("recover/batch")]
+        public async Task<ActionResult<BatchResponseDTO>> RecoverTimeEntries([FromQuery] int[] id)
+        {
+            return Ok();
+        }
+
+        [Authorize]
+        [HttpPatch("batch")]
+        public async Task<ActionResult<BatchResponseDTO>> PatchTimeEntries([FromQuery] int[] id, [FromBody] JsonPatchDocument<TimeEntryDTO> request)
         {
             int userId = ControllerHelper.GetUserId(User);
             TimeEntryDTO timeEntryDTO = new();

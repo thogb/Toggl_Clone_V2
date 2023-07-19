@@ -7,7 +7,7 @@ namespace TogglTrackCloneApi.Repositories.IRepositories
     {
         Task<bool> IsTimeEntryInWorkspace(int timeEntryId, int workspaceId);
         void SoftRemove(TimeEntry timeEntry);
-        void UnDelete(TimeEntry timeEntry);
+        void Recover(TimeEntry timeEntry);
         Task<List<TimeEntry>> GetAllByFiltersIncludeTagsAsync(Expression<Func<TimeEntry, bool>> filter, bool tracked = true);
     }
 }

@@ -86,6 +86,11 @@ namespace TogglTrackCloneApi.Services
                 throw new TTIllegalEditException("tag with this name already exists");
         }
 
+        public async Task<bool> IsUserInWorkspace(int workspaceId, int userId)
+        {
+            return await _workspaceUserRepository.RecordExistsAsync(workspaceId, userId);
+        }
+
         public async Task<bool> CanUserEditTag(int workspaceId, int userId)
         {
             bool userCan = await IsUserInWorkspace(workspaceId, userId);
@@ -105,18 +110,26 @@ namespace TogglTrackCloneApi.Services
             return userCan;
         }
 
-        public async Task<bool> IsUserInWorkspace(int workspaceId, int userId)
-        {
-            return await _workspaceUserRepository.RecordExistsAsync(workspaceId, userId);
-        }
-
         public async Task ValidateWorkspaceAndUserCanEditTimeEntry(int workspaceId, int userId)
         {
             if (!await _workspaceRepository.Exists(workspaceId)) throw new TTNotFoundException("workspace does not exist");
-            if (!await CanUserEditTimeEntry(workspaceId, userId)) throw new TTNoPermissionException("no permission to edit in workspace");
+            if (!await CanUserEditTimeEntry(workspaceId, userId)) throw new TTNoPermissionException("no permission to edit time entry in workspace");
         }
 
-        public Task<bool> isTagNameInWorkspace(int workspaceId, string tagName)
+        public async Task<bool> CanUserEditProject(int workspaceId, int userId)
+        {
+            bool userCan = await IsUserInWorkspace(workspaceId, userId);
+
+            return userCan;
+        }
+
+        public async Task ValidateWorkspaceAndUserCanEditProject(int workspaceId, int userId)
+        {
+            if (!await _workspaceRepository.Exists(workspaceId)) throw new TTNotFoundException("workspace does not exist");
+            if (!await CanUserEditProject(workspaceId, userId)) throw new TTNoPermissionException("no permission to edit project in workspace");
+        }
+
+        public Task<bool> IsTagNameInWorkspace(int workspaceId, string tagName)
         {
             throw new NotImplementedException();
         }

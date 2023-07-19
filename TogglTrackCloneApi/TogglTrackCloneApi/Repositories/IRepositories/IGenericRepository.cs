@@ -10,7 +10,7 @@ namespace TogglTrackCloneApi.Repositories.IRepositories
         void Add(T entity);
         void Remove(T entity);
         void Update(T entity);
-        Task<T?> GetByFilterAsync(Expression<Func<T, bool>>? filter, bool tracked);
+        Task<T?> GetByFilterAsync(Expression<Func<T, bool>>? filter, bool tracked = true);
         Task<List<T>> GetAllByFilterAsync(Expression<Func<T, bool>> filter, bool tracked = true);
     }
 }

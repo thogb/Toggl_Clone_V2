@@ -6,11 +6,12 @@ namespace TogglTrackCloneApi.ValidationAttributes
     {
         public override bool IsValid(object? value)
         {
-            if (value == null) return false;
-            var idList = value as IEnumerable<int>;
-            foreach(int id in idList)
+            if (value == null) return true;
+            var strs = value as IEnumerable<string>;
+            if (strs == null) return false;
+            foreach(string tagName in strs)
             {
-                if (id <= 0) return false;
+                if (tagName == string.Empty) return false;
             }
             return true;
         }

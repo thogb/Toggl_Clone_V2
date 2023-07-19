@@ -16,13 +16,15 @@ namespace TogglTrackCloneApi.Services
         private readonly IWorkspaceService _workspaceService;
         private readonly IWorkspaceRepository _workspaceRepository;
         private readonly ITimeEntryTagRepository _timeEntryTagRepository;
+        private readonly ITagRepository _tagRepository;
 
         public TimeEntryService(
             IMapper mapper,
             ITimeEntryRepository timeEntryRepository,
             IWorkspaceService workspaceService,
             IWorkspaceRepository workspaceRepository,
-            ITimeEntryTagRepository timeEntryTagRepository
+            ITimeEntryTagRepository timeEntryTagRepository,
+            ITagRepository tagRepository
             )
         {
             this._mapper = mapper;
@@ -30,6 +32,7 @@ namespace TogglTrackCloneApi.Services
             this._workspaceService = workspaceService;
             this._workspaceRepository = workspaceRepository;
             this._timeEntryTagRepository = timeEntryTagRepository;
+            this._tagRepository = tagRepository;
         }
 
         public async Task<TimeEntryResponseDTO> AddTimeEntry(TimeEntryDTO timeEntryDTO, int userId)
@@ -99,7 +102,7 @@ namespace TogglTrackCloneApi.Services
             return true;
         }
 
-        public async Task<bool> UnRemoveTimeEntryAsync(int timeEntryId, int userId)
+        public async Task<bool> RecoverTimeEntryAsync(int timeEntryId, int userId)
         {
             var timeEntry = await _timeEntryRepository.GetByIdAsync(timeEntryId);
             if (timeEntry == null) throw new TTNotFoundException("time entry is not found");
@@ -107,7 +110,7 @@ namespace TogglTrackCloneApi.Services
             int workspaceId = timeEntry.WorkspaceId;
             await _workspaceService.ValidateWorkspaceAndUserCanEditTimeEntry(workspaceId, userId);
 
-            _timeEntryRepository.UnDelete(timeEntry);
+            _timeEntryRepository.Recover(timeEntry);
             await _timeEntryRepository.SaveChangesAsync();
             return true;
         }
@@ -177,7 +180,9 @@ namespace TogglTrackCloneApi.Services
                             PopulateFailure(innerTimeEntries, batchResponseDTO, "duplicate tags found");
                             continue;
                         }
-                        tags = await _workspaceRepository.GetTagsFromTagNameList(workspaceId, tagNames);
+                        /*tags = await _workspaceRepository.GetTagsFromTagNameList(workspaceId, tagNames);*/
+                        tags = await _tagRepository
+                            .GetAllByFilterAsync(t => t.WorkspaceId == workspaceId && tagNames.Contains(t.Name));
                         if (tags.Count != timeEntryDTO.Tags.Count())
                         {
                             PopulateFailure(innerTimeEntries, batchResponseDTO, "invalid tags found");
@@ -210,9 +215,12 @@ namespace TogglTrackCloneApi.Services
 
         private async Task<ICollection<Tag>> ValidateAndGetTagsFromTagNames(TimeEntryDTO timeEntryDTO, int workspaceId)
         {
+            if (!timeEntryDTO.Tags.Any()) return new List<Tag>();
             var tagNames = timeEntryDTO.Tags.Distinct().ToList();
             if (tagNames.Count != tagNames.Count) throw new TTIllegalEditException("Duplicate tags found in time entry");
-            var tags = await _workspaceRepository.GetTagsFromTagNameList(workspaceId, tagNames);
+            /*var tags = await _workspaceRepository.GetTagsFromTagNameList(workspaceId, tagNames);*/
+            var tags = await _tagRepository
+                            .GetAllByFilterAsync(t => t.WorkspaceId == workspaceId && tagNames.Contains(t.Name));
             if (tags.Count != timeEntryDTO.Tags.Count()) throw new TTIllegalEditException("invalid tags found in time entry");
 
             return tags;
@@ -226,6 +234,16 @@ namespace TogglTrackCloneApi.Services
                     Id = te.Id,
                     Message = errorMessage
                 }));
+        }
+
+        public Task<BatchResponseDTO> SoftRemoveTimeEntriesAsync(int[] timeEntryIds, int userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<BatchResponseDTO> RecoverTimeEntriesAsync(int[] timeEntryIds, int userId)
+        {
+            throw new NotImplementedException();
         }
     }
 }
