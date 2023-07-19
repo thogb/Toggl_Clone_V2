@@ -6,6 +6,12 @@ namespace TogglTrackCloneApi.Filters
 {
     public class ApiExceptionFilter : ExceptionFilterAttribute
     {
+        private readonly ILogger<ApiExceptionFilter> _logger;
+
+        public ApiExceptionFilter(ILogger<ApiExceptionFilter> logger)
+        {
+            this._logger = logger;
+        }
         public override void OnException(ExceptionContext context)
         {
             string message = "Server Error";
@@ -21,6 +27,7 @@ namespace TogglTrackCloneApi.Filters
             }
 
             context.Result = new JsonResult(new ApiError { Message=message});
+            _logger.LogError(context.Exception.ToString());
 
             base.OnException(context);
         }

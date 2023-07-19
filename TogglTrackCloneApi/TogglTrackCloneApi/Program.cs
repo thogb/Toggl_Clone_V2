@@ -47,14 +47,15 @@ builder.Services.AddControllers(
     options =>
     {
         options.Filters.Add<ApiExceptionFilter>();
-    }
-);
+    })
+    .AddNewtonsoftJson();
 
 builder.Services.AddDbContext<TTCloneContext>();
 
 // Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ITagRepository, TagRepository>();
+builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddScoped<ITimeEntryRepository, TimeEntryRepository>();
 builder.Services.AddScoped<ITimeEntryTagRepository, TimeEntryTagRepository>();
 builder.Services.AddScoped<IWorkspaceRepository, WorkspaceRepository>();
@@ -66,6 +67,7 @@ builder.Services.AddScoped<IOrganisationUsersRepository, OrganisationUserReposit
 builder.Services.AddScoped<IOrganisationService, OrganisationService>();
 builder.Services.AddScoped<IWorkspaceService, WorkspaceService>();
 builder.Services.AddScoped<ITimeEntryService, TimeEntryService>();
+builder.Services.AddScoped<IProjectService, ProjectService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

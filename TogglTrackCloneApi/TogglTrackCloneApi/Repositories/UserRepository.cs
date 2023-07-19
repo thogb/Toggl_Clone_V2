@@ -12,6 +12,12 @@ namespace TogglTrackCloneApi.Repositories
         {
         }
 
+        public override void Update(User entity)
+        {
+            base.Update(entity);
+            _context.Entry(entity).Property(u => u.PasswordHash).IsModified = false;
+        }
+
         public async Task<User?> GetByEmailAsync(string email)
         {
             User? user = await _context.Users.FirstOrDefaultAsync(x => x.Email == email);

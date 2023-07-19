@@ -12,9 +12,14 @@ namespace TogglTrackCloneApi.Repositories
         {
         }
 
-        async Task<bool> ITagRepository.IsTagInWorkSpace(int tagId, int workspaceId)
+        public async Task<bool> IsTagInWorkSpace(int tagId, int workspaceId)
         {
             return await _context.Tags.AnyAsync(t => t.Id == tagId && t.WorkspaceId == workspaceId);
+        }
+
+        public async Task<bool> IsTagNameInWorkSpace(string tagName, int workspaceId)
+        {
+            return await _context.Tags.AnyAsync(t => t.Name == tagName && t.WorkspaceId == workspaceId);
         }
 
         public override void Update(Tag entity)

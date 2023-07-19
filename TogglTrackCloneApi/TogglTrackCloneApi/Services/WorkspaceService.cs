@@ -30,9 +30,12 @@ namespace TogglTrackCloneApi.Services
         public async Task<TagResponseDTO> AddTagAsync(int workspaceId, int userId, TagDTO tagDTO)
         {
             await ValidateUserCanEditTag(workspaceId, userId);
+            await ValidateTagCanBeAdded(workspaceId, tagDTO);
+
             Tag tag = _mapper.Map<Tag>(tagDTO);
             tag.WorkspaceId = workspaceId;
             tag.UserId = userId;
+
             _tagRepository.Add(tag);
             await _tagRepository.SaveChangesAsync();
             return _mapper.Map<TagResponseDTO>(tag);
@@ -42,6 +45,7 @@ namespace TogglTrackCloneApi.Services
         {
             await ValidateUserCanEditTag(workspaceId, userId);
             await ValidateTagInWorkSpace(workspaceId, tagId);
+
             _tagRepository.Remove(new Tag { Id = tagId });
             await _tagRepository.SaveChangesAsync();
             return true; 
@@ -51,9 +55,12 @@ namespace TogglTrackCloneApi.Services
         {
             await ValidateUserCanEditTag(workspaceId, userId);
             await ValidateTagInWorkSpace(workspaceId, tagId);
+            await ValidateTagCanBeAdded(workspaceId, tagDTO);
+
             Tag tag = _mapper.Map<Tag>(tagDTO);
             tag.Id = tagId;
             _tagRepository.Update(tag);
+
             await _tagRepository.SaveChangesAsync();
             return _mapper.Map<TagResponseDTO>(tag);
         }
@@ -71,6 +78,17 @@ namespace TogglTrackCloneApi.Services
         private Task ValidateUserCanEditTimeEntry(int workspaceId, int userId)
         {
             throw new NotImplementedException();
+        }
+
+        private async Task ValidateTagCanBeAdded(int workspaceId, TagDTO tagDTO)
+        {
+            if (await _tagRepository.IsTagNameInWorkSpace(tagDTO.Name, workspaceId))
+                throw new TTIllegalEditException("tag with this name already exists");
+        }
+
+        public async Task<bool> IsUserInWorkspace(int workspaceId, int userId)
+        {
+            return await _workspaceUserRepository.RecordExistsAsync(workspaceId, userId);
         }
 
         public async Task<bool> CanUserEditTag(int workspaceId, int userId)
@@ -92,15 +110,28 @@ namespace TogglTrackCloneApi.Services
             return userCan;
         }
 
-        public async Task<bool> IsUserInWorkspace(int workspaceId, int userId)
-        {
-            return await _workspaceUserRepository.RecordExistsAsync(workspaceId, userId);
-        }
-
         public async Task ValidateWorkspaceAndUserCanEditTimeEntry(int workspaceId, int userId)
         {
             if (!await _workspaceRepository.Exists(workspaceId)) throw new TTNotFoundException("workspace does not exist");
-            if (!await CanUserEditTimeEntry(workspaceId, userId)) throw new TTNoPermissionException("no permission to edit in workspace");
+            if (!await CanUserEditTimeEntry(workspaceId, userId)) throw new TTNoPermissionException("no permission to edit time entry in workspace");
+        }
+
+        public async Task<bool> CanUserEditProject(int workspaceId, int userId)
+        {
+            bool userCan = await IsUserInWorkspace(workspaceId, userId);
+
+            return userCan;
+        }
+
+        public async Task ValidateWorkspaceAndUserCanEditProject(int workspaceId, int userId)
+        {
+            if (!await _workspaceRepository.Exists(workspaceId)) throw new TTNotFoundException("workspace does not exist");
+            if (!await CanUserEditProject(workspaceId, userId)) throw new TTNoPermissionException("no permission to edit project in workspace");
+        }
+
+        public Task<bool> IsTagNameInWorkspace(int workspaceId, string tagName)
+        {
+            throw new NotImplementedException();
         }
     }
 }

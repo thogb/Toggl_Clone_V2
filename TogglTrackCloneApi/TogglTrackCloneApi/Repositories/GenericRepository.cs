@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using TogglTrackCloneApi.Data;
 using TogglTrackCloneApi.Models;
 using TogglTrackCloneApi.Repositories.IRepositories;
@@ -24,6 +25,22 @@ namespace TogglTrackCloneApi.Repositories
         public virtual async Task<IEnumerable<T>> GetAllAsync()
         {
             return await _context.Set<T>().ToListAsync();
+        }
+
+        public virtual async Task<List<T>> GetAllByFilterAsync(Expression<Func<T, bool>> filter, bool tracked = true)
+        {
+            IQueryable<T> query = _context.Set<T>();
+            if (!tracked) query = query.AsNoTracking();
+            if (filter != null) query = query.Where(filter);
+            return await query.ToListAsync();
+        }
+
+        public virtual async Task<T?> GetByFilterAsync(Expression<Func<T, bool>>? filter = null, bool tracked = true)
+        {
+            IQueryable<T> query = _context.Set<T>();
+            if (!tracked) query = query.AsNoTracking();
+            if (filter != null) query = query.Where(filter);
+            return await query.FirstOrDefaultAsync();
         }
 
         public virtual async Task<T?> GetByIdAsync(int id)

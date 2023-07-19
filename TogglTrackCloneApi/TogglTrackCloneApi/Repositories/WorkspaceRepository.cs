@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
+using System.Linq;
 using TogglTrackCloneApi.Data;
 using TogglTrackCloneApi.Models;
 using TogglTrackCloneApi.Repositories.IRepositories;
@@ -11,6 +13,12 @@ namespace TogglTrackCloneApi.Repositories
         {
         }
 
+        public override void Update(Workspace entity)
+        {
+            base.Update(entity);
+            _context.Entry(entity).Property(w => w.OrganisationId).IsModified = false;
+        }
+
         public async Task<ICollection<Tag>> GetTagsFromTagIdList(int workspaceId, IEnumerable<int> tagIdList)
         {
             var workspace = await _context.Workspaces
@@ -19,6 +27,18 @@ namespace TogglTrackCloneApi.Repositories
                     .Where(t => tagIdList.Contains(t.Id)))
                 .FirstOrDefaultAsync();
             return workspace?.Tags ?? new List<Tag>();
+        }
+
+        public async Task<ICollection<Tag>> GetTagsFromTagNameList(int workspaceId, IEnumerable<string> tagNameList)
+        {
+            var workspace = await _context.Workspaces
+                .Where(w => w.Id == workspaceId)
+                        .Include(w => w.Tags
+                            .Where(t => tagNameList.Contains(t.Name)))
+                .FirstOrDefaultAsync();
+
+            var tags = workspace?.Tags ?? new List<Tag>();
+            return tags;
         }
     }
 }

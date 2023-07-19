@@ -19,7 +19,7 @@ namespace TogglTrackCloneApi.DTOs.TimeEntry
         public int WorkspaceId { get; set; }
         public int? ProjectId { get; set; } = null;
         [Required]
-        [ValidateIdList(ErrorMessage = "Tag id list is invalid")]
-        public IEnumerable<int> TagIds { get; set; } = new List<int>();
+        [ValidateIdList(ErrorMessage = "Tag name list is invalid")]
+        public IEnumerable<string> Tags { get; set; } = new List<string>();
     }
 }
