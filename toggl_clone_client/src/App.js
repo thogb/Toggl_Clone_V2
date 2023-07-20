@@ -1,18 +1,11 @@
-import {
-  CssBaseline,
-  ThemeProvider,
-  alpha,
-  createTheme,
-  darken,
-} from "@mui/material";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
+import { Route, Routes } from "react-router-dom";
 import TimerPage from "./scenes/timerPage/TimerPage";
 import { useEffect, useMemo } from "react";
 import { themeSettings } from "./theme";
 import ThemePage from "./scenes/themePage/ThemePage";
 import "./App.css";
 import HomePage from "./scenes/homePage/HomePage";
-import NavBar from "./scenes/navbar/NavBar";
 import TestingPage from "./scenes/testingPage/TestingPage";
 import {
   generateDateGroupedEntries,
@@ -27,6 +20,7 @@ import TrackPageWrapper from "./routes/TrackPageWrapper";
 import { ROUTES } from "./routes/Routes";
 import DefaultRoute from "./routes/DefaultRoute";
 import UnAuthorizedPageWrapper from "./routes/UnAuthorizedPageWrapper";
+import DashBoard from "./scenes/dashBoard/DashBoard";
 
 function App() {
   const mode = "light";
@@ -52,7 +46,7 @@ function App() {
             </Route>
           </Route>
           <Route element={<AuthorizedPageWrapper />}>
-            <Route path="/" element={<NavBar />}>
+            <Route element={<DashBoard />}>
               <Route path="/" element={<HomePage />} />
               <Route path={ROUTES.TIMER} element={<TimerPage />} />
               <Route path="/theme" element={<ThemePage />} />

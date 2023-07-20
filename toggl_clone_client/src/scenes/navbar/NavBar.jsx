@@ -1,17 +1,6 @@
 import { useTheme } from "@emotion/react";
-import {
-  AppBar,
-  Badge,
-  Box,
-  Drawer,
-  IconButton,
-  Toolbar,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
-import React, { useState } from "react";
-import { Outlet } from "react-router-dom";
-import { APPBAR_HEIGHT, DRAWER_WIDTH } from "../../utils/constants";
+import { Badge, Box, Typography, useMediaQuery } from "@mui/material";
+import React from "react";
 import SideNavBarButton from "./SideNavBarButton";
 import HelpIcon from "@mui/icons-material/Help";
 import NotificationsIcon from "@mui/icons-material/Notifications";
@@ -32,31 +21,22 @@ import PowerIcon from "@mui/icons-material/Power";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import CorporateFareIcon from "@mui/icons-material/CorporateFare";
 import SettingsIcon from "@mui/icons-material/Settings";
-import MenuIcon from "@mui/icons-material/Menu";
 import TTTimerIcon from "./TTTimerIcon";
 import { useSelector } from "react-redux";
 import { formatSecondHMMSS } from "../../utils/TTDateUtil";
 
-const NavBar = () => {
+const NavBar = ({ onClose = () => {} }) => {
   const timerStarted = useSelector((state) => state.currentEntry.timerStarted);
   const duration = useSelector((state) => state.currentEntry.duration);
-
-  const [isMDrawerOpen, setIsMDrawerOpen] = useState(false);
 
   const theme = useTheme();
   const belowMd = useMediaQuery(theme.breakpoints.down("md"));
 
-  const drawerWidth = DRAWER_WIDTH;
-  const appbarHeight = APPBAR_HEIGHT;
   const leftDrawerWidth = 47;
 
   const username = "Test";
 
-  const handleDrawerToggle = () => {
-    setIsMDrawerOpen(!isMDrawerOpen);
-  };
-
-  const drawer = (
+  return (
     <Box
       display={"flex"}
       flexDirection={"row"}
@@ -81,7 +61,7 @@ const NavBar = () => {
         {/* top */}
         <Box width={"100%"} display={"flex"} flexDirection={"column"}>
           {belowMd && (
-            <SideNavBarButton onClick={() => setIsMDrawerOpen(false)}>
+            <SideNavBarButton onClick={onClose}>
               <Box
                 bgcolor={"primary.light"}
                 display={"flex"}
@@ -249,89 +229,6 @@ const NavBar = () => {
             />
           </TTSideMenuList>
         </Box>
-      </Box>
-    </Box>
-  );
-
-  return (
-    <Box
-    // height={"100%"}
-    // minHeight={"100%"}
-    // overflow={"hidden"}
-    >
-      {/* Drawer */}
-      {belowMd && (
-        <Drawer
-          variant="temporary"
-          open={isMDrawerOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{ keepMounted: true }}
-          sx={{
-            "& .MuiDrawer-paper": {
-              boxSizing: "border-box",
-              width: { xs: drawerWidth * 2.0, md: drawerWidth },
-            },
-          }}
-        >
-          {drawer}
-        </Drawer>
-      )}
-      <Drawer
-        variant="permanent"
-        sx={{
-          "& .MuiDrawer-paper": {
-            boxSizing: "border-box",
-            width: { xs: 0, md: drawerWidth },
-            transition: "all 0.2s linear",
-            borderRight: "none",
-          },
-        }}
-      >
-        {drawer}
-      </Drawer>
-
-      {/* Main Page */}
-      <Box
-        pl={{ xs: "0", md: `${drawerWidth}px` }}
-        pt={{ xs: `${appbarHeight}px`, md: "0px" }}
-        sx={{
-          // minHeight: "100vh",
-          // height: "100%",
-          position: "relative",
-          "&>:nth-of-type(n+1) header:first-of-type": {
-            left: `${DRAWER_WIDTH}px`,
-            [theme.breakpoints.down("md")]: {
-              top: `${appbarHeight}px`,
-              left: 0,
-            },
-          },
-        }}
-      >
-        {/* Topbar */}
-        <AppBar position="fixed" sx={{ display: { xs: "block", md: "none" } }}>
-          <Toolbar sx={{ height: `${appbarHeight}px` }}>
-            <IconButton
-              sx={{ color: "white", mr: (theme) => theme.spacing(1) }}
-              onClick={handleDrawerToggle}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography
-              variant="h4"
-              color={"secondary.light"}
-              fontWeight={900}
-              mr={1}
-            >
-              toggl
-            </Typography>
-            <Typography variant="h5" color={"secondary.light"}>
-              track
-            </Typography>
-          </Toolbar>
-        </AppBar>
-
-        {/* main content */}
-        <Outlet />
       </Box>
     </Box>
   );
