@@ -4,6 +4,10 @@ import entryListReducer from "./entryListSlice";
 import groupedEntryListReducer from "./groupedEntryListSlice";
 import authReducer from "./authSlice";
 import { ttCloneApi } from "./apiSlice";
+import workspacesReducer from "./workspaceSlice";
+import organisationsReducer from "./organisationSlice";
+import tagsReducer from "./tagSlice";
+import projectsReducer from "./projectSlice";
 
 export const store = configureStore({
   reducer: combineReducers({
@@ -11,6 +15,10 @@ export const store = configureStore({
     entryList: entryListReducer,
     groupedEntryList: groupedEntryListReducer,
     auth: authReducer,
+    organisations: organisationsReducer,
+    workspaces: workspacesReducer,
+    tags: tagsReducer,
+    projects: projectsReducer,
     [ttCloneApi.reducerPath]: ttCloneApi.reducer,
   }),
   middleware: (getDefaultMiddleware) =>
