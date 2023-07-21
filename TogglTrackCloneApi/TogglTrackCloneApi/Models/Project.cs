@@ -4,6 +4,11 @@ namespace TogglTrackCloneApi.Models
 {
     public class Project : EntityWithId
     {
+        public Project()
+        {
+            this.TimeEntries = new List<TimeEntry>();
+        }
+
         public int Id { get; set; }
         [Required]
         [StringLength(255, MinimumLength = 4)]
@@ -18,7 +23,7 @@ namespace TogglTrackCloneApi.Models
         public DateTime? DeleteDate { get; set; } = null;
         public int WorkspaceId { get; set; }
         public Workspace? Workspace { get; set; }
-        public ICollection<TimeEntry>? TimeEntries { get; set; }
+        public ICollection<TimeEntry> TimeEntries { get; set; }
         /*public ICollection<User>? Users{ get; set; }*/
     }
 }

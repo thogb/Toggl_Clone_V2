@@ -107,6 +107,12 @@ const adminPaths = {
 };
 
 const NavBar = ({ loading = false, onClose = () => {} }) => {
+  const currentOrganisation = useSelector(
+    (state) => state.organisations.currentOrganisation
+  );
+  const currentWorkspace = useSelector(
+    (state) => state.workspaces.currentWorkspace
+  );
   const timerStarted = useSelector((state) => state.currentEntry.timerStarted);
   const duration = useSelector((state) => state.currentEntry.duration);
 
@@ -122,7 +128,7 @@ const NavBar = ({ loading = false, onClose = () => {} }) => {
   const username = "Test";
 
   const handleWorkspaceClick = () => {
-    if (!loading) {
+    if (!loading && currentWorkspace?.name && currentOrganisation?.name) {
     }
   };
 
@@ -237,7 +243,9 @@ const NavBar = ({ loading = false, onClose = () => {} }) => {
               variant="h6"
               sx={{ color: "white", fontSize: "1rem" }}
             >
-              {loading ? "Loading..." : `${username}'s workspaces`}
+              {loading || !currentOrganisation?.name
+                ? "Loading..."
+                : currentOrganisation?.name}
             </Typography>
             <Typography
               noWrap
@@ -248,7 +256,9 @@ const NavBar = ({ loading = false, onClose = () => {} }) => {
                 textTransform: "uppercase",
               }}
             >
-              {loading ? "Loading..." : `${username}'s organisation`}
+              {loading || !currentOrganisation?.name
+                ? "Loading..."
+                : currentWorkspace?.name}
             </Typography>
           </Box>
           {!loading && (

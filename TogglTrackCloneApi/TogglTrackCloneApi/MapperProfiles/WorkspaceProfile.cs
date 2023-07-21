@@ -8,7 +8,8 @@ namespace TogglTrackCloneApi.MapperProfiles
     {
         public WorkspaceProfile()
         {
-            this.CreateMap<WorkspaceAddDTO, Workspace>(); ;
+            this.CreateMap<WorkspaceAddDTO, Workspace>();
+            this.CreateMap<Workspace, WorkspaceResponseDTO>();
         }
     }
 }

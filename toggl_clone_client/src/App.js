@@ -31,11 +31,11 @@ function App() {
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
 
   // TODO: to be replaced with api calls
-  useEffect(() => {
-    const dateGroupedEntries = generateDateGroupedEntries(getRawEntryList());
+  // useEffect(() => {
+  //   const dateGroupedEntries = generateDateGroupedEntries(getRawEntryList());
 
-    dispatch(setDateGroupedEntries({ dateGroupedEntries: dateGroupedEntries }));
-  }, []);
+  //   dispatch(setDateGroupedEntries({ dateGroupedEntries: dateGroupedEntries }));
+  // }, []);
 
   return (
     <ThemeProvider theme={theme}>

@@ -15,10 +15,12 @@ export const TTSideMenuList = styled(List)(({ theme }) => ({
     minHeight: 32,
     paddingTop: 0,
     paddingBottom: 0,
-    "&:not(.Mui-selected):not(.Mui-disabled):hover": {
+    "&:hover": {
       backgroundColor: theme.palette.primary.light,
     },
-    "&.Mui-selected": { backgroundColor: theme.palette.secondary.main },
+    "&.Mui-selected,&.Mui-selected:hover": {
+      backgroundColor: theme.palette.secondary.main,
+    },
   },
   "& .MuiListItemIcon-root": {
     minWidth: 0,
