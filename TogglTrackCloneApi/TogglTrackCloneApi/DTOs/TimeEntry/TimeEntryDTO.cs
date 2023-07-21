@@ -6,7 +6,7 @@ namespace TogglTrackCloneApi.DTOs.TimeEntry
 {
     public class TimeEntryDTO
     {
-        [Required]
+/*        [Required]*/
         [StringLength(255, MinimumLength = 0, ErrorMessage = "description must be between 0 and 255 characters long")]
         public string Description { get; set; } = string.Empty;
         [Required]

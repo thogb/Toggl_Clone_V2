@@ -12,3 +12,7 @@ export const groupObj = (objs, groupKey) => {
   }
   return res;
 };
+
+export const generateApiBatchIdString = (ids) => {
+  return ids.map((id) => `id=${id}`).join("&");
+};

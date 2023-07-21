@@ -14,6 +14,24 @@ const timeEntryExample = {
 // #compare
 const isEqual = (timeEntry, groupData) => {};
 
+// #create
+const createFromApiResponse = (rawTimeEntry) => {
+  const startDate = new Date(timeEntry.startDate).getTime();
+  const stopDate = new Date(timeEntry.stopDate).getTime();
+  const tags = timeEntry.tags.map((tag) => tag.name);
+  tags.sort();
+  const timeEntry = {
+    id: rawTimeEntry.id,
+    description: rawTimeEntry.description,
+    startDate: startDate,
+    stopDate: stopDate,
+    duration: rawTimeEntry.duration,
+    tags: tags,
+    workspaceId: rawTimeEntry.workspaceId,
+    projectId: rawTimeEntry.projectId,
+  };
+};
+
 // #update
 const updateDateInfo = (timeEntry, dateInfo) => {
   timeEntry.duration = dateInfo.duration;
@@ -39,4 +57,9 @@ const getEntryData = (timeEntry) => {
   };
 };
 
-export const timeEntryUtil = { updateDateInfo, cloneTimeEntry, getEntryData };
+export const timeEntryUtil = {
+  createFromApiResponse,
+  updateDateInfo,
+  cloneTimeEntry,
+  getEntryData,
+};

@@ -21,6 +21,7 @@ import { ROUTES } from "./routes/Routes";
 import DefaultRoute from "./routes/DefaultRoute";
 import UnAuthorizedPageWrapper from "./routes/UnAuthorizedPageWrapper";
 import DashBoard from "./scenes/dashBoard/DashBoard";
+import ApiPage from "./scenes/testingPage/ApiPage";
 
 function App() {
   const mode = "light";
@@ -52,6 +53,7 @@ function App() {
               <Route path={ROUTES.TIMER} element={<TimerPage />} />
               <Route path="/theme" element={<ThemePage />} />
               <Route path="/testing" element={<TestingPage />} />
+              <Route path="/api" element={<ApiPage />} />
             </Route>
           </Route>
           <Route path="*" element={<DefaultRoute />} />

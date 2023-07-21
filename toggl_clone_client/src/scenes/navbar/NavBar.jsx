@@ -221,6 +221,7 @@ const NavBar = ({ onClose = () => {} }) => {
               icon={<PowerIcon />}
               to={"/testing"}
             />
+            <TTListItemButton label={"Api"} icon={<PowerIcon />} to={"/api"} />
           </TTSideMenuList>
         </Box>
 

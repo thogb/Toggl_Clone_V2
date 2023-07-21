@@ -7,8 +7,8 @@ import {
   groupedEntryUtil,
 } from "../utils/groupedEntryUtil";
 import { dateGroupEntryUtil } from "../utils/dateGroupEntryUtil";
-import { validateSections } from "@mui/x-date-pickers/internals/hooks/useField/useField.utils";
-import { validateDateTime } from "@mui/x-date-pickers/internals";
+import { ttCloneApi } from "./apiSlice";
+import { generateApiBatchIdString } from "../utils/otherUtil";
 
 const exampleState = {
   dateGroupedEntries: {
@@ -290,3 +290,75 @@ export const {
   addTimeEntry,
 } = allActions;
 export default groupedEntryListSlice.reducer;
+
+const extendedApi = ttCloneApi.injectEndpoints({
+  endpoints: (builder) => ({
+    getTimeEntries: builder.query({
+      query: () => "me/time_entries",
+    }),
+    addTimeEntry: builder.mutation({
+      query: ({ timeEntry }) => ({
+        url: `time_entries`,
+        method: "POST",
+        body: timeEntry,
+      }),
+    }),
+    updateTimeEntry: builder.mutation({
+      query: ({ timeEntry }) => ({
+        url: `time_entries/${timeEntry.id}`,
+        method: "PUT",
+        body: timeEntry,
+      }),
+    }),
+    deleteTimeEntry: builder.mutation({
+      query: ({ id }) => ({
+        url: `time_entries/${id}`,
+        method: "DELETE",
+      }),
+    }),
+    recoverTimeEntry: builder.mutation({
+      query: ({ id }) => ({
+        url: `time_entries/recover/${id}`,
+        method: "PATCH",
+      }),
+    }),
+    patchTimeEntry: builder.mutation({
+      query: ({ id, patch }) => ({
+        url: `time_entries/${id}`,
+        method: "PATCH",
+        body: patch,
+      }),
+    }),
+    batchDeleteTimeEntry: builder.mutation({
+      query: ({ ids }) => ({
+        url: `time_entries/batch?${generateApiBatchIdString(ids)}`,
+        method: "DELETE",
+      }),
+    }),
+    batchRecoverTimeEntry: builder.mutation({
+      query: ({ ids }) => ({
+        url: `time_entries/recover/batch?${generateApiBatchIdString(ids)}`,
+        method: "PATCH",
+      }),
+    }),
+    batchPatchTimeEntry: builder.mutation({
+      query: ({ ids, patch }) => ({
+        url: `time_entries/batch?${generateApiBatchIdString(ids)}`,
+        method: "PATCH",
+        body: patch,
+      }),
+    }),
+  }),
+});
+
+export const {
+  useGetTimeEntriesQuery,
+  useAddTimeEntryMutation,
+  useUpdateTimeEntryMutation,
+  useDeleteTimeEntryMutation,
+  useRecoverTimeEntryMutation,
+  usePatchTimeEntryMutation,
+  useBatchDeleteTimeEntryMutation,
+  useBatchRecoverTimeEntryMutation,
+  useBatchPatchTimeEntryMutation,
+} = extendedApi;

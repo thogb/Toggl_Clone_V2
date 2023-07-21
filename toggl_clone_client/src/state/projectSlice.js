@@ -1,4 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { ttCloneApi } from "./apiSlice";
+import { groupObj } from "../utils/otherUtil";
 
 const initialState = {
   //   projects: {
@@ -21,7 +23,28 @@ const projectsSlice = createSlice({
   name: "projects",
   initialState,
   reducers: {},
-  extraReducers: (builder) => {},
+  extraReducers: (builder) => {
+    builder.addMatcher(
+      ttCloneApi.endpoints.getProjects.matchFulfilled,
+      (state, action) => {
+        const grouped = groupObj(action.payload, "workspaceId");
+        state.projects = grouped;
+        state.currentProject = action.payload[0];
+      }
+    );
+  },
 });
 
 export default projectsSlice.reducer;
+
+const extendedApi = ttCloneApi.injectEndpoints({
+  endpoints: (builder) => ({
+    getProjects: builder.query({
+      query: () => ({
+        url: "me/projects",
+      }),
+    }),
+  }),
+});
+
+export const { useGetProjectsQuery } = extendedApi;
