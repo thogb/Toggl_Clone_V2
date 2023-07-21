@@ -28,6 +28,7 @@ function App() {
   const dispatch = useDispatch();
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
 
+  // TODO: to be replaced with api calls
   useEffect(() => {
     const dateGroupedEntries = generateDateGroupedEntries(getRawEntryList());
 

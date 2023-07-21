@@ -24,10 +24,14 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import TTTimerIcon from "./TTTimerIcon";
 import { useSelector } from "react-redux";
 import { formatSecondHMMSS } from "../../utils/TTDateUtil";
+import ProfilePopper from "./ProfilePopper";
+import { useState } from "react";
 
 const NavBar = ({ onClose = () => {} }) => {
   const timerStarted = useSelector((state) => state.currentEntry.timerStarted);
   const duration = useSelector((state) => state.currentEntry.duration);
+
+  const [profileAnchorEl, setProfileAnchorEl] = useState(null);
 
   const theme = useTheme();
   const belowMd = useMediaQuery(theme.breakpoints.down("md"));
@@ -82,15 +86,27 @@ const NavBar = ({ onClose = () => {} }) => {
 
         {/* bottom */}
         <Box width={"100%"} display={"flex"} flexDirection={"column"}>
-          <SideNavBarButton>
-            <Box display={"flex"} flexDirection={"column"}>
-              <AccountCircleIcon
-                fontSize="large"
-                sx={{ color: orange[400], mb: 0.5 }}
-              />
-              <span style={{ fontSize: "8px", color: grey[500] }}>PROFILE</span>
-            </Box>
-          </SideNavBarButton>
+          <ProfilePopper
+            anchorEl={profileAnchorEl}
+            onClose={() => setProfileAnchorEl(null)}
+            placement={"right"}
+            offset={[-30, 8]}
+            triggerComponent={
+              <SideNavBarButton
+                onClick={(e) => setProfileAnchorEl(e.currentTarget)}
+              >
+                <Box display={"flex"} flexDirection={"column"}>
+                  <AccountCircleIcon
+                    fontSize="large"
+                    sx={{ color: orange[400], mb: 0.5 }}
+                  />
+                  <span style={{ fontSize: "8px", color: grey[500] }}>
+                    PROFILE
+                  </span>
+                </Box>
+              </SideNavBarButton>
+            }
+          />
           <SideNavBarButton>
             <Badge
               variant="dot"

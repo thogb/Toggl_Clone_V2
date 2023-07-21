@@ -28,7 +28,7 @@ namespace TogglTrackCloneApi.Controllers
         }
 
         [HttpPost("Register")]
-        public async Task<ActionResult<string>> Register(UserAuthDTO request)
+        public async Task<ActionResult<UserAuthResponseDTO>> Register(UserAuthDTO request)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -42,7 +42,12 @@ namespace TogglTrackCloneApi.Controllers
 
                 if (!(await _userRepository.SaveChangesAsync())) return BadRequest("failed in creating the account.");
 
-                return Ok("Successfully registered account");
+                UserAuthResponseDTO response = _mapper.Map<UserAuthResponseDTO>(user);
+                string token = CreateToken(user.Id, user.Email);
+                response.Token = token;
+                Response.Cookies.Append("jwt", token, new CookieOptions { HttpOnly = true });
+
+                return Ok(response);
             }
             catch (Exception ex)
             {

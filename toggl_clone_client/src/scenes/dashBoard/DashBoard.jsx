@@ -50,6 +50,7 @@ const DashBoard = () => {
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
               width: { xs: drawerWidth * 2.0, md: drawerWidth },
+              overflow: "unset",
             },
           }}
         >
@@ -64,6 +65,7 @@ const DashBoard = () => {
             width: { xs: 0, md: drawerWidth },
             transition: "all 0.2s linear",
             borderRight: "none",
+            overflow: "unset",
           },
         }}
       >

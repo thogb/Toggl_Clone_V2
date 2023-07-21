@@ -135,6 +135,7 @@ const SignInForm = ({ loginMode = false, onComplete, style }) => {
 
   const handleSubmit = (values, formikHelpers) => {
     console.log(values);
+    onComplete(values);
   };
 
   const handleVisibilityClick = () => {

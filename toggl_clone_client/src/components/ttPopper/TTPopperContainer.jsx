@@ -9,6 +9,8 @@ const StyledBox = styled(Box)(({ theme }) => ({
 const TTPopperContainer = ({ padding, children }) => {
   const style = {
     "--TTPopper-container-padding": padding ?? "16px",
+    display: "flex",
+    flexDirection: "column",
   };
 
   return <StyledBox style={style}>{children}</StyledBox>;
