@@ -11,7 +11,6 @@ import {
   generateDateGroupedEntries,
   setDateGroupedEntries,
 } from "./state/groupedEntryListSlice";
-import { getRawEntryList } from "./state/entryListSlice";
 import { useDispatch } from "react-redux";
 import SignUpPage from "./scenes/trackPage/SignUpPage";
 import LogInPage from "./scenes/trackPage/LogInPage";

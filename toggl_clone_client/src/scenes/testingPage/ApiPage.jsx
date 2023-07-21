@@ -1,7 +1,7 @@
 import { Box, Button } from "@mui/material";
 import React from "react";
 import { useAddTagMutation } from "../../state/tagSlice";
-import { getRawEntryList } from "../../state/entryListSlice";
+// import { getRawEntryList } from "../../state/entryListSlice";
 import { useAddTimeEntryMutation } from "../../state/groupedEntryListSlice";
 
 const workspaceId = 2002;
@@ -43,7 +43,8 @@ const ApiPage = () => {
   };
 
   const handleAddTimeEntries = () => {
-    const timeEntries = getRawEntryList();
+    // const timeEntries = getRawEntryList();
+    const timeEntries = [];
     const newTimeEntries = timeEntries.timeEntries.map((timeEntry) => {
       const startDate = new Date(timeEntry.startDate);
       const stopDate = new Date(timeEntry.stopDate);

@@ -2,48 +2,23 @@ import {
   Box,
   Button,
   InputAdornment,
-  InputBase,
   List,
   ListItem,
-  ListItemButton,
-  ListItemIcon,
   ListItemText,
   Menu,
   MenuItem,
-  Popover,
   Stack,
-  SvgIcon,
-  TextField,
-  Typography,
 } from "@mui/material";
-import {
-  DateCalendar,
-  DatePicker,
-  LocalizationProvider,
-  StaticDatePicker,
-  TimeIcon,
-} from "@mui/x-date-pickers";
+import { LocalizationProvider, TimeIcon } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import {
-  addSeconds,
-  format,
-  formatDuration,
-  isEqual,
-  isToday,
-  isValid,
-  parse,
-} from "date-fns";
-import dayjs from "dayjs";
+import { addSeconds, format } from "date-fns";
 import React, { useReducer, useState } from "react";
-import { isDateToday } from "../../utils/TTDateUtil";
 import TTPopOver from "../../components/ttPopOver/TTPopOver";
 import TTDateCalender from "../../components/TTDateCalender/TTDateCalender";
 import TTTimeTextField from "../../components/ttTimeTextField/TTTimeTextField";
 import { useTheme } from "@emotion/react";
-import { green, grey } from "@mui/material/colors";
+import { grey } from "@mui/material/colors";
 import TTTimeHMTextField from "../../components/ttTimeHMTextField/TTTimeHMTextField";
-import { REFERENCE_DATE } from "../../utils/constants";
 import TTPopper from "../../components/ttPopper/TTPopper";
 import {
   entryDatesReducer,

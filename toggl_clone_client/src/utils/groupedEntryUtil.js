@@ -3,16 +3,16 @@ import { isListEqual } from "./listUtil";
 import { timeEntryUtil } from "./TimeEntryUtil";
 
 // #example
-const groupedEntryExample = {
-  gId: "Wed, 21 Jun 2023 - 0", // from groupCount
-  description: "desc",
-  projectId: 1234123,
-  tags: ["tag1", "tag2"], //sorted as string
-  startDate: new Date().getTime(),
-  stopDate: new Date().getTime(),
-  totalDuration: 12,
-  entries: [],
-};
+// const groupedEntryExample = {
+//   gId: "Wed, 21 Jun 2023 - 0", // from groupCount
+//   description: "desc",
+//   projectId: 1234123,
+//   tags: ["tag1", "tag2"], //sorted as string
+//   startDate: new Date().getTime(),
+//   stopDate: new Date().getTime(),
+//   totalDuration: 12,
+//   entries: [],
+// };
 
 // #create
 const createGroupId = (count) => {

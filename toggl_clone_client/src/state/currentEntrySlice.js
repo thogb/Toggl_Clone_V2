@@ -2,83 +2,15 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { addDays, addSeconds, subDays } from "date-fns";
 import { addTE, addTimeEntry } from "./groupedEntryListSlice";
 
-const initialState = {
-  description: "",
-  projectId: null,
-  projectName: null,
-  tags: [],
-  tagsChecked: [],
-  duration: 0,
-  startDate: new Date().getTime(),
-  stopDate: new Date().getTime(),
-  timerStarted: false,
-};
-
-const testState = {
-  description: "",
-  projectId: null,
-  projectName: null,
-  // tags: [
-  //   "Java",
-  //   "Python",
-  //   "C",
-  //   ".net Core",
-  //   "React",
-  //   "Web",
-  //   "full stack",
-  //   "font end",
-  //   "back end",
-  //   "srd",
-  //   "cits1003",
-  //   "icts",
-  //   "osts",
-  //   "leetcode",
-  //   "brain training",
-  // ],
-  tags: [
-    "backend",
-    "Brain_training",
-    "C#",
-    "C#_Web",
-    "Dual-n-back",
-    "email",
-    "frontend",
-    "fullstack",
-    "ISC",
-    "ITCS",
-    "java",
-    "Leetcode",
-    ".net_Core",
-    ".net_Core_Web",
-    "newtest",
-    "OSTS",
-    "project",
-    "python",
-    "reactjs",
-    "Schulte_table",
-    "SRD",
-    "SRD_Assignment",
-    "SRD_Book",
-    "SRD_Lec",
-    "testtag",
-    "toggl_clone",
-    "uni_work",
-  ],
-  tagsChecked: [],
-  duration: 0,
-  startDate: new Date().getTime(),
-  stopDate: new Date().getTime(),
-  timerStarted: false,
-  timerInterval: null,
-};
-
 export const getInitialCurrentEntryState = () => {
   const newDate = Date.now();
   return {
     description: "",
-    projectId: null,
-    projectName: null,
-    tags: [],
+    // project: {
+    //   id: 1,
+    //   name: ""
+    // }
+    project: {},
     tagsChecked: [],
     duration: 0,
     startDate: newDate,
@@ -88,17 +20,6 @@ export const getInitialCurrentEntryState = () => {
 };
 
 const name = "currentEntry";
-const getIntialEntryData = () => {
-  return {
-    description: "",
-    projectId: null,
-    projectName: null,
-    tagsChecked: [],
-    duration: 0,
-    startDate: Date.now(),
-    stopDate: Date.now(),
-  };
-};
 
 const createTimerInterval = (dispatch) => {
   return setInterval(() => {
@@ -108,7 +29,7 @@ const createTimerInterval = (dispatch) => {
 
 export const currentEntrySlice = createSlice({
   name: name,
-  initialState: testState,
+  initialState: getInitialCurrentEntryState(),
   reducers: {
     updateDescription: (state, action) => {
       const { description } = action.payload;
@@ -167,13 +88,13 @@ export const currentEntrySlice = createSlice({
     resetEntryData: (state) => {
       return {
         ...state,
-        ...getIntialEntryData(),
+        ...getInitialCurrentEntryState(),
       };
     },
     resetEntryDataAndTimer: (state) => {
       return {
         ...state,
-        ...getIntialEntryData(),
+        ...getInitialCurrentEntryState(),
         timerStarted: false,
         timerInterval: null,
       };

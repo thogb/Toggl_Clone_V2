@@ -8,12 +8,12 @@ import {
 import { timeEntryUtil } from "./TimeEntryUtil";
 
 // #example
-const DateGroupedEntryExample = {
-  dateGroupId: "Wed, 21 Jun 2023",
-  date: Date.now(),
-  totalDuration: 0,
-  groupedEntries: [],
-};
+// const DateGroupedEntryExample = {
+//   dateGroupId: "Wed, 21 Jun 2023",
+//   date: Date.now(),
+//   totalDuration: 0,
+//   groupedEntries: [],
+// };
 
 // #create
 const createDateGroupId = (date) => {
