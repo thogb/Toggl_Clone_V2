@@ -7,7 +7,7 @@ const DefaultRoute = () => {
   const token = useSelector((state) => state.auth.token);
 
   if (!token) {
-    return <Navigate to={ROUTES.SIGNUP} />;
+    return <Navigate to={ROUTES.LOGIN} />;
   } else {
     return <Navigate to={ROUTES.TIMER} />;
   }

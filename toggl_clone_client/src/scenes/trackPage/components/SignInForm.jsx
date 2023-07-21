@@ -129,7 +129,12 @@ const initialValues = {
   password: "",
 };
 
-const SignInForm = ({ loginMode = false, onComplete, style }) => {
+const SignInForm = ({
+  errorMsg = null,
+  loginMode = false,
+  onComplete,
+  style,
+}) => {
   const theme = useTheme();
   const [showPassword, setShowPassword] = useState(false);
 
@@ -145,11 +150,15 @@ const SignInForm = ({ loginMode = false, onComplete, style }) => {
     <Box
       bgcolor={"primary.dark"}
       px={4.5}
-      py={5}
-      pt={5.5}
+      pb={5}
+      // py={5}
+      // pt={5.5}
       width={"100%"}
       style={style}
     >
+      <Typography pb={5} pt={1} color={"error"}>
+        {errorMsg}
+      </Typography>
       <Stack
         direction={{ xs: "column", sm: "row" }}
         spacing={2}

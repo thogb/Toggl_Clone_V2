@@ -21,7 +21,7 @@ const StyledLink = styled(Link)(({ theme }) => ({
 
 const SignUpPage = () => {
   const theme = useTheme();
-  const [registerUser, { isLoading }] = useRegisterUserMutation();
+  const [registerUser, { isLoading, error }] = useRegisterUserMutation();
 
   const onSignUp = async ({ email, password }) => {
     if (!isLoading) {
@@ -91,7 +91,7 @@ const SignUpPage = () => {
           gap={2}
         >
           <Box px={theme.spacing(3)}>
-            <SignInForm onComplete={onSignUp} />
+            <SignInForm errorMsg={error?.data} onComplete={onSignUp} />
           </Box>
           <Box padding={4} flexBasis={"40%"}>
             <Typography

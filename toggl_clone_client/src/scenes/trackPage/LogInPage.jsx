@@ -10,6 +10,7 @@ import TrackFooterTools from "./components/TrackFooterTools";
 import TrackFooter from "./components/TrackFooter";
 import { useNavigate } from "react-router-dom";
 import { relativeURL } from "../../utils/constants";
+import { useLoginUserMutation } from "../../state/authSlice";
 
 const signInFormOffset = 70;
 
@@ -17,6 +18,12 @@ const LogInPage = () => {
   const theme = useTheme();
   const navigate = useNavigate();
   const below800 = useMediaQuery("(max-width:800px)");
+
+  const [loginUser, { isLoading, error }] = useLoginUserMutation();
+
+  const handleLogin = ({ email, password }) => {
+    if (!isLoading) loginUser({ email, password });
+  };
 
   return (
     <Box minHeight={"100vh"} color={"white"}>
@@ -62,9 +69,11 @@ const LogInPage = () => {
       <Box bgcolor={"primary.light"} pb={14}>
         <SignInForm
           loginMode={true}
+          onComplete={handleLogin}
+          errorMsg={error?.data}
           style={{
             width: below800 ? "100%" : "680px",
-            paddingTop: theme.spacing(!below800 ? 10 : 5),
+            paddingTop: theme.spacing(!below800 ? 5 : 0),
             marginLeft: below800 ? 0 : "auto",
             marginRight: below800 ? 0 : "auto",
             marginBottom: below800 ? theme.spacing(5) : 0,
