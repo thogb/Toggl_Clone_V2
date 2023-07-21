@@ -65,7 +65,8 @@ const DashBoard = () => {
             width: { xs: 0, md: drawerWidth },
             transition: "all 0.2s linear",
             borderRight: "none",
-            overflow: "unset",
+            overflow: belowMd ? "hidden" : "unset",
+            // overflowY: belowMd ? "hidden" : "visible",
           },
         }}
       >

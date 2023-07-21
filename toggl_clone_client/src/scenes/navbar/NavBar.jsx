@@ -26,10 +26,91 @@ import { useSelector } from "react-redux";
 import { formatSecondHMMSS } from "../../utils/TTDateUtil";
 import ProfilePopper from "./ProfilePopper";
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 
-const NavBar = ({ onClose = () => {} }) => {
+const analysePaths = {
+  name: "analyse",
+  paths: [
+    {
+      name: "Reports",
+      path: "/theme",
+      icon: <ArticleIcon />,
+    },
+    {
+      name: "Insights",
+      path: "/insights",
+      icon: <AssessmentIcon />,
+    },
+  ],
+};
+
+const managePaths = {
+  name: "manage",
+  paths: [
+    {
+      name: "Projects",
+      path: "/projects",
+      icon: <FolderIcon />,
+    },
+    {
+      name: "Clients",
+      path: "/clients",
+      icon: <AccountBoxIcon />,
+    },
+    {
+      name: "Teams",
+      path: "/teams",
+      icon: <GroupIcon />,
+    },
+    {
+      name: "Tags",
+      path: "/tags",
+      icon: <LocalOfferIcon />,
+    },
+    {
+      name: "Integrations",
+      path: "/integrations",
+      icon: <PowerIcon />,
+    },
+    {
+      name: "Testing",
+      path: "/testing",
+      icon: <PowerIcon />,
+    },
+    {
+      name: "Api",
+      path: "/api",
+      icon: <PowerIcon />,
+    },
+  ],
+};
+
+const adminPaths = {
+  name: "admin",
+  paths: [
+    {
+      name: "Subscription",
+      path: "/subscription",
+      icon: <CreditCardIcon />,
+    },
+    {
+      name: "Organisation",
+      path: "/organisation",
+      icon: <CorporateFareIcon />,
+    },
+    {
+      name: "Settings",
+      path: "/settings",
+      icon: <SettingsIcon />,
+    },
+  ],
+};
+
+const NavBar = ({ loading = false, onClose = () => {} }) => {
   const timerStarted = useSelector((state) => state.currentEntry.timerStarted);
   const duration = useSelector((state) => state.currentEntry.duration);
+
+  const location = useLocation();
 
   const [profileAnchorEl, setProfileAnchorEl] = useState(null);
 
@@ -39,6 +120,11 @@ const NavBar = ({ onClose = () => {} }) => {
   const leftDrawerWidth = 47;
 
   const username = "Test";
+
+  const handleWorkspaceClick = () => {
+    if (!loading) {
+    }
+  };
 
   return (
     <Box
@@ -140,17 +226,19 @@ const NavBar = ({ onClose = () => {} }) => {
           justifyContent={"space-between"}
           sx={{
             "&:hover": {
-              cursor: "pointer",
+              cursor: loading ? "default" : "pointer",
             },
           }}
-          onClick={() => {}}
+          onClick={handleWorkspaceClick}
         >
-          <Box minWidth={0}>
+          <Box minWidth={0} visibility={loading ? "hidden" : "visible"}>
             <Typography
               noWrap
               variant="h6"
               sx={{ color: "white", fontSize: "1rem" }}
-            >{`${username}'s workspaces`}</Typography>
+            >
+              {loading ? "Loading..." : `${username}'s workspaces`}
+            </Typography>
             <Typography
               noWrap
               variant="body2"
@@ -159,91 +247,73 @@ const NavBar = ({ onClose = () => {} }) => {
                 fontSize: "0.75rem",
                 textTransform: "uppercase",
               }}
-            >{`${username}'s organisation`}</Typography>
+            >
+              {loading ? "Loading..." : `${username}'s organisation`}
+            </Typography>
           </Box>
-          <KeyboardArrowDownIcon sx={{ color: "primary1.main" }} />
+          {!loading && (
+            <KeyboardArrowDownIcon sx={{ color: "primary1.main" }} />
+          )}
         </Box>
 
         {/* main nav list */}
-        <Box overflow={"auto"} flexGrow={1}>
+        <Box overflow={"auto"} flexGrow={1} style={{ overflowX: "hidden" }}>
           <TTSectionHeading>track</TTSectionHeading>
           <TTSideMenuList>
             <TTListItemButton
               label={timerStarted ? formatSecondHMMSS(duration) : "Timer"}
               icon={<WatchLaterIcon />}
               to={"/timer"}
+              disabled={loading}
+              selected={location.pathname === "/timer"}
             />
           </TTSideMenuList>
 
-          <TTSectionHeading>analyse</TTSectionHeading>
+          {/* analyse */}
+          <TTSectionHeading>{analysePaths.name}</TTSectionHeading>
           <TTSideMenuList>
-            <TTListItemButton
-              label={"Reports"}
-              icon={<ArticleIcon />}
-              to={"/theme"}
-            />
-            <TTListItemButton
-              label={"Insights"}
-              icon={<AssessmentIcon />}
-              to={"/insights"}
-            />
+            {analysePaths.paths.map((item) => (
+              <TTListItemButton
+                key={item.name}
+                label={item.name}
+                icon={item.icon}
+                to={item.path}
+                disabled={loading}
+                selected={location.pathname === item.path}
+              />
+            ))}
           </TTSideMenuList>
 
-          <TTSectionHeading>manage</TTSectionHeading>
+          {/* manage */}
+          <TTSectionHeading>{managePaths.name}</TTSectionHeading>
           <TTSideMenuList>
-            <TTListItemButton
-              label={"Projects"}
-              icon={<FolderIcon />}
-              to={"/projects"}
-            />
-            <TTListItemButton
-              label={"Clients"}
-              icon={<AccountBoxIcon />}
-              to={"/clients"}
-            />
-            <TTListItemButton
-              label={"Team"}
-              icon={<GroupIcon />}
-              to={"/team"}
-            />
-            <TTListItemButton
-              label={"Tags"}
-              icon={<LocalOfferIcon />}
-              to={"/tags"}
-            />
-            <TTListItemButton
-              label={"Integerations"}
-              icon={<PowerIcon />}
-              to={"/integerations"}
-            />
-            <TTListItemButton
-              label={"Testing"}
-              icon={<PowerIcon />}
-              to={"/testing"}
-            />
-            <TTListItemButton label={"Api"} icon={<PowerIcon />} to={"/api"} />
+            {managePaths.paths.map((item) => (
+              <TTListItemButton
+                key={item.name}
+                label={item.name}
+                icon={item.icon}
+                to={item.path}
+                disabled={loading}
+                selected={location.pathname === item.path}
+              />
+            ))}
           </TTSideMenuList>
         </Box>
 
         {/* bottom sticky nav list */}
         <Box>
-          <TTSectionHeading>admin</TTSectionHeading>
+          <TTSectionHeading>{adminPaths.name}</TTSectionHeading>
           <TTSideMenuList>
-            <TTListItemButton
-              label={"Subscription"}
-              icon={<CreditCardIcon />}
-              to={"/subscription"}
-            />
-            <TTListItemButton
-              label={"Organisation"}
-              icon={<CorporateFareIcon />}
-              to={"/organisation"}
-            />
-            <TTListItemButton
-              label={"Settings"}
-              icon={<SettingsIcon />}
-              to={"/settings"}
-            />
+            {adminPaths.paths.map((item) => (
+              <TTListItemButton
+                key={item.name}
+                label={item.name}
+                icon={item.icon}
+                to={item.path}
+                disabled={loading}
+                selected={location.pathname === item.path}
+              />
+            ))}
           </TTSideMenuList>
         </Box>
       </Box>

@@ -11,9 +11,14 @@ export const TTSideMenuList = styled(List)(({ theme }) => ({
   "& .MuiListItemButton-root": {
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2),
-  },
-  "& .MuiListItemButton-root:hover": {
-    backgroundColor: theme.palette.primary.light,
+    color: "white",
+    minHeight: 32,
+    paddingTop: 0,
+    paddingBottom: 0,
+    "&:not(.Mui-selected):not(.Mui-disabled):hover": {
+      backgroundColor: theme.palette.primary.light,
+    },
+    "&.Mui-selected": { backgroundColor: theme.palette.secondary.main },
   },
   "& .MuiListItemIcon-root": {
     minWidth: 0,
@@ -24,17 +29,19 @@ export const TTSideMenuList = styled(List)(({ theme }) => ({
   },
 }));
 
-export const TTListItemButton = ({ icon, label, to }) => {
+export const TTListItemButton = ({
+  icon,
+  label,
+  to,
+  disabled = false,
+  selected = false,
+}) => {
   return (
     <ListItemButton
+      disabled={disabled}
+      selected={selected}
       LinkComponent={Link}
       to={to}
-      sx={{
-        py: 0,
-        minHeight: 32,
-        color: "white",
-        "&.Mui-selected": { backgroundColor: "secondary.main" },
-      }}
       disableRipple
     >
       <ListItemIcon sx={{ color: "inherit" }}>{icon}</ListItemIcon>
