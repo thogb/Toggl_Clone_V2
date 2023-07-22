@@ -2,15 +2,13 @@ import React, { memo, useMemo, useState } from "react";
 import TimeEntryItemRecord from "./TimeEntryItemRecord";
 import TimeEntryItem, { itemMenuData } from "./TimeEntryItem";
 import { timeEntryCheckedActions } from "./TimeEntryCheckedReducer";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   deleteGE,
   updateGEDescription,
   updateGEProjectId,
   updateGETags,
 } from "../../state/groupedEntryListSlice";
-import { startTimer } from "../../state/currentEntrySlice";
-import { groupedEntryUtil } from "../../utils/groupedEntryUtil";
 
 const groupMenuData = {
   PIN_AS_FAVORITE: itemMenuData.PIN_AS_FAVORITE,
@@ -24,12 +22,16 @@ const TimeEntryGroup = ({
   dateGroupId,
 
   groupedEntry,
-  tagList,
   timeEntryChecked,
   timeEntryCheckedDispatch,
 }) => {
   const dispatch = useDispatch();
   const [isExpanded, setIsExpanded] = useState(false);
+
+  const worksapceId = useSelector(
+    (state) => state.workspaces.currentWorkspace
+  ).id;
+  const tagList = useSelector((state) => state.tags.tagNames)[worksapceId];
 
   const checkedList = timeEntryChecked.checkedList;
 
@@ -104,9 +106,9 @@ const TimeEntryGroup = ({
   };
 
   const onStartButtonClick = (e) => {
-    dispatch(
-      startTimer({ entryData: groupedEntryUtil.getEntryData(groupedEntry) })
-    );
+    // dispatch(
+    //   startTimer({ entryData: groupedEntryUtil.getEntryData(groupedEntry) })
+    // );
   };
 
   const onExpandButonClick = (e) => {
@@ -180,7 +182,6 @@ const TimeEntryGroup = ({
             key={entry.id}
             dateGroupId={dateGroupId}
             gId={groupedEntry.gId}
-            tagList={tagList}
             timeEntry={entry}
             isChildrenOfGroup={true}
             //   checked={timeEntryChecked.checkedList.indexOf(entry.id) !== -1}

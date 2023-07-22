@@ -25,6 +25,7 @@ const tagsSlice = createSlice({
   name: "tags",
   initialState: intitialState,
   reducers: {
+    resetState: () => intitialState,
     populateFromRaw(state, action) {
       const rawTags = action.payload.tags;
       tagsUtil.populateFromRaw(state, rawTags);
@@ -42,7 +43,7 @@ const tagsSlice = createSlice({
     builder.addMatcher(
       ttCloneApi.endpoints.getTags.matchFulfilled,
       (state, action) => {
-        tagsUtil.populateFromRaw(state, action.payload.tags);
+        tagsUtil.populateFromRaw(state, action.payload);
       }
     );
     builder.addMatcher(
@@ -53,6 +54,9 @@ const tagsSlice = createSlice({
     );
   },
 });
+
+export const tagActions = tagsSlice.actions;
+export default tagsSlice.reducer;
 
 const extendedApi = ttCloneApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -89,7 +93,6 @@ const extendedApi = ttCloneApi.injectEndpoints({
   }),
 });
 
-export default tagsSlice.reducer;
 export const {
   useGetTagsQuery,
   useAddTagMutation,

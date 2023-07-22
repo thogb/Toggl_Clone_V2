@@ -60,7 +60,6 @@ const DeleteTextButton = styled(TTTextButton)(({ theme }) => ({
 }));
 
 const TimeEntryHeader = ({
-  tagList,
   dateGroupId,
   sectionDate,
   timeEIdList,
@@ -75,6 +74,8 @@ const TimeEntryHeader = ({
   const checked = timeEIdList.length === timeEntryChecked.checkedList.length;
   const indeterminate = !checked && timeEntryChecked.checkedList.length > 0;
   const isCheckOn = checked || indeterminate;
+
+  const tagList = [];
 
   const handleBulkEdit = (e) => {
     setIsUpdateModalOpen(true);

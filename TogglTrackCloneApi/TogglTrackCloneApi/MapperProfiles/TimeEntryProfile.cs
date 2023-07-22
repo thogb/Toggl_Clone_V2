@@ -13,10 +13,10 @@ namespace TogglTrackCloneApi.MapperProfiles
                 .ForMember(te => te.Tags, o => o.Ignore())
                 .ReverseMap()
                 .ForMember(ted => ted.Tags, o => o.Ignore());
-            this.CreateMap<TimeEntry, TimeEntryResponseDTO>()
-                .AfterMap((te, ter) => ter.TagIds = te.Tags?
+            this.CreateMap<TimeEntry, TimeEntryResponseDTO>();
+               /* .AfterMap((te, ter) => ter.Tags = new List<TagInTEResponseDTO>());*//*te.Tags?
                         .Select(tag => new TagInTEResponseDTO { Id = tag.Id, Name = tag.Name })
-                        ?? new List<TagInTEResponseDTO>());
+                        ?? new List<TagInTEResponseDTO>());*/
             /*            this.CreateMap<TimeEntry, TimeEntryResponseDTO>()
                             .AfterMap((te, ter) => ter.Tags = te.Tags?
                                     .Select(tag => tag.Name )

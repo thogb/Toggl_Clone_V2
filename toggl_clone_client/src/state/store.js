@@ -1,7 +1,7 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import currentEntryReducer from "./currentEntrySlice";
 import groupedEntryListReducer from "./groupedEntryListSlice";
-import authReducer from "./authSlice";
+import authReducer, { authListenerMiddleware } from "./authSlice";
 import { ttCloneApi } from "./apiSlice";
 import workspacesReducer from "./workspaceSlice";
 import organisationsReducer from "./organisationSlice";
@@ -20,7 +20,9 @@ export const store = configureStore({
     [ttCloneApi.reducerPath]: ttCloneApi.reducer,
   }),
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(ttCloneApi.middleware),
+    getDefaultMiddleware()
+      .prepend(authListenerMiddleware.middleware)
+      .concat(ttCloneApi.middleware),
   //   reducer: {
   //     currentEntry: currentEntryReducer,
   //   },

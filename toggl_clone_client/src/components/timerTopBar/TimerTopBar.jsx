@@ -24,12 +24,12 @@ import { grey } from "@mui/material/colors";
 import TagsSelector from "../../scenes/timerPage/TagsSelector";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  endTimer,
+  // endTimer,
   resetCurrentEntryInfo,
   resetDateInfo,
   setDateInfo,
   setTagsChecked,
-  startTimer,
+  // startTimer,
   updateDescription,
 } from "../../state/currentEntrySlice";
 import { getDiffInSeconds } from "../../utils/TTDateUtil";
@@ -55,8 +55,12 @@ const TimerTopBar = () => {
   const isTimerStarted = useSelector(
     (state) => state.currentEntry.timerStarted
   );
-  const tagList = useSelector((state) => state.currentEntry.tags);
   const tagCheckedList = useSelector((state) => state.currentEntry.tagsChecked);
+  // const tagList = useSelector((state) => state.currentEntry.tags);
+  const workspaceId =
+    useSelector((state) => state.workspaces.currentWorkspace).id ?? 0;
+  const tagList =
+    useSelector((state) => state.tags.tagNames)[workspaceId] ?? [];
 
   const desciptionInput = useRef();
   const [isTimerMode, setIsTimerMode] = useState(true);
@@ -126,7 +130,7 @@ const TimerTopBar = () => {
         // }, 1000);
         // dispatch(startTimer({ timerInterval: timerInterval }));
         console.log("idle");
-        dispatch(startTimer({}));
+        // dispatch(startTimer({}));
         desciptionInput.current.focus();
         return;
       case timerStates.STARTED:
@@ -135,7 +139,7 @@ const TimerTopBar = () => {
         //     timeEntry: getCurrentTimeEntry(),
         //   })
         // );
-        dispatch(endTimer());
+        // dispatch(endTimer());
         return;
       case timerStates.MANUAL:
       case timerStates.CHECK:
@@ -225,7 +229,11 @@ const TimerTopBar = () => {
 
   return (
     // <AppBar position="sticky" sx={{ height: APPBAR_HEIGHT }} color="background">
-    <AppBar position="fixed" sx={{ height: APPBAR_HEIGHT, width: "auto"}} color="background">
+    <AppBar
+      position="fixed"
+      sx={{ height: APPBAR_HEIGHT, width: "auto" }}
+      color="background"
+    >
       <Toolbar disableGutters>
         <InputBase
           inputRef={desciptionInput}

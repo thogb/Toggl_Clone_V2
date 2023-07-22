@@ -33,6 +33,7 @@ namespace TogglTrackCloneApi.Services
 
         public async Task<List<Organisation>> GetOrganisations(int userId)
         {
+            await Console.Out.WriteLineAsync($"UserId: {userId}");
             User? user = await _userRepository.GetByFilterIncludeAsync(u => u.Id == userId, includeOrganisation: true);
             if (user == null) throw new TTNotFoundException("user not found");
             List<Organisation> organisations = user.Organisations.ToList();

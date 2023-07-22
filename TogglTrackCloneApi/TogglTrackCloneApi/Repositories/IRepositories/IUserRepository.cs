@@ -7,7 +7,7 @@ namespace TogglTrackCloneApi.Repositories.IRepositories
     {
         Task<User?> GetByEmailAsync(string email);
         Task<User?> GetByFilterIncludeAsync(
-            Expression<Func<User, bool>> filter, 
+            Expression<Func<User, bool>>? filter = null, 
             bool track = false, 
             bool includeOrganisation = false, 
             bool includeWorkspace = false, 

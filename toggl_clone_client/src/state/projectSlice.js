@@ -22,7 +22,9 @@ const initialState = {
 const projectsSlice = createSlice({
   name: "projects",
   initialState,
-  reducers: {},
+  reducers: {
+    resetState: () => initialState,
+  },
   extraReducers: (builder) => {
     builder.addMatcher(
       ttCloneApi.endpoints.getProjects.matchFulfilled,
@@ -35,6 +37,7 @@ const projectsSlice = createSlice({
   },
 });
 
+export const projectActions = projectsSlice.actions;
 export default projectsSlice.reducer;
 
 const extendedApi = ttCloneApi.injectEndpoints({

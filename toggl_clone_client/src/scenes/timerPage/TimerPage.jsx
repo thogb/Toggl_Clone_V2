@@ -50,7 +50,8 @@ const TimerPage = () => {
         {/* top bar */}
         <TimerTopBar />
         {/* views */}
-        <Box pt={`${APPBAR_HEIGHT}px`}>{/* tool bar */}</Box>
+        {/* <Box pt={`${APPBAR_HEIGHT}px`}>tool bar</Box> */}
+        <Box mt={`${APPBAR_HEIGHT}px`}>{/* tool bar */}</Box>
         <Box pt={2}>{/* tool bar */}</Box>
         {viewType === "LIST" && <TimerListView />}
       </ThemeProvider>

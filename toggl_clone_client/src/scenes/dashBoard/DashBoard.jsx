@@ -8,19 +8,52 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 
 import MenuIcon from "@mui/icons-material/Menu";
 
 import { APPBAR_HEIGHT, DRAWER_WIDTH } from "../../utils/constants";
 import NavBar from "../navbar/NavBar";
+import { useGetOrganisationsQuery } from "../../state/organisationSlice";
+import { useGetWorkspacesQuery } from "../../state/workspaceSlice";
+import { useGetTagsQuery } from "../../state/tagSlice";
+import { useGetProjectsQuery } from "../../state/projectSlice";
+import { useGetTimeEntriesQuery } from "../../state/groupedEntryListSlice";
+import LoadingPage from "../LoadingPage";
+import { useSelector } from "react-redux";
 
 const DashBoard = () => {
   const [isMDrawerOpen, setIsMDrawerOpen] = useState(false);
 
   const theme = useTheme();
   const belowMd = useMediaQuery(theme.breakpoints.down("md"));
+  const user = useSelector((state) => state.auth.user);
+
+  const organisationQuery = useGetOrganisationsQuery();
+  const workspaceQuery = useGetWorkspacesQuery();
+  const tagsQuery = useGetTagsQuery();
+  const projectsQuery = useGetProjectsQuery();
+  const timeEntriesQuery = useGetTimeEntriesQuery();
+
+  const userId = user?.id;
+
+  useEffect(() => {
+    if (userId) {
+      organisationQuery.refetch();
+      workspaceQuery.refetch();
+      tagsQuery.refetch();
+      projectsQuery.refetch();
+      timeEntriesQuery.refetch();
+    }
+  }, [userId]);
+
+  const loading =
+    organisationQuery.isLoading ||
+    workspaceQuery.isLoading ||
+    tagsQuery.isLoading ||
+    projectsQuery.isLoading ||
+    timeEntriesQuery.isLoading;
 
   const drawerWidth = DRAWER_WIDTH;
   const appbarHeight = APPBAR_HEIGHT;
@@ -70,7 +103,7 @@ const DashBoard = () => {
           },
         }}
       >
-        <NavBar onClose={onDrawerClose} />
+        <NavBar loading={loading} onClose={onDrawerClose} />
       </Drawer>
 
       {/* Main Page */}
@@ -114,7 +147,7 @@ const DashBoard = () => {
         </AppBar>
 
         {/* main content */}
-        <Outlet />
+        {loading ? <LoadingPage /> : <Outlet />}
       </Box>
     </Box>
   );

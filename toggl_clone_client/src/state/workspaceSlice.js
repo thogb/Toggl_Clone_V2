@@ -19,7 +19,9 @@ const initialState = {
 const workspacesSlice = createSlice({
   name: "workspaces",
   initialState,
-  reducers: {},
+  reducers: {
+    resetState: () => initialState,
+  },
   extraReducers: (builder) => {
     builder.addMatcher(
       ttCloneApi.endpoints.getWorkspaces.matchFulfilled,
@@ -32,6 +34,7 @@ const workspacesSlice = createSlice({
   },
 });
 
+export const workspaceActions = workspacesSlice.actions;
 export default workspacesSlice.reducer;
 
 const extendedApi = ttCloneApi.injectEndpoints({

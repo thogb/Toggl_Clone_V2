@@ -13,6 +13,7 @@ export const getInitialCurrentEntryState = () => {
     project: {},
     tagsChecked: [],
     duration: 0,
+    workspaceId: 0,
     startDate: newDate,
     stopDate: newDate,
     timerStarted: false,
@@ -151,59 +152,66 @@ export const currentEntrySlice = createSlice({
       }
       state.timerStarted = !state.timerStarted;
     },
+    changeWorkspace: (state, action) => {
+      const { newWorkspaceId } = action.payload;
+      if (state.workspaceId !== newWorkspaceId) {
+        state.tagsChecked = [];
+        state.workspaceId = newWorkspaceId;
+      }
+    },
   },
 });
 
-const createExtraActions = () => {
-  const startTimer = () => {
-    return createAsyncThunk(
-      `${name}/startTimer`,
-      async function (arg, { getState, dispatch }) {
-        const state = getState();
-        const currentEntry = state.currentEntry;
-        const entryData = arg?.entryData;
-        if (currentEntry.timerStarted) {
-          dispatch(reducers.endTimer());
-        }
-        const timerInterval = createTimerInterval(dispatch);
-        dispatch(setStartTimerData({ entryData: entryData, timerInterval }));
-      }
-    );
-  };
+// const createExtraActions = () => {
+//   const startTimer = () => {
+//     return createAsyncThunk(
+//       `${name}/startTimer`,
+//       async function (arg, { getState, dispatch }) {
+//         const state = getState();
+//         const currentEntry = state.currentEntry;
+//         const entryData = arg?.entryData;
+//         if (currentEntry.timerStarted) {
+//           dispatch(reducers.endTimer());
+//         }
+//         const timerInterval = createTimerInterval(dispatch);
+//         dispatch(setStartTimerData({ entryData: entryData, timerInterval }));
+//       }
+//     );
+//   };
 
-  const endTimer = () => {
-    return createAsyncThunk(
-      `${name}/endTimer`,
-      async (arg, { getState, dispatch }) => {
-        const state = getState();
-        const currentEntry = state.currentEntry;
-        const entryData = {
-          description: currentEntry.description,
-          projectId: currentEntry.projectId,
-          tags: [...currentEntry.tagsChecked],
-          duration: currentEntry.duration,
-          startDate: currentEntry.startDate,
-          stopDate: addSeconds(
-            currentEntry.startDate,
-            currentEntry.duration
-          ).getTime(),
-        };
-        clearInterval(currentEntry.timerInterval);
-        dispatch(resetEntryDataAndTimer());
-        dispatch(addTimeEntry({ entryData: entryData }));
-      }
-    );
-  };
+//   const endTimer = () => {
+//     return createAsyncThunk(
+//       `${name}/endTimer`,
+//       async (arg, { getState, dispatch }) => {
+//         const state = getState();
+//         const currentEntry = state.currentEntry;
+//         const entryData = {
+//           description: currentEntry.description,
+//           projectId: currentEntry.projectId,
+//           tags: [...currentEntry.tagsChecked],
+//           duration: currentEntry.duration,
+//           startDate: currentEntry.startDate,
+//           stopDate: addSeconds(
+//             currentEntry.startDate,
+//             currentEntry.duration
+//           ).getTime(),
+//         };
+//         clearInterval(currentEntry.timerInterval);
+//         dispatch(resetEntryDataAndTimer());
+//         dispatch(addTimeEntry({ entryData: entryData }));
+//       }
+//     );
+//   };
 
-  const reducers = {
-    startTimer: startTimer(),
-    endTimer: endTimer(),
-  };
+//   const reducers = {
+//     startTimer: startTimer(),
+//     endTimer: endTimer(),
+//   };
 
-  return reducers;
-};
+//   return reducers;
+// };
 
-const allActions = { ...currentEntrySlice.actions, ...createExtraActions() };
+const allActions = { ...currentEntrySlice.actions };
 
 export const {
   updateDescription,
@@ -222,7 +230,9 @@ export const {
   resetEntryDataAndTimer,
   resetEntryData,
 
-  startTimer,
-  endTimer,
+  // startTimer,
+  // endTimer,
+
+  changeWorkspace,
 } = allActions;
 export default currentEntrySlice.reducer;

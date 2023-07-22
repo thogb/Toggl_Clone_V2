@@ -27,7 +27,7 @@ namespace TogglTrackCloneApi.Repositories
         }
 
         public async Task<User?> GetByFilterIncludeAsync(
-            Expression<Func<User, bool>> filter, 
+            Expression<Func<User, bool>>? filter = null, 
             bool track = false, 
             bool includeOrganisation = false, 
             bool includeWorkspace = false,
@@ -38,6 +38,7 @@ namespace TogglTrackCloneApi.Repositories
         {
             IQueryable<User> query = _context.Users;
             if (!track) query = query.AsNoTracking();
+            if (filter != null) query = query.Where(filter);
             if (includeOrganisation) query = query.Include(u => u.Organisations);
             if (includeWorkspace) query = query.Include(u => u.Workspaces);
             if (includeProjects) query = query.Include(u => u.Projects);

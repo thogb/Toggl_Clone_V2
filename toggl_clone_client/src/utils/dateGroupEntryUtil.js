@@ -301,6 +301,7 @@ const generateDateGroupedEntries = (timeEntries) => {
             tags: timeEntry.tags,
             startDate: timeEntry.startDate,
             stopDate: timeEntry.stopDate,
+            workspaceId: timeEntry.workspaceId,
             totalDuration: timeEntry.duration,
             // entry: timeEntry,
             entries: [timeEntry],
@@ -324,6 +325,7 @@ const generateDateGroupedEntries = (timeEntries) => {
           startDate: timeEntry.startDate,
           stopDate: timeEntry.stopDate,
           totalDuration: timeEntry.duration,
+          workspaceId: timeEntry.workspaceId,
           // entry: timeEntry,
           entries: [timeEntry],
         });

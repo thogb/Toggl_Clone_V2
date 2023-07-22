@@ -1,14 +1,14 @@
 import React, { memo } from "react";
 import TimeEntryItemRecord from "./TimeEntryItemRecord";
 import { timeEntryCheckedActions } from "./TimeEntryCheckedReducer";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   deleteTE,
   updateTEDateInfo,
   updateTEDescription,
   updateTETags,
 } from "../../state/groupedEntryListSlice";
-import { startTimer } from "../../state/currentEntrySlice";
+// import { startTimer } from "../../state/currentEntrySlice";
 import { timeEntryUtil } from "../../utils/TimeEntryUtil";
 
 export const itemMenuData = {
@@ -47,13 +47,16 @@ const TimeEntryItem = ({
 
   timeEntry,
   isChildrenOfGroup = false,
-  tagList,
 
   //   checked = false,
   timeEntryChecked,
   timeEntryCheckedDispatch,
 }) => {
   const dispatch = useDispatch();
+  const worksapceId = useSelector(
+    (state) => state.workspaces.currentWorkspace
+  ).id;
+  const tagList = useSelector((state) => state.tags.tagNames)[worksapceId];
 
   const onDescriptionEdit = (description) => {
     dispatch(
@@ -98,9 +101,9 @@ const TimeEntryItem = ({
 
   const onStartButtonClick = async () => {
     // dispatch(startTimer({entryData:}));
-    dispatch(
-      startTimer({ entryData: timeEntryUtil.cloneTimeEntry(timeEntry) })
-    );
+    // dispatch(
+    //   startTimer({ entryData: timeEntryUtil.cloneTimeEntry(timeEntry) })
+    // );
   };
 
   const onMenuClick = (option) => {

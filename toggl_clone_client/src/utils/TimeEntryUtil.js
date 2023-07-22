@@ -17,9 +17,9 @@ const isEqual = (timeEntry, groupData) => {};
 
 // #create
 const createFromApiResponse = (rawTimeEntry) => {
-  const startDate = new Date(timeEntry.startDate).getTime();
-  const stopDate = new Date(timeEntry.stopDate).getTime();
-  const tags = timeEntry.tags.map((tag) => tag.name);
+  const startDate = new Date(rawTimeEntry.startDate).getTime();
+  const stopDate = new Date(rawTimeEntry.stopDate).getTime();
+  const tags = rawTimeEntry.tags.map((tag) => tag.name);
   tags.sort();
   const timeEntry = {
     id: rawTimeEntry.id,
@@ -31,6 +31,7 @@ const createFromApiResponse = (rawTimeEntry) => {
     workspaceId: rawTimeEntry.workspaceId,
     projectId: rawTimeEntry.projectId,
   };
+  return timeEntry;
 };
 
 // #update

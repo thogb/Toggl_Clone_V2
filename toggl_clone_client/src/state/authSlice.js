@@ -1,6 +1,15 @@
-import { createSlice, isAnyOf } from "@reduxjs/toolkit";
+import {
+  createListenerMiddleware,
+  createSlice,
+  isAnyOf,
+} from "@reduxjs/toolkit";
 import { ttCloneApi } from "./apiSlice";
 import { ttLocalStorage } from "../storage/TTCloneLocalStorage";
+import { organisationActions } from "./organisationSlice";
+import { workspaceActions } from "./workspaceSlice";
+import { projectActions } from "./projectSlice";
+import { tagActions } from "./tagSlice";
+import { timeEntryActions } from "./groupedEntryListSlice";
 
 const initialState = {
   user: null,
@@ -44,6 +53,9 @@ const authSlice = createSlice({
   },
 });
 
+export const authActions = authSlice.actions;
+export default authSlice.reducer;
+
 const extendedApi = ttCloneApi.injectEndpoints({
   endpoints: (builder) => ({
     registerUser: builder.mutation({
@@ -76,6 +88,20 @@ const extendedApi = ttCloneApi.injectEndpoints({
   }),
 });
 
-export const authActions = authSlice.actions;
-export default authSlice.reducer;
 export const { useRegisterUserMutation, useLoginUserMutation } = extendedApi;
+
+export const authListenerMiddleware = createListenerMiddleware();
+
+authListenerMiddleware.startListening({
+  actionCreator: authActions.logout,
+  effect: (action, listenerApi) => {
+    console.log("running in lisenter logout");
+    const dispatch = listenerApi.dispatch;
+    console.log("running in lisenter logout");
+    dispatch(organisationActions.resetState());
+    dispatch(workspaceActions.resetState());
+    dispatch(timeEntryActions.resetState());
+    dispatch(projectActions.resetState());
+    dispatch(tagActions.resetState());
+  },
+});

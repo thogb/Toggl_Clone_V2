@@ -15,7 +15,9 @@ const initialState = {
 const organisationsSlice = createSlice({
   name: "organisations",
   initialState,
-  reducers: {},
+  reducers: {
+    resetState: () => initialState,
+  },
   extraReducers: (builder) => {
     builder.addMatcher(
       ttCloneApi.endpoints.getOrganisations.matchFulfilled,
@@ -27,6 +29,7 @@ const organisationsSlice = createSlice({
   },
 });
 
+export const organisationActions = organisationsSlice.actions;
 export default organisationsSlice.reducer;
 
 const extendedApi = ttCloneApi.injectEndpoints({

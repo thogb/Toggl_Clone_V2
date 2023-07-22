@@ -22,7 +22,6 @@ const TimeEntryList = styled("ul")(({ theme }) => ({
 }));
 
 const TimeEntrySection = ({ sectionData, ...other }) => {
-  const tagList = useSelector((state) => state.currentEntry.tags);
   const { dateGroupId, groupedEntries, totalDuration } = sectionData;
   const sectionDate = sectionData.date;
   const [timeEntryChecked, timeEntryCheckedDispatch] = useReducer(
@@ -54,7 +53,6 @@ const TimeEntrySection = ({ sectionData, ...other }) => {
     <TimeEntryList className="TimeEntryList-root">
       <TimeEntryHeader
         key={"test"}
-        tagList={tagList}
         dateGroupId={dateGroupId}
         sectionDate={sectionDate}
         timeEIdList={timeEIdList}
@@ -71,7 +69,6 @@ const TimeEntrySection = ({ sectionData, ...other }) => {
               dateGroupId={sectionData.dateGroupId}
               gId={groupedEntry.gId}
               timeEntry={groupedEntry.entries[0]}
-              tagList={tagList}
               timeEntryChecked={timeEntryChecked}
               timeEntryCheckedDispatch={timeEntryCheckedDispatch}
             />
@@ -82,7 +79,6 @@ const TimeEntrySection = ({ sectionData, ...other }) => {
               key={groupedEntry.gId}
               dateGroupId={sectionData.dateGroupId}
               groupedEntry={groupedEntry}
-              tagList={tagList}
               timeEntryChecked={timeEntryChecked}
               timeEntryCheckedDispatch={timeEntryCheckedDispatch}
             />
