@@ -3,10 +3,12 @@ import TimeEntryItemRecord from "./TimeEntryItemRecord";
 import { timeEntryCheckedActions } from "./TimeEntryCheckedReducer";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  addTE,
   deleteTE,
   updateTEDateInfo,
   updateTEDescription,
   updateTETags,
+  useDeleteTimeEntryMutation,
   usePatchTimeEntryMutation,
 } from "../../state/groupedEntryListSlice";
 // import { startTimer } from "../../state/currentEntrySlice";
@@ -61,6 +63,7 @@ const TimeEntryItem = ({
     useSelector((state) => state.tags.tagNames)[workspaceId] ?? [];
 
   const [patchTimeEntry] = usePatchTimeEntryMutation();
+  const [deleteTimeEntry] = useDeleteTimeEntryMutation();
 
   const onDescriptionEdit = async (description) => {
     if (timeEntry.description !== description) {
@@ -155,8 +158,15 @@ const TimeEntryItem = ({
     }
   };
 
-  const onDeleteClick = (e) => {
+  const onDeleteClick = async (e) => {
+    const cloned = timeEntryUtil.cloneTimeEntry(timeEntry);
+    console.log(cloned);
     dispatch(deleteTE({ dateGroupId, gId, id: timeEntry.id }));
+    try {
+      deleteTimeEntry({ id: timeEntry.id });
+    } catch (error) {
+      dispatch(addTE({ timeEntry: cloned }));
+    }
   };
 
   const onCheckBoxClick = () => {

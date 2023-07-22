@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System.Linq.Expressions;
 using TogglTrackCloneApi.Data;
 using TogglTrackCloneApi.Models;
@@ -27,11 +28,45 @@ namespace TogglTrackCloneApi.Repositories
             base.Add(entity);
         }
 
+        public override async Task<IEnumerable<TimeEntry>> GetAllAsync()
+        {
+            return await _context.TimeEntries.Where(t => t.DeleteDate == null).ToListAsync();
+        }
+
+        public override async Task<List<TimeEntry>> GetAllByFilterAsync(Expression<Func<TimeEntry, bool>> filter, bool tracked = true)
+        {
+            IQueryable<TimeEntry> query = _context.TimeEntries;
+            if (!tracked) query = query.AsNoTracking();
+            if (filter != null) query = query.Where(filter);
+            query = query.Where(t => t.DeleteDate != null);
+            return await query.ToListAsync();
+        }
+
+        public override async Task<TimeEntry?> GetByFilterAsync(Expression<Func<TimeEntry, bool>>? filter = null, bool tracked = true)
+        {
+            IQueryable<TimeEntry> query = _context.TimeEntries;
+            if (!tracked) query = query.AsNoTracking();
+            if (filter != null) query = query.Where(filter);
+            query = query.Where(t => t.DeleteDate == null);
+            return await query.FirstOrDefaultAsync();
+        }
+
+        public override async Task<TimeEntry?> GetByIdAsync(int id)
+        {
+            IQueryable<TimeEntry> query = _context.TimeEntries;
+            query = query.Where(t => t.Id == id);
+            query = query.Where(t => t.DeleteDate == null);
+            return await query.FirstOrDefaultAsync();
+        }
+
         public async Task<List<TimeEntry>> GetAllByFiltersIncludeTagsAsync(Expression<Func<TimeEntry, bool>>? filter = null, bool tracked = true)
         {
             IQueryable<TimeEntry> query = _context.TimeEntries;
             if (!tracked) query = query.AsNoTracking();
             if (filter != null) query = query.Where(filter);
+
+            query = query.Where(t => t.DeleteDate == null);
+
             return await query.Include(t => t.Tags).ToListAsync();
         }
 
