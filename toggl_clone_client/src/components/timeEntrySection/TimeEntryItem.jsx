@@ -53,10 +53,9 @@ const TimeEntryItem = ({
   timeEntryCheckedDispatch,
 }) => {
   const dispatch = useDispatch();
-  const worksapceId = useSelector(
-    (state) => state.workspaces.currentWorkspace
-  ).id;
-  const tagList = useSelector((state) => state.tags.tagNames)[worksapceId];
+  const workspaceId = timeEntry.workspaceId;
+  const tagList =
+    useSelector((state) => state.tags.tagNames)[workspaceId] ?? [];
 
   const onDescriptionEdit = (description) => {
     dispatch(

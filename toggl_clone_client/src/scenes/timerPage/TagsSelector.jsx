@@ -35,11 +35,11 @@ const TagsSelector = ({
 
   useEffect(() => {
     reOrderTagsList();
-  }, [tagCheckedList]);
+  }, [tagCheckedList, tagList]);
 
   const reOrderTagsList = () => {
     const newCheckedList = [...tagCheckedList].sort();
-    const filteredList = localList
+    const filteredList = tagList
       .filter((v) => newCheckedList.indexOf(v) === -1)
       .sort();
     setLocalList([...newCheckedList, ...filteredList]);

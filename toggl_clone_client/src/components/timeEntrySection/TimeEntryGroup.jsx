@@ -27,11 +27,9 @@ const TimeEntryGroup = ({
 }) => {
   const dispatch = useDispatch();
   const [isExpanded, setIsExpanded] = useState(false);
-
-  const worksapceId = useSelector(
-    (state) => state.workspaces.currentWorkspace
-  ).id;
-  const tagList = useSelector((state) => state.tags.tagNames)[worksapceId];
+  const workspaceId = groupedEntry.workspaceId;
+  const tagList =
+    useSelector((state) => state.tags.tagNames)[workspaceId] ?? [];
 
   const checkedList = timeEntryChecked.checkedList;
 
