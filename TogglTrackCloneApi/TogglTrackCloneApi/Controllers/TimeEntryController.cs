@@ -18,11 +18,16 @@ namespace TogglTrackCloneApi.Controllers
     {
         private readonly ITimeEntryService _timeEntryService;
         private readonly TTCloneContext tTCloneContext;
+        private readonly ILogger _logger;
 
-        public TimeEntryController(ITimeEntryService timeEntryService, TTCloneContext tTCloneContext)
+        public TimeEntryController(
+            ITimeEntryService timeEntryService, 
+            TTCloneContext tTCloneContext,
+            ILogger<TimeEntryController> logger)
         {
             this._timeEntryService = timeEntryService;
             this.tTCloneContext = tTCloneContext;
+            this._logger = logger;
         }
 
         [Authorize]
@@ -64,12 +69,16 @@ namespace TogglTrackCloneApi.Controllers
 
         [Authorize]
         [HttpPatch("{tId:int}")]
-        public async Task<ActionResult<TimeEntryResponseDTO>> PatchTimeEntry(int tId, [FromBody] JsonPatchDocument<TimeEntryDTO> request)
+        public async Task<ActionResult<TimeEntryResponseDTO>> PatchTimeEntry(int tId, [FromBody] JsonPatchDocument<TimeEntryPatchDTO> request)
         {
             int userId = ControllerHelper.GetUserId(User);
-            TimeEntryDTO timeEntryDTO  = new();
-            request.ApplyTo(timeEntryDTO, ModelState);
-            if (!ModelState.IsValid) return BadRequest("not valid");
+            TimeEntryPatchDTO timeEntryPatchDTO  = new();
+            request.ApplyTo(timeEntryPatchDTO, ModelState);
+            if (!ModelState.IsValid)
+            {
+                _logger.LogError($"PatchTimeEntry: bad request.\n{ModelState}");
+                return BadRequest(ModelState);
+            }
 
             TimeEntryResponseDTO response = await _timeEntryService.PatchTimeEntryAsync(tId, request, userId);
             return Ok(response);

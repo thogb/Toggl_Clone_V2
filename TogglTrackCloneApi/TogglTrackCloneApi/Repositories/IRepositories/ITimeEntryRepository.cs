@@ -9,5 +9,6 @@ namespace TogglTrackCloneApi.Repositories.IRepositories
         void SoftRemove(TimeEntry timeEntry);
         void Recover(TimeEntry timeEntry);
         Task<List<TimeEntry>> GetAllByFiltersIncludeTagsAsync(Expression<Func<TimeEntry, bool>> filter, bool tracked = true);
+        void UpdateDateInfo(TimeEntry timeEntry);
     }
 }

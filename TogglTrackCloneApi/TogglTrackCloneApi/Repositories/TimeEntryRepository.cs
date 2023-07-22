@@ -54,7 +54,7 @@ namespace TogglTrackCloneApi.Repositories
             _context.Entry(timeEntry).Property(te => te.DeleteDate).IsModified = true;
         }
 
-        private void UpdateDateInfo(TimeEntry timeEntry)
+        public void UpdateDateInfo(TimeEntry timeEntry)
         {
             if (timeEntry.Duration >= 0)
             {
