@@ -10,6 +10,7 @@ import {
   updateGETags,
 } from "../../state/groupedEntryListSlice";
 import { listUtil } from "../../utils/listUtil";
+import { timeEntryUtil } from "../../utils/TimeEntryUtil";
 
 const groupMenuData = {
   PIN_AS_FAVORITE: itemMenuData.PIN_AS_FAVORITE,
@@ -35,17 +36,18 @@ const TimeEntryGroup = ({
   const checkedList = timeEntryChecked.checkedList;
 
   const checkboxInfo = useMemo(() => {
+    const checkedIdList = timeEntryUtil.convertTEListToTEIdList(checkedList);
     let checked = !(groupedEntry.entries.length > checkedList.length);
     checked =
       checked &&
       groupedEntry.entries.every(
-        (entry) => checkedList.indexOf(entry.id) !== -1
+        (entry) => checkedIdList.indexOf(entry.id) !== -1
       );
     const indeterminate =
       !checked &&
       checkedList.length > 0 &&
       groupedEntry.entries.some(
-        (entry) => checkedList.indexOf(entry.id) !== -1
+        (entry) => checkedIdList.indexOf(entry.id) !== -1
       );
     return {
       checked,
@@ -98,11 +100,10 @@ const TimeEntryGroup = ({
   };
 
   const onCheckBoxClick = (e) => {
-    const idList = groupedEntry.entries.map((entry) => entry.id);
     timeEntryCheckedDispatch({
       type: timeEntryCheckedActions.TOGGLE_FROM_GROUP,
       checkOn: checkboxInfo.isCheckOn,
-      inList: idList,
+      inList: groupedEntry.entries,
     });
   };
 

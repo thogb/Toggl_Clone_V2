@@ -17,8 +17,10 @@ import {
   deleteBatchTE,
   deleteDGE,
   updateBatchTE,
+  useBatchDeleteTimeEntryMutation,
 } from "../../state/groupedEntryListSlice";
 import TimeEntryInputModal from "../timeEntryInputModal/TimeEntryInputModal";
+import { timeEntryUtil } from "../../utils/TimeEntryUtil";
 
 const OutlinedIconButton = styled("button")(({ theme }) => ({
   border: "1px solid",
@@ -62,7 +64,7 @@ const DeleteTextButton = styled(TTTextButton)(({ theme }) => ({
 const TimeEntryHeader = ({
   dateGroupId,
   sectionDate,
-  timeEIdList,
+  checkedTEList,
   totalDuration,
   timeEntryChecked,
   timeEntryCheckedDispatch,
@@ -70,8 +72,10 @@ const TimeEntryHeader = ({
   const dispatch = useDispatch();
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
 
+  const [batchDeleteTimeEntry] = useBatchDeleteTimeEntryMutation();
+
   // const dateFormat = "EEE, dd MMM";
-  const checked = timeEIdList.length === timeEntryChecked.checkedList.length;
+  const checked = checkedTEList.length === timeEntryChecked.checkedList.length;
   const indeterminate = !checked && timeEntryChecked.checkedList.length > 0;
   const isCheckOn = checked || indeterminate;
 
@@ -82,20 +86,29 @@ const TimeEntryHeader = ({
   };
 
   const handleBulkDelete = () => {
+    let ids = timeEntryUtil.convertTEListToTEIdList(
+      timeEntryChecked.checkedList
+    );
     if (checked) {
       dispatch(deleteDGE({ dateGroupId: dateGroupId }));
     } else {
-      console.log(timeEntryChecked.checkedList);
       dispatch(
         deleteBatchTE({
           dateGroupId: dateGroupId,
-          idList: timeEntryChecked.checkedList,
+          idList: timeEntryUtil.convertTEListToTEIdList(
+            timeEntryChecked.checkedList
+          ),
         })
       );
     }
     timeEntryCheckedDispatch({
       type: timeEntryCheckedActions.RESET_CHECKED_LIST,
     });
+    try {
+      batchDeleteTimeEntry({ ids: [123123123, 123123123, 123123123] });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleCheckBoxToggle = () => {
@@ -112,7 +125,7 @@ const TimeEntryHeader = ({
     } else {
       timeEntryCheckedDispatch({
         type: timeEntryCheckedActions.SET_CHECKED_LIST,
-        checkedList: timeEIdList,
+        checkedList: checkedTEList,
       });
     }
   };
@@ -160,7 +173,7 @@ const TimeEntryHeader = ({
               <Typography
                 variant="body2"
                 color={"GrayText"}
-              >{`${nSelected}/${timeEIdList.length} items selected`}</Typography>
+              >{`${nSelected}/${checkedTEList.length} items selected`}</Typography>
               <TTTextButton
                 disabled={!isCheckOn}
                 text={"Bulk edit"}

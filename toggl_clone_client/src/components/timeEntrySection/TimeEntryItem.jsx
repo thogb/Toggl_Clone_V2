@@ -160,7 +160,6 @@ const TimeEntryItem = ({
 
   const onDeleteClick = async (e) => {
     const cloned = timeEntryUtil.cloneTimeEntry(timeEntry);
-    console.log(cloned);
     dispatch(deleteTE({ dateGroupId, gId, id: timeEntry.id }));
     try {
       deleteTimeEntry({ id: timeEntry.id });
@@ -172,7 +171,7 @@ const TimeEntryItem = ({
   const onCheckBoxClick = () => {
     timeEntryCheckedDispatch({
       type: timeEntryCheckedActions.TOGGLE_CHECKED_LIST_ITEM,
-      id: timeEntry.id,
+      timeEntry: timeEntry,
     });
   };
 
@@ -225,7 +224,11 @@ const TimeEntryItem = ({
       stopDate={timeEntry.stopDate}
       tagList={tagList}
       isChildrenOfGroup={isChildrenOfGroup}
-      checked={timeEntryChecked.checkedList.indexOf(timeEntry.id) !== -1}
+      checked={
+        timeEntryChecked.checkedList.findIndex(
+          (te) => te.id === timeEntry.id
+        ) !== -1
+      }
       showCheckbox={timeEntryChecked.showCheckbox}
       menuOptions={itemMenuOptions}
       operations={{

@@ -6,7 +6,6 @@ import {
   timeEntryCheckedActions,
   timeEntryCheckedReducer,
 } from "./TimeEntryCheckedReducer";
-import { useSelector } from "react-redux";
 import TimeEntryItem from "./TimeEntryItem";
 import TimeEntryGroup from "./TimeEntryGroup";
 import { alpha } from "@mui/material";
@@ -29,15 +28,15 @@ const TimeEntrySection = ({ sectionData, ...other }) => {
     getIntialTimeEntryCheckedData()
   );
 
-  const timeEIdList = useMemo(() => {
+  const checkedTEList = useMemo(() => {
     const list = [];
     groupedEntries.forEach((groupedEntry) => {
       if (groupedEntry.entries !== undefined) {
         groupedEntry.entries.forEach((entry) => {
-          list.push(entry.id);
+          list.push(entry);
         });
       } else {
-        list.push(groupedEntry.entry.id);
+        list.push(groupedEntry.entry);
       }
     });
     if (timeEntryChecked.checkedList.length > 0) {
@@ -55,7 +54,7 @@ const TimeEntrySection = ({ sectionData, ...other }) => {
         key={"test"}
         dateGroupId={dateGroupId}
         sectionDate={sectionDate}
-        timeEIdList={timeEIdList}
+        checkedTEList={checkedTEList}
         totalDuration={totalDuration}
         timeEntryChecked={timeEntryChecked}
         timeEntryCheckedDispatch={timeEntryCheckedDispatch}

@@ -83,6 +83,10 @@ const convertDateInfoToIntDateInfo = (dateInfo) => {
   };
 };
 
+const convertTEListToTEIdList = (timeEntryList) => {
+  return timeEntryList.map((timeEntry) => timeEntry.id);
+};
+
 export const timeEntryUtil = {
   createFromApiResponse,
 
@@ -93,4 +97,5 @@ export const timeEntryUtil = {
   isDateInfoEqualBySeconds,
   getInvalidDate,
   convertDateInfoToIntDateInfo,
+  convertTEListToTEIdList,
 };
