@@ -1,7 +1,6 @@
 import { compareDesc } from "date-fns";
-import { isListEqual } from "./listUtil";
+import { listUtil } from "./listUtil";
 import { timeEntryUtil } from "./TimeEntryUtil";
-import { bn } from "date-fns/locale";
 
 // #example
 // const groupedEntryExample = {
@@ -113,7 +112,7 @@ const isEqualByGroupingData = (a, b) => {
     a.workspaceId === b.workspaceId &&
     a.description === b.description &&
     a.projectId === b.projectId &&
-    isListEqual(a.tags, b.tags)
+    listUtil.isListEqual(a.tags, b.tags)
   );
 };
 
@@ -125,7 +124,8 @@ const isEqualByExistingGroupingData = (a, groupingData) => {
       a.description === groupingData.description) &&
     (groupingData.projectId === undefined ||
       a.projectId === groupingData.projectId) &&
-    (groupingData.tags === undefined || isListEqual(a.tags, groupingData.tags))
+    (groupingData.tags === undefined ||
+      listUtil.isListEqual(a.tags, groupingData.tags))
   );
 };
 

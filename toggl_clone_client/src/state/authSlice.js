@@ -43,6 +43,7 @@ const authSlice = createSlice({
         ttCloneApi.endpoints.loginUser.matchFulfilled
       ),
       (state, action) => {
+        console.log(action);
         const { token, ...user } = action.payload;
         state.user = user;
         state.token = token;
@@ -95,9 +96,7 @@ export const authListenerMiddleware = createListenerMiddleware();
 authListenerMiddleware.startListening({
   actionCreator: authActions.logout,
   effect: (action, listenerApi) => {
-    console.log("running in lisenter logout");
     const dispatch = listenerApi.dispatch;
-    console.log("running in lisenter logout");
     dispatch(organisationActions.resetState());
     dispatch(workspaceActions.resetState());
     dispatch(timeEntryActions.resetState());

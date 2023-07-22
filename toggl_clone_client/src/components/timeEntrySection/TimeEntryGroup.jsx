@@ -9,6 +9,7 @@ import {
   updateGEProjectId,
   updateGETags,
 } from "../../state/groupedEntryListSlice";
+import { listUtil } from "../../utils/listUtil";
 
 const groupMenuData = {
   PIN_AS_FAVORITE: itemMenuData.PIN_AS_FAVORITE,
@@ -83,9 +84,11 @@ const TimeEntryGroup = ({
   };
 
   const onTagsCheckedEdit = (tagsChecked) => {
-    dispatch(
-      updateGETags({ dateGroupId, gId: groupedEntry.gId, tags: tagsChecked })
-    );
+    if (!listUtil.isListEqual(tagsChecked, groupedEntry.tags)) {
+      dispatch(
+        updateGETags({ dateGroupId, gId: groupedEntry.gId, tags: tagsChecked })
+      );
+    }
   };
 
   const onDateInfoChange = (dateInfo) => {};

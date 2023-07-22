@@ -115,7 +115,9 @@ const TimeEntryItemRecord = ({
   const handleTeDescriptionInputComplete = (e) => {
     // Api call to update description of entry
     // console.log(e.target.value);
-    operations.onDescriptionEdit(e.target.value);
+    const trimmedValue = e.target.value.trim();
+    setTeDescription(trimmedValue);
+    operations.onDescriptionEdit(trimmedValue);
   };
 
   const handleCheckboxClick = () => {
@@ -124,7 +126,6 @@ const TimeEntryItemRecord = ({
 
   const handleTagsSelectorClose = (newCheckedList) => {
     setTagSelectorAnchor(null);
-    console.log(newCheckedList);
     operations.onTagsCheckedEdit(newCheckedList);
   };
 
@@ -134,8 +135,6 @@ const TimeEntryItemRecord = ({
 
   const hasTags = tagsChecked.length > 0;
   const commonTextColor = alpha(theme.palette.primary.main, 0.7);
-
-  // console.log("End time: " + Date.now());
 
   return (
     <StyledTimeEntryItemBase

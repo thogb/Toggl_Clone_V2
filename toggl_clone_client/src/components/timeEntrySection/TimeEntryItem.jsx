@@ -7,9 +7,12 @@ import {
   updateTEDateInfo,
   updateTEDescription,
   updateTETags,
+  usePatchTimeEntryMutation,
 } from "../../state/groupedEntryListSlice";
 // import { startTimer } from "../../state/currentEntrySlice";
 import { timeEntryUtil } from "../../utils/TimeEntryUtil";
+import { listUtil } from "../../utils/listUtil";
+import { compare } from "fast-json-patch";
 
 export const itemMenuData = {
   DUPLICATE: {
@@ -57,37 +60,102 @@ const TimeEntryItem = ({
   const tagList =
     useSelector((state) => state.tags.tagNames)[workspaceId] ?? [];
 
-  const onDescriptionEdit = (description) => {
-    dispatch(
-      updateTEDescription({ dateGroupId, gId, id: timeEntry.id, description })
-    );
+  const [patchTimeEntry] = usePatchTimeEntryMutation();
+
+  const onDescriptionEdit = async (description) => {
+    if (timeEntry.description !== description) {
+      const oldDescription = timeEntry.description;
+      dispatch(
+        updateTEDescription({ dateGroupId, gId, id: timeEntry.id, description })
+      );
+      const diff = compare({ description: "" }, { description });
+      try {
+        await patchTimeEntry({
+          id: timeEntry.id,
+          patch: diff,
+        }).unwrap();
+      } catch (error) {
+        dispatch(
+          updateTEDescription({
+            dateGroupId,
+            gId,
+            id: timeEntry.id,
+            description: oldDescription,
+          })
+        );
+      }
+    }
   };
 
-  const onProjectEdit = (projectInfo) => {};
+  const onProjectEdit = async (projectInfo) => {};
 
-  const onTagsCheckedEdit = (tagsChecked) => {
-    dispatch(
-      updateTETags({ dateGroupId, gId, id: timeEntry.id, tags: tagsChecked })
-    );
+  const onTagsCheckedEdit = async (tagsChecked) => {
+    if (!listUtil.isListEqual(tagsChecked, timeEntry.tags)) {
+      const diff = compare({ tags: null }, { tags: tagsChecked });
+      const oldTags = [...timeEntry.tags];
+      dispatch(
+        updateTETags({ dateGroupId, gId, id: timeEntry.id, tags: tagsChecked })
+      );
+      try {
+        await patchTimeEntry({
+          id: timeEntry.id,
+          patch: diff,
+        }).unwrap();
+      } catch (error) {
+        dispatch(
+          updateTETags({
+            dateGroupId,
+            gId,
+            id: timeEntry.id,
+            tags: oldTags,
+          })
+        );
+      }
+    }
   };
 
-  const onDateInfoChange = (dateInfo) => {
-    dispatch(
-      updateTEDateInfo({
-        dateGroupId,
-        gId,
-        id: timeEntry.id,
-        dateInfo: {
-          duration: dateInfo.duration,
-          startDate: dateInfo.startDate.getTime(),
-          stopDate: dateInfo.stopDate.getTime(),
-        },
-      })
-    );
+  const onDateInfoChange = async (dateInfo) => {
+    if (
+      !timeEntryUtil.isDateInfoEqualBySeconds(
+        dateInfo.initialDateInfo,
+        dateInfo.finalDateInfo
+      )
+    ) {
+      const diff = compare(
+        timeEntryUtil.getInvalidDate(),
+        dateInfo.finalDateInfo
+      );
+      dispatch(
+        updateTEDateInfo({
+          dateGroupId,
+          gId,
+          id: timeEntry.id,
+          dateInfo: timeEntryUtil.convertDateInfoToIntDateInfo(
+            dateInfo.finalDateInfo
+          ),
+        })
+      );
+      try {
+        await patchTimeEntry({
+          id: timeEntry.id,
+          patch: diff,
+        }).unwrap();
+      } catch (error) {
+        dispatch(
+          updateTEDateInfo({
+            dateGroupId,
+            gId,
+            id: timeEntry.id,
+            dateInfo: timeEntryUtil.convertDateInfoToIntDateInfo(
+              dateInfo.initialDateInfo
+            ),
+          })
+        );
+      }
+    }
   };
 
   const onDeleteClick = (e) => {
-    console.log("delete clicked");
     dispatch(deleteTE({ dateGroupId, gId, id: timeEntry.id }));
   };
 

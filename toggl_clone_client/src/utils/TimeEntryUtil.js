@@ -1,4 +1,4 @@
-import { addSeconds } from "date-fns";
+import { addSeconds, differenceInSeconds } from "date-fns";
 
 // #example
 // const timeEntryExample = {
@@ -11,6 +11,12 @@ import { addSeconds } from "date-fns";
 //   description: "",
 //   tags: ["backend", "Brain_training", "C#", ".net_Core", ".net_Core_Web"],
 // };
+
+const invalidDateInfo = {
+  duration: -1,
+  startDate: null,
+  stopDate: null,
+};
 
 // #compare
 const isEqual = (timeEntry, groupData) => {};
@@ -59,9 +65,32 @@ const getEntryData = (timeEntry) => {
   };
 };
 
+const isDateInfoEqualBySeconds = (dateInfo1, dateInfo2) => {
+  return (
+    dateInfo1.duration === dateInfo2.duration &&
+    differenceInSeconds(dateInfo1.startDate, dateInfo2.startDate) === 0 &&
+    differenceInSeconds(dateInfo1.stopDate, dateInfo2.stopDate) === 0
+  );
+};
+
+const getInvalidDate = () => invalidDateInfo;
+
+const convertDateInfoToIntDateInfo = (dateInfo) => {
+  return {
+    ...dateInfo,
+    startDate: dateInfo.startDate.getTime(),
+    stopDate: dateInfo.stopDate.getTime(),
+  };
+};
+
 export const timeEntryUtil = {
   createFromApiResponse,
+
   updateDateInfo,
   cloneTimeEntry,
   getEntryData,
+
+  isDateInfoEqualBySeconds,
+  getInvalidDate,
+  convertDateInfoToIntDateInfo,
 };
