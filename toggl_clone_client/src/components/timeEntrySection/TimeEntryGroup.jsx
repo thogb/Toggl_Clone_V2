@@ -8,9 +8,12 @@ import {
   updateGEDescription,
   updateGEProjectId,
   updateGETags,
+  useBatchDeleteTimeEntryMutation,
+  useBatchPatchTimeEntryMutation,
 } from "../../state/groupedEntryListSlice";
 import { listUtil } from "../../utils/listUtil";
 import { timeEntryUtil } from "../../utils/TimeEntryUtil";
+import { compare } from "fast-json-patch";
 
 const groupMenuData = {
   PIN_AS_FAVORITE: itemMenuData.PIN_AS_FAVORITE,
@@ -32,6 +35,9 @@ const TimeEntryGroup = ({
   const workspaceId = groupedEntry.workspaceId;
   const tagList =
     useSelector((state) => state.tags.tagNames)[workspaceId] ?? [];
+
+  const [batchDeleteTimeEntry] = useBatchDeleteTimeEntryMutation();
+  const [batchPatchTimeEntry] = useBatchPatchTimeEntryMutation();
 
   const checkedList = timeEntryChecked.checkedList;
 
@@ -56,27 +62,19 @@ const TimeEntryGroup = ({
     };
   }, [checkedList]);
 
-  // const checked = useMemo(() => {
-  //   if (groupedEntry.entries.length > checkedList.length) return false;
-  //   return groupedEntry.entries.every(
-  //     (entry) => checkedList.indexOf(entry.id) !== -1
-  //   );
-  // }, [checkedList]);
-
-  // const indeterminate = useMemo(() => {
-  //   return (
-  //     !checked &&
-  //     checkedList.length > 0 &&
-  //     groupedEntry.entries.some((entry) => checkedList.indexOf(entry.id) !== -1)
-  //   );
-  // }, [checkedList]);
-
-  // const isCheckOn = checked || indeterminate;
-
-  const onDescriptionEdit = (description) => {
-    dispatch(
-      updateGEDescription({ dateGroupId, gId: groupedEntry.gId, description })
-    );
+  const onDescriptionEdit = async (description) => {
+    const entries = groupedEntry.entries;
+    try {
+      const ids = timeEntryUtil.convertTEListToTEIdList(entries);
+      const patch = compare({ description: "" }, { description });
+      const payload = await batchPatchTimeEntry({
+        ids: ids,
+        patch: patch,
+      }).unwrap();
+      dispatch(
+        updateGEDescription({ dateGroupId, gId: groupedEntry.gId, description })
+      );
+    } catch (error) {}
   };
 
   const onProjectEdit = (projectInfo) => {
@@ -85,18 +83,36 @@ const TimeEntryGroup = ({
     );
   };
 
-  const onTagsCheckedEdit = (tagsChecked) => {
+  const onTagsCheckedEdit = async (tagsChecked) => {
     if (!listUtil.isListEqual(tagsChecked, groupedEntry.tags)) {
-      dispatch(
-        updateGETags({ dateGroupId, gId: groupedEntry.gId, tags: tagsChecked })
-      );
+      const entries = groupedEntry.entries;
+      try {
+        const ids = timeEntryUtil.convertTEListToTEIdList(entries);
+        const patch = compare({ tags: null }, { tags: tagsChecked });
+        const payload = await batchPatchTimeEntry({
+          ids: ids,
+          patch: patch,
+        }).unwrap();
+        dispatch(
+          updateGETags({
+            dateGroupId,
+            gId: groupedEntry.gId,
+            tags: tagsChecked,
+          })
+        );
+      } catch (error) {}
     }
   };
 
   const onDateInfoChange = (dateInfo) => {};
 
-  const onDeleteClick = (e) => {
+  const onDeleteClick = async (e) => {
+    const entries = groupedEntry.entries;
     dispatch(deleteGE({ dateGroupId, gId: groupedEntry.gId }));
+    try {
+      const ids = timeEntryUtil.convertTEListToTEIdList(entries);
+      const payload = await batchDeleteTimeEntry({ ids: ids }).unwrap();
+    } catch (error) {}
   };
 
   const onCheckBoxClick = (e) => {
@@ -134,18 +150,6 @@ const TimeEntryGroup = ({
         break;
     }
   };
-
-  // const operations = useMemo(() => {
-  //   return {
-  //     onCheckBoxClick,
-  //     onDescriptionEdit,
-  //     onProjectEdit,
-  //     onTagsCheckedEdit,
-  //     onDateInfoChange,
-  //     onDeleteClick,
-  //     onExpandButonClick,
-  //   };
-  // }, []);
 
   return (
     <>
