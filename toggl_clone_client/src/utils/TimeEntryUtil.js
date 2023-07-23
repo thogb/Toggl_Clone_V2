@@ -40,6 +40,15 @@ const createFromApiResponse = (rawTimeEntry) => {
   return timeEntry;
 };
 
+// #convert
+const convertToApiDTO = (timeEntry) => {
+  return {
+    ...timeEntry,
+    startDate: new Date(timeEntry.startDate),
+    stopDate: new Date(timeEntry.stopDate),
+  };
+};
+
 // #update
 const updateDateInfo = (timeEntry, dateInfo) => {
   timeEntry.duration = dateInfo.duration;
@@ -89,6 +98,7 @@ const convertTEListToTEIdList = (timeEntryList) => {
 
 export const timeEntryUtil = {
   createFromApiResponse,
+  convertToApiDTO,
 
   updateDateInfo,
   cloneTimeEntry,

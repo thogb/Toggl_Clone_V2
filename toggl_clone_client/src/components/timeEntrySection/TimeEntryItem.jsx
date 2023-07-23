@@ -8,6 +8,7 @@ import {
   updateTEDateInfo,
   updateTEDescription,
   updateTETags,
+  useAddTimeEntryMutation,
   useDeleteTimeEntryMutation,
   usePatchTimeEntryMutation,
 } from "../../state/groupedEntryListSlice";
@@ -64,6 +65,7 @@ const TimeEntryItem = ({
 
   const [patchTimeEntry] = usePatchTimeEntryMutation();
   const [deleteTimeEntry] = useDeleteTimeEntryMutation();
+  const [addTimeEntry] = useAddTimeEntryMutation();
 
   const onDescriptionEdit = async (description) => {
     if (timeEntry.description !== description) {
@@ -185,6 +187,7 @@ const TimeEntryItem = ({
   const onMenuClick = (option) => {
     switch (option.name) {
       case itemMenuData.DUPLICATE.name:
+        onDuplicateClick();
         break;
       case itemMenuData.SPLIT.name:
         break;
@@ -198,6 +201,18 @@ const TimeEntryItem = ({
       default:
         break;
     }
+  };
+
+  const onDuplicateClick = async () => {
+    try {
+      const payload = await addTimeEntry({
+        timeEntry: timeEntryUtil.convertToApiDTO(timeEntry),
+      }).unwrap();
+      const cloned = timeEntryUtil.createFromApiResponse(
+        timeEntryUtil.cloneTimeEntry(payload)
+      );
+      dispatch(addTE({ timeEntry: cloned }));
+    } catch (error) {}
   };
 
   // const operations = useMemo(() => {
