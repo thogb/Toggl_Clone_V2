@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 using System.Linq.Expressions;
 using TogglTrackCloneApi.Data;
 using TogglTrackCloneApi.Models;
@@ -22,24 +23,20 @@ namespace TogglTrackCloneApi.Repositories
             _context.Set<T>().Add(entity);
         }
 
-        public virtual async Task<IEnumerable<T>> GetAllAsync()
+        public virtual async Task<List<T>> GetAllAsync(bool tracked = true)
         {
-            return await _context.Set<T>().ToListAsync();
+            return await GetByFilterQuery(null, tracked: tracked).ToListAsync();
         }
 
-        public virtual async Task<List<T>> GetAllByFilterAsync(Expression<Func<T, bool>> filter, bool tracked = true)
+        public virtual async Task<List<T>> GetAllByFilterAsync(Expression<Func<T, bool>>? filter, bool tracked = true)
         {
-            IQueryable<T> query = _context.Set<T>();
-            if (!tracked) query = query.AsNoTracking();
-            if (filter != null) query = query.Where(filter);
+            IQueryable<T> query = GetByFilterQuery(filter, tracked: tracked);
             return await query.ToListAsync();
         }
 
         public virtual async Task<T?> GetByFilterAsync(Expression<Func<T, bool>>? filter = null, bool tracked = true)
         {
-            IQueryable<T> query = _context.Set<T>();
-            if (!tracked) query = query.AsNoTracking();
-            if (filter != null) query = query.Where(filter);
+            IQueryable<T> query = GetByFilterQuery(filter, tracked: tracked);
             return await query.FirstOrDefaultAsync();
         }
 
@@ -56,6 +53,14 @@ namespace TogglTrackCloneApi.Repositories
         public virtual void Update(T entity)
         {
             _context.Set<T>().Update(entity);
+        }
+
+        public virtual IQueryable<T> GetByFilterQuery(Expression<Func<T, bool>>? filter, bool tracked = true)
+        {
+            IQueryable<T> query = _context.Set<T>();
+            if (!tracked) query = query.AsNoTracking();
+            if (filter != null) query = query.Where(filter);
+            return query;
         }
     }
 }

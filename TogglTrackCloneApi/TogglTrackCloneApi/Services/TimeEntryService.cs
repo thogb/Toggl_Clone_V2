@@ -146,10 +146,10 @@ namespace TogglTrackCloneApi.Services
             return _mapper.Map<TimeEntryResponseDTO>(timeEntry);
         }
 
-        public async Task<BatchResponseDTO> PatchTimeEntriesAsync(int[] timeEntryIds, JsonPatchDocument<TimeEntryDTO> request, int userId)
+        public async Task<BatchResponseDTO> PatchTimeEntriesAsync(List<int> timeEntryIds, JsonPatchDocument<TimeEntryPatchDTO> request, int userId)
         {
             BatchResponseDTO batchResponseDTO = new BatchResponseDTO();
-            List<int> timeEntryIdList = new List<int>(timeEntryIds).Distinct().ToList();
+            List<int> timeEntryIdList = timeEntryIds.Distinct().ToList();
             List<TimeEntry> timeEntries = await _timeEntryRepository.GetAllByFiltersIncludeTagsAsync(te => timeEntryIdList.Contains(te.Id));
             List<int> idFound = timeEntries.Select(t => t.Id).ToList();
 
@@ -172,26 +172,18 @@ namespace TogglTrackCloneApi.Services
                     PopulateFailure(innerTimeEntries, batchResponseDTO, "No permission to edit time entry");
                 } else
                 {
-
-                    TimeEntryDTO timeEntryDTO = _mapper.Map<TimeEntryDTO>(innerTimeEntries.First());
+                    TimeEntryPatchDTO timeEntryDTO = _mapper.Map<TimeEntryPatchDTO>(innerTimeEntries.First());
                     request.ApplyTo(timeEntryDTO);
 
                     ICollection<Tag> tags = new List<Tag>();
-                    if (timeEntryDTO.Tags.Any())
+                    if (timeEntryDTO.Tags != null)
                     {
-                        var tagNames = timeEntryDTO.Tags.Distinct().ToList();
-                        if (tagNames.Count != tagNames.Count)
+                        try
                         {
-                            PopulateFailure(innerTimeEntries, batchResponseDTO, "duplicate tags found");
-                            continue;
-                        }
-                        /*tags = await _workspaceRepository.GetTagsFromTagNameList(workspaceId, tagNames);*/
-                        tags = await _tagRepository
-                            .GetAllByFilterAsync(t => t.WorkspaceId == workspaceId && tagNames.Contains(t.Name));
-                        if (tags.Count != timeEntryDTO.Tags.Count())
+                            tags = await ValidateAndGetTagsFromTagNames(timeEntryDTO.Tags, workspaceId);
+                        } catch (APIException ex)
                         {
-                            PopulateFailure(innerTimeEntries, batchResponseDTO, "invalid tags found");
-                            continue;
+                            PopulateFailure(innerTimeEntries, batchResponseDTO, ex.Message);
                         }
                     }
 
@@ -227,6 +219,7 @@ namespace TogglTrackCloneApi.Services
         public async Task<List<Tag>> ValidateAndGetTagsFromTagNames(ICollection<string> inTagNames, int workspaceId)
         {
             var tagNames = inTagNames.Distinct().ToList();
+            if (tagNames.Count == 0) return new List<Tag>();
             if (tagNames.Count != tagNames.Count) throw new TTIllegalEditException("Duplicate tags found in time entry");
             /*var tags = await _workspaceRepository.GetTagsFromTagNameList(workspaceId, tagNames);*/
             var tags = await _tagRepository

@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
 using TogglTrackCloneApi.Data;
 using TogglTrackCloneApi.DTOs.BatchResponse;
 using TogglTrackCloneApi.DTOs.TimeEntry;
+using TogglTrackCloneApi.Exceptions;
 using TogglTrackCloneApi.Helper;
 using TogglTrackCloneApi.ModelBinders;
 using TogglTrackCloneApi.Services.IServices;
@@ -48,31 +50,67 @@ namespace TogglTrackCloneApi.Controllers
             return Ok(response);
         }
 
-
         [Authorize]
-        [HttpDelete("{tId}")]
-        public async Task<ActionResult> DeleteTimeEntry(int tId)
+        [HttpDelete("{ids}")]
+        public async Task<ActionResult<BatchResponseDTO>> DeleteTimeEntries(string ids)
         {
+            List<int> intIds = ControllerHelper.TryParseStrIds(ids).Distinct().ToList();
+            if (intIds.Count == 0) return BadRequest("Invalid ids");
+
             int userId = ControllerHelper.GetUserId(User);
-            await _timeEntryService.SoftRemoveTimeEntryAsync(tId, userId);
-            return NoContent();
+
+            if (intIds.Count == 1)
+            {
+                await _timeEntryService.SoftRemoveTimeEntryAsync(intIds.First(), userId);
+                return NoContent();
+            } else
+            {
+                var patch = new JsonPatchDocument<TimeEntryPatchDTO>();
+                patch.Replace(e => e.DeleteDate, DateTime.UtcNow);
+                BatchResponseDTO response = await _timeEntryService.PatchTimeEntriesAsync(intIds, patch, userId);
+                return response;
+            }
         }
 
         [Authorize]
-        [HttpPatch("recover/{tId}")]
-        public async Task<ActionResult> RecoverTimeEntry(int tId)
+        [HttpPatch("recover/{ids}")]
+        public async Task<ActionResult<BatchResponseDTO>> RecoverTimeEntries(string ids)
         {
+            List<int> intIds = ControllerHelper.TryParseStrIds(ids).Distinct().ToList();
+            if (intIds.Count == 0) return BadRequest("Invalid ids");
+
             int userId = ControllerHelper.GetUserId(User);
-            await _timeEntryService.RecoverTimeEntryAsync(tId, userId);
-            return Ok();
+            if (intIds.Count == 1)
+            {
+                int id = intIds.First();
+                BatchResponseDTO response = new BatchResponseDTO();
+                try
+                {
+                    await _timeEntryService.RecoverTimeEntryAsync(id, userId);
+                    response.Success.Add(id);
+                }
+                catch (APIException apiEx)
+                {
+                    response.Failure.Add(new FailureDTO { Id = id, Message = apiEx.Message });
+                }
+                return response;
+            } else
+            {
+                var patch = new JsonPatchDocument<TimeEntryPatchDTO>();
+                patch.Replace(e => e.DeleteDate, null);
+                BatchResponseDTO response = await _timeEntryService.PatchTimeEntriesAsync(intIds, patch, userId);
+                return response;
+            }
         }
 
         [Authorize]
-        [HttpPatch("{tId:int}")]
-        public async Task<ActionResult<TimeEntryResponseDTO>> PatchTimeEntry(int tId, [FromBody] JsonPatchDocument<TimeEntryPatchDTO> request)
+        [HttpPatch("{ids}")]
+        public async Task<ActionResult<BatchResponseDTO>> PatchTimeEntries(string ids, [FromBody] JsonPatchDocument<TimeEntryPatchDTO> request)
         {
-            int userId = ControllerHelper.GetUserId(User);
-            TimeEntryPatchDTO timeEntryPatchDTO  = new();
+            List<int> intIds = ControllerHelper.TryParseStrIds(ids).Distinct().ToList();
+            if (intIds.Count == 0) return BadRequest("Invalid ids");
+
+            TimeEntryPatchDTO timeEntryPatchDTO = new();
             request.ApplyTo(timeEntryPatchDTO, ModelState);
             if (!ModelState.IsValid)
             {
@@ -80,35 +118,25 @@ namespace TogglTrackCloneApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            TimeEntryResponseDTO response = await _timeEntryService.PatchTimeEntryAsync(tId, request, userId);
-            return Ok(response);
-        }
-
-        [Authorize]
-        [HttpDelete("batch")]
-        public async Task<ActionResult<BatchResponseDTO>> DeleteTimeEntries([FromQuery] int[] id)
-        {
-            return Ok();
-        }
-
-        [Authorize]
-        [HttpPatch("recover/batch")]
-        public async Task<ActionResult<BatchResponseDTO>> RecoverTimeEntries([FromQuery] int[] id)
-        {
-            return Ok();
-        }
-
-        [Authorize]
-        [HttpPatch("batch")]
-        public async Task<ActionResult<BatchResponseDTO>> PatchTimeEntries([FromQuery] int[] id, [FromBody] JsonPatchDocument<TimeEntryDTO> request)
-        {
             int userId = ControllerHelper.GetUserId(User);
-            TimeEntryDTO timeEntryDTO = new();
-            request.ApplyTo(timeEntryDTO, ModelState);
-            if (!ModelState.IsValid) return BadRequest("not valid");
-
-            BatchResponseDTO response = await _timeEntryService.PatchTimeEntriesAsync(id, request, userId);
-            return Ok(response);
+            if (intIds.Count == 1)
+            {
+                int id = intIds.First();
+                BatchResponseDTO response = new BatchResponseDTO();
+                try
+                {
+                    await _timeEntryService.PatchTimeEntryAsync(id, request, userId);
+                    response.Success.Add(id);
+                } catch (APIException apiEx)
+                {
+                    response.Failure.Add(new FailureDTO { Id=id, Message=apiEx.Message });
+                }
+                return response;
+            } else
+            {
+                BatchResponseDTO response = await _timeEntryService.PatchTimeEntriesAsync(intIds, request, userId);
+                return response;
+            }
         }
     }
 }

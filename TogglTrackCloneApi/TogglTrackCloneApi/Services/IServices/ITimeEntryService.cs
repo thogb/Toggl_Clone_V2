@@ -13,6 +13,6 @@ namespace TogglTrackCloneApi.Services.IServices
         Task<bool> RecoverTimeEntryAsync(int timeEntryId, int userId);
         Task<BatchResponseDTO> RecoverTimeEntriesAsync(int[] timeEntryIds, int userId);
         Task<TimeEntryResponseDTO> PatchTimeEntryAsync(int timeEntryId, JsonPatchDocument<TimeEntryPatchDTO> request, int userId);
-        Task<BatchResponseDTO> PatchTimeEntriesAsync(int[] timeEntryIds, JsonPatchDocument<TimeEntryDTO> request, int userId);
+        Task<BatchResponseDTO> PatchTimeEntriesAsync(List<int> timeEntryIds, JsonPatchDocument<TimeEntryPatchDTO> request, int userId);
     }
 }

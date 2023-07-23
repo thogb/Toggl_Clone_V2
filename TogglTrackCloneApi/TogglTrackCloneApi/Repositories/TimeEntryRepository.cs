@@ -7,7 +7,7 @@ using TogglTrackCloneApi.Repositories.IRepositories;
 
 namespace TogglTrackCloneApi.Repositories
 {
-    public class TimeEntryRepository : GenericWithIdRepository<TimeEntry>, ITimeEntryRepository
+    public class TimeEntryRepository : GenericWithIdSoftDeleteRepository<TimeEntry>, ITimeEntryRepository
     {
         public TimeEntryRepository(TTCloneContext context) : base(context)
         {
@@ -16,7 +16,6 @@ namespace TogglTrackCloneApi.Repositories
         public override void Update(TimeEntry entity)
         {
             base.Update(entity);
-            _context.Entry(entity).Property(te => te.DeleteDate).IsModified = false;
             _context.Entry(entity).Property(te => te.WorkspaceId).IsModified = false;
             _context.Entry(entity).Property(te => te.UserId).IsModified = false;
             UpdateDateInfo(entity);
@@ -28,65 +27,15 @@ namespace TogglTrackCloneApi.Repositories
             base.Add(entity);
         }
 
-        public override async Task<IEnumerable<TimeEntry>> GetAllAsync()
+        public async Task<List<TimeEntry>> GetAllByFiltersIncludeTagsAsync(Expression<Func<TimeEntry, bool>>? filter = null, bool tracked = true, bool includeSoftRemoved = false)
         {
-            return await _context.TimeEntries.Where(t => t.DeleteDate == null).ToListAsync();
-        }
-
-        public override async Task<List<TimeEntry>> GetAllByFilterAsync(Expression<Func<TimeEntry, bool>> filter, bool tracked = true)
-        {
-            IQueryable<TimeEntry> query = _context.TimeEntries;
-            if (!tracked) query = query.AsNoTracking();
-            if (filter != null) query = query.Where(filter);
-            query = query.Where(t => t.DeleteDate != null);
-            return await query.ToListAsync();
-        }
-
-        public override async Task<TimeEntry?> GetByFilterAsync(Expression<Func<TimeEntry, bool>>? filter = null, bool tracked = true)
-        {
-            IQueryable<TimeEntry> query = _context.TimeEntries;
-            if (!tracked) query = query.AsNoTracking();
-            if (filter != null) query = query.Where(filter);
-            query = query.Where(t => t.DeleteDate == null);
-            return await query.FirstOrDefaultAsync();
-        }
-
-        public override async Task<TimeEntry?> GetByIdAsync(int id)
-        {
-            IQueryable<TimeEntry> query = _context.TimeEntries;
-            query = query.Where(t => t.Id == id);
-            query = query.Where(t => t.DeleteDate == null);
-            return await query.FirstOrDefaultAsync();
-        }
-
-        public async Task<List<TimeEntry>> GetAllByFiltersIncludeTagsAsync(Expression<Func<TimeEntry, bool>>? filter = null, bool tracked = true)
-        {
-            IQueryable<TimeEntry> query = _context.TimeEntries;
-            if (!tracked) query = query.AsNoTracking();
-            if (filter != null) query = query.Where(filter);
-
-            query = query.Where(t => t.DeleteDate == null);
-
+            IQueryable<TimeEntry> query =  GetByFilterQuery(filter: filter, tracked: tracked, includeSoftRemoved: includeSoftRemoved);
             return await query.Include(t => t.Tags).ToListAsync();
         }
 
         public async Task<bool> IsTimeEntryInWorkspace(int timeEntryId, int workspaceId)
         {
             return await _context.TimeEntries.AnyAsync(te => te.Id == timeEntryId && te.WorkspaceId == workspaceId && te.DeleteDate == null);
-        }
-
-        // Assumed it is tracked, usually retrieve with find first then remove
-        public void SoftRemove(TimeEntry timeEntry)
-        {
-            _context.Attach(timeEntry);
-            timeEntry.DeleteDate = DateTime.UtcNow;
-        }
-
-        public void Recover(TimeEntry timeEntry)
-        {
-            timeEntry.DeleteDate = null;
-            _context.Attach(timeEntry);
-            _context.Entry(timeEntry).Property(te => te.DeleteDate).IsModified = true;
         }
 
         public void UpdateDateInfo(TimeEntry timeEntry)

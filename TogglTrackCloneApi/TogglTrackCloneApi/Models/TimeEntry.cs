@@ -2,14 +2,14 @@
 
 namespace TogglTrackCloneApi.Models
 {
-    public class TimeEntry : EntityWithId
+    public class TimeEntry : EntityWithIdSoftDelete
     {
         public TimeEntry()
         {
             this.Tags = new List<Tag>();
         }
 
-        public int Id { get; set; }
+/*        public int Id { get; set; }*/
         [Required]
         [StringLength(255, MinimumLength = 0)]
         public string Description { get; set; } = string.Empty;
@@ -19,7 +19,7 @@ namespace TogglTrackCloneApi.Models
         public DateTime StartDate { get; set; }
         /*public DateTime CreationDate { get; set; }*/
         public DateTime? StopDate { get; set; }
-        public DateTime? DeleteDate { get; set; }
+/*        public DateTime? DeleteDate { get; set; }*/
         [Required]
         public int WorkspaceId { get; set; }
         public Workspace? Workspace { get; set; }
