@@ -14,5 +14,15 @@ export const groupObj = (objs, groupKey) => {
 };
 
 export const generateApiBatchIdString = (ids) => {
-  return ids.map((id) => `id=${id}`).join("&");
+  // return ids.map((id) => `id=${id}`).join("&");
+  return ids.join(",");
+};
+
+export const findCommonValueInObjs = (objs, key) => {
+  if (!objs?.length || objs?.length <= 0) return null;
+  const common = objs[0][key];
+  for (let obj of objs) {
+    if (obj[key] !== common) return null;
+  }
+  return common;
 };

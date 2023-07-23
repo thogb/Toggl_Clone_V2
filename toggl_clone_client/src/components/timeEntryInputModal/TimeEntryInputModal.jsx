@@ -16,8 +16,10 @@ import TimeEntryInputExpand from "./TimeEntryInputExpand";
 import TagsSelector from "../../scenes/timerPage/TagsSelector";
 import TTPopper from "../ttPopper/TTPopper";
 import TTDateCalender from "../TTDateCalender/TTDateCalender";
-import { format } from "date-fns";
+import { differenceInSeconds, format } from "date-fns";
 import { useTheme } from "@emotion/react";
+import { listUtil } from "../../utils/listUtil";
+import { withDataFromTimeEntries } from "./withDataFromTimeEntries";
 
 // Using styled() to make a style component named StyledDialog with dialog
 // also including theme
@@ -94,6 +96,27 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
   },
 }));
 
+const isInputModalDataDifferent = (initialValues, currentValues) => {
+  if (initialValues === null) {
+    return true;
+  }
+  if (initialValues.description !== currentValues.description) {
+    return true;
+  }
+  if (initialValues.projectId !== currentValues.projectId) {
+    return true;
+  }
+  if (!listUtil.isListEqual(initialValues.tags, currentValues.tags)) {
+    return true;
+  }
+  if (
+    differenceInSeconds(initialValues.startDate, currentValues.startDate) !== 0
+  ) {
+    return true;
+  }
+  return false;
+};
+
 const TimeEntryInputModal = ({
   open,
   title,
@@ -105,6 +128,7 @@ const TimeEntryInputModal = ({
 
   tagList,
 
+  onOpen,
   onSave,
   onClose,
 }) => {
@@ -119,19 +143,27 @@ const TimeEntryInputModal = ({
   const [dateString, setDateString] = useState(format(startDate, formatString));
   const [localStartDate, setLocalStartDate] = useState(startDate);
   const [calenderAnchorEl, setCalenderAnchorEl] = useState(null);
+  const [initialValues, setInitialValues] = useState(null);
 
   //   useEffect(() => {
   //     setLocalCheckedTagList([...checkedTagList]);
   //   }, [checkedTagList]);
 
   useEffect(() => {
+    resetValues();
+    setInitialValues(getCurrentValues());
+  }, [description, checkedTagList, startDate]);
+
+  useEffect(() => {
     if (open) {
       resetValues();
+      setInitialValues(getCurrentValues());
+      if (onOpen) onOpen();
     }
   }, [open]);
 
   const resetValues = () => {
-    setLocalDescription("");
+    setLocalDescription(description);
     setLocalCheckedTagList(checkedTagList);
     setDateString(format(startDate, formatString));
     setLocalStartDate(startDate);
@@ -143,13 +175,22 @@ const TimeEntryInputModal = ({
     setLocalDescription(e.target.value);
   };
 
+  const getCurrentValues = () => {
+    return {
+      description: localDescription,
+      projectId: projectId,
+      tags: localCheckedTagList,
+      startDate: localStartDate,
+    };
+  };
+
   const handleSaveClick = () => {
     if (onSave) {
+      const finalValues = getCurrentValues();
       onSave({
-        description: localDescription,
-        projectId: projectId,
-        tags: localCheckedTagList,
-        startDate: localStartDate,
+        initialValues: initialValues,
+        finalValues: finalValues,
+        isDifferent: isInputModalDataDifferent(initialValues, finalValues),
       });
     }
     onClose();
@@ -170,7 +211,8 @@ const TimeEntryInputModal = ({
 
   const handleCalenderChange = (newDate) => {
     setDateString(format(newDate, formatString));
-    setLocalStartDate(newDate.getTime());
+    // setLocalStartDate(newDate.getTime());
+    setLocalStartDate(newDate);
   };
 
   return (
@@ -187,6 +229,9 @@ const TimeEntryInputModal = ({
           variant="outlined"
           placeholder="New description..."
           value={localDescription}
+          onBlur={(e) => {
+            setLocalDescription(e.target.value.trim());
+          }}
           onChange={handleDescriptionChange}
         ></TextField>
         <FormControl>
@@ -256,3 +301,4 @@ const TimeEntryInputModal = ({
 };
 
 export default TimeEntryInputModal;
+export const TEInputModalFromTEs = withDataFromTimeEntries(TimeEntryInputModal);

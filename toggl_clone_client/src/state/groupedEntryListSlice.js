@@ -157,19 +157,22 @@ const extendedApi = ttCloneApi.injectEndpoints({
     }),
     batchDeleteTimeEntry: builder.mutation({
       query: ({ ids }) => ({
-        url: `time_entries/batch?${generateApiBatchIdString(ids)}`,
+        // url: `time_entries/batch?${generateApiBatchIdString(ids)}`,
+        url: `time_entries/${generateApiBatchIdString(ids)}`,
         method: "DELETE",
       }),
     }),
     batchRecoverTimeEntry: builder.mutation({
       query: ({ ids }) => ({
-        url: `time_entries/recover/batch?${generateApiBatchIdString(ids)}`,
+        // url: `time_entries/recover/batch?${generateApiBatchIdString(ids)}`,
+        url: `time_entries/recover/${generateApiBatchIdString(ids)}`,
         method: "PATCH",
       }),
     }),
     batchPatchTimeEntry: builder.mutation({
       query: ({ ids, patch }) => ({
-        url: `time_entries/batch?${generateApiBatchIdString(ids)}`,
+        // url: `time_entries/batch?${generateApiBatchIdString(ids)}`,
+        url: `time_entries/${generateApiBatchIdString(ids)}`,
         method: "PATCH",
         body: patch,
       }),
