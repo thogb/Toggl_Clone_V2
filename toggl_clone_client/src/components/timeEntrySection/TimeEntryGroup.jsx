@@ -63,18 +63,24 @@ const TimeEntryGroup = ({
   }, [checkedList]);
 
   const onDescriptionEdit = async (description) => {
-    const entries = groupedEntry.entries;
-    try {
-      const ids = timeEntryUtil.convertTEListToTEIdList(entries);
-      const patch = compare({ description: "" }, { description });
-      const payload = await batchPatchTimeEntry({
-        ids: ids,
-        patch: patch,
-      }).unwrap();
-      dispatch(
-        updateGEDescription({ dateGroupId, gId: groupedEntry.gId, description })
-      );
-    } catch (error) {}
+    if (description !== groupedEntry.description) {
+      const entries = groupedEntry.entries;
+      try {
+        const ids = timeEntryUtil.convertTEListToTEIdList(entries);
+        const patch = compare({ description: "" }, { description });
+        const payload = await batchPatchTimeEntry({
+          ids: ids,
+          patch: patch,
+        }).unwrap();
+        dispatch(
+          updateGEDescription({
+            dateGroupId,
+            gId: groupedEntry.gId,
+            description,
+          })
+        );
+      } catch (error) {}
+    }
   };
 
   const onProjectEdit = (projectInfo) => {

@@ -126,9 +126,6 @@ namespace TogglTrackCloneApi.Services
             TimeEntryPatchDTO dummyTimeEntryPatchDTO = new();
             request.ApplyTo(dummyTimeEntryPatchDTO);
 
-            await Console.Out.WriteLineAsync(dummyTimeEntryPatchDTO.StartDate.ToString());
-            await Console.Out.WriteLineAsync(dummyTimeEntryPatchDTO.StartDate.ToLocalTime().ToString());
-
             List<Tag>? tags = null;
             if (dummyTimeEntryPatchDTO.Tags != null)
             {
@@ -137,8 +134,14 @@ namespace TogglTrackCloneApi.Services
 
             TimeEntryPatchDTO timeEntryPatchDTO = _mapper.Map<TimeEntryPatchDTO>(timeEntry);
             request.ApplyTo(timeEntryPatchDTO);
-
+            DateTime tempDate = timeEntry.StartDate;
             _mapper.Map(timeEntryPatchDTO, timeEntry);
+
+            if (!dummyTimeEntryPatchDTO.ChangeStartTime)
+            {
+                timeEntry.StartDate = timeEntry.StartDate.Date.Add(new TimeSpan(tempDate.Hour, tempDate.Minute, tempDate.Second));
+            }
+
             _timeEntryRepository.UpdateDateInfo(timeEntry);
             if (tags != null) timeEntry.Tags = tags;
 
@@ -172,15 +175,15 @@ namespace TogglTrackCloneApi.Services
                     PopulateFailure(innerTimeEntries, batchResponseDTO, "No permission to edit time entry");
                 } else
                 {
-                    TimeEntryPatchDTO timeEntryDTO = _mapper.Map<TimeEntryPatchDTO>(innerTimeEntries.First());
-                    request.ApplyTo(timeEntryDTO);
+                    TimeEntryPatchDTO dummyTimeEntryPatchDTO = new();
+                    request.ApplyTo(dummyTimeEntryPatchDTO);
 
-                    ICollection<Tag> tags = new List<Tag>();
-                    if (timeEntryDTO.Tags != null)
+                    List<Tag>? tags = null;
+                    if (dummyTimeEntryPatchDTO.Tags != null)
                     {
                         try
                         {
-                            tags = await ValidateAndGetTagsFromTagNames(timeEntryDTO.Tags, workspaceId);
+                            tags = await ValidateAndGetTagsFromTagNames(dummyTimeEntryPatchDTO.Tags, workspaceId);
                         } catch (APIException ex)
                         {
                             PopulateFailure(innerTimeEntries, batchResponseDTO, ex.Message);
@@ -189,11 +192,20 @@ namespace TogglTrackCloneApi.Services
 
                     foreach (var timeEntry in innerTimeEntries)
                     {
-                        int id = timeEntry.Id;
-                        _mapper.Map(timeEntryDTO, timeEntry);
-                        timeEntry.Tags = tags;
-                        timeEntry.Id = id;
-                        _timeEntryRepository.Update(timeEntry);
+                        TimeEntryPatchDTO timeEntryDTO = _mapper.Map<TimeEntryPatchDTO>(innerTimeEntries.First());
+                        request.ApplyTo(timeEntryDTO);
+
+                        if (!dummyTimeEntryPatchDTO.ChangeStartTime)
+                        {
+                            DateTime tempDate = timeEntryDTO.StartDate;
+                            _mapper.Map(timeEntryDTO, timeEntry);
+                            timeEntry.StartDate = timeEntryDTO.StartDate.Date.Add(new TimeSpan(tempDate.Hour, tempDate.Minute, tempDate.Second));
+                        } else
+                        {
+                            _mapper.Map(timeEntryDTO, timeEntry);
+                        }
+                        _timeEntryRepository.UpdateDateInfo(timeEntry);
+                        if (tags != null) timeEntry.Tags = tags;
                     }
 
                     try

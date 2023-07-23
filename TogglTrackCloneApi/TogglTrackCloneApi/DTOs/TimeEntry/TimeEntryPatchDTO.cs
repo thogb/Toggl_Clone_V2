@@ -18,6 +18,6 @@ namespace TogglTrackCloneApi.DTOs.TimeEntry
         [ValidateIdList(ErrorMessage = "Tag id list is invalid")]
         public ICollection<string>? Tags { get; set; } = null;
         public DateTime? DeleteDate { get; set; }
-
+        public bool ChangeStartTime = true;
     }
 }

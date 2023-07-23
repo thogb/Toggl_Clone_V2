@@ -353,9 +353,13 @@ const generateDateGroupedEntries = (timeEntries) => {
 
   for (let dateGroupId in grouped) {
     const groupedEntries = grouped[dateGroupId].groupedEntries;
+    groupedEntries.sort((a, b) => compareDesc(a.stopDate, b.stopDate));
     groupedEntries.sort((a, b) => compareDesc(a.startDate, b.startDate));
     groupedEntries.forEach((groupedEntry) => {
       if (groupedEntry.entries !== undefined) {
+        groupedEntry.entries.sort((a, b) =>
+          compareDesc(a.stopDate, b.stopDate)
+        );
         groupedEntry.entries.sort((a, b) =>
           compareDesc(a.startDate, b.startDate)
         );
