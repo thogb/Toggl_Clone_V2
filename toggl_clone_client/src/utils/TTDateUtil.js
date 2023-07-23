@@ -39,6 +39,10 @@ export const formatDateEEddMMMyyyy = (date) => {
   return isToday(date) ? "Today" : format(date, "EEE, dd MMM yyyy");
 };
 
+export const formatDateyyyyMMdd = (date) => {
+  return format(date, "yyyy-MM-dd");
+};
+
 export const getDaysBetween = (start, end) => {
   return Math.abs(differenceInCalendarDays(end, start));
   // const newStart = new Date(

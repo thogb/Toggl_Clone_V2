@@ -96,25 +96,26 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
   },
 }));
 
-const isInputModalDataDifferent = (initialValues, currentValues) => {
+const getInputModalDataDifferent = (initialValues, currentValues) => {
+  const changed = {};
   if (initialValues === null) {
-    return true;
+    return changed;
   }
   if (initialValues.description !== currentValues.description) {
-    return true;
+    changed.description = currentValues.description;
   }
   if (initialValues.projectId !== currentValues.projectId) {
-    return true;
+    changed.projectId = currentValues.projectId;
   }
   if (!listUtil.isListEqual(initialValues.tags, currentValues.tags)) {
-    return true;
+    changed.tags = currentValues.tags;
   }
   if (
     differenceInSeconds(initialValues.startDate, currentValues.startDate) !== 0
   ) {
-    return true;
+    changed.startDate = currentValues.startDate;
   }
-  return false;
+  return changed;
 };
 
 const TimeEntryInputModal = ({
@@ -150,29 +151,41 @@ const TimeEntryInputModal = ({
   //   }, [checkedTagList]);
 
   useEffect(() => {
-    resetValues();
-    setInitialValues(getCurrentValues());
-  }, [description, checkedTagList, startDate]);
+    if (open) {
+      resetValues();
+      setInitialValues(getIntialValues());
+    }
+  }, [description, projectId, checkedTagList, startDate.getTime()]);
 
   useEffect(() => {
     if (open) {
       resetValues();
-      setInitialValues(getCurrentValues());
+      setInitialValues(getIntialValues());
       if (onOpen) onOpen();
     }
   }, [open]);
 
   const resetValues = () => {
+    const justDate = new Date(startDate.toDateString());
     setLocalDescription(description);
     setLocalCheckedTagList(checkedTagList);
-    setDateString(format(startDate, formatString));
-    setLocalStartDate(startDate);
+    setDateString(format(justDate, formatString));
+    setLocalStartDate(justDate);
     setCalenderAnchorEl(null);
     setTagsAnchorEl(null);
   };
 
   const handleDescriptionChange = (e) => {
     setLocalDescription(e.target.value);
+  };
+
+  const getIntialValues = () => {
+    return {
+      description: description,
+      projectId: projectId,
+      tags: checkedTagList,
+      startDate: new Date(startDate.toDateString()),
+    };
   };
 
   const getCurrentValues = () => {
@@ -190,7 +203,7 @@ const TimeEntryInputModal = ({
       onSave({
         initialValues: initialValues,
         finalValues: finalValues,
-        isDifferent: isInputModalDataDifferent(initialValues, finalValues),
+        changed: getInputModalDataDifferent(initialValues, finalValues),
       });
     }
     onClose();

@@ -11,7 +11,7 @@ import ChecklistIcon from "@mui/icons-material/Checklist";
 import styled from "@emotion/styled";
 import { grey, red } from "@mui/material/colors";
 import { timeEntryCheckedActions } from "./TimeEntryCheckedReducer";
-import { formatSecondHMMSS } from "../../utils/TTDateUtil";
+import { formatDateyyyyMMdd, formatSecondHMMSS } from "../../utils/TTDateUtil";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addTE,
@@ -145,28 +145,33 @@ const TimeEntryHeader = ({
   };
 
   const handleInputModalComplete = async (editData) => {
-    const { initialValues, finalValues, hasChanged } = editData;
-    if (hasChanged) {
+    const { initialValues, finalValues, changed } = editData;
+    if (Object.values(changed).length > 0) {
       timeEntryCheckedDispatch({
         type: timeEntryCheckedActions.TOGGLE_AND_RESET_CHECKED_LIST,
       });
       let ids = timeEntryUtil.convertTEListToTEIdList(
         timeEntryChecked.checkedList
       );
-      const patch = compare(
-        { description: "", tags: [], projectId: -1, startDate: null },
-        finalValues
-      );
+      if (changed.startDate) {
+        changed.startDate = formatDateyyyyMMdd(changed.startDate);
+        changed.changeStartTime = false;
+      }
+      const dummy = { ...changed };
+      Object.keys(dummy).forEach((key) => {
+        dummy[key] = null;
+      });
+      const patch = compare(dummy, changed);
       try {
-        const { sucess, failure } = await batchPatchTimeEntry({
+        const { success, failure } = await batchPatchTimeEntry({
           ids: ids,
           patch: patch,
         }).unwrap();
-        if (sucess?.length > 0) {
+        if (success?.length > 0) {
           dispatch(
             updateBatchTE({
               dateGroupId,
-              idList: sucess,
+              idList: success,
               editData: {
                 ...finalValues,
                 startDate: new Date(finalValues.startDate).getTime(),

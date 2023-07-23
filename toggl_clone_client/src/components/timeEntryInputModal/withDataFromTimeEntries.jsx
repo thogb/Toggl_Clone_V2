@@ -25,7 +25,6 @@ export const withDataFromTimeEntries =
     }, [open]);
 
     const handleOpen = () => {
-      console.log(timeEntries);
       if (timeEntries.length === 1) {
         setDescription(timeEntries[0].description);
         setCheckedTagList(timeEntries[0].tags);
@@ -50,7 +49,6 @@ export const withDataFromTimeEntries =
         setDescription(findCommonValueInObjs(timeEntries, "description") ?? "");
         setCheckedTagList(commonTags);
       }
-      console.log(description);
     };
 
     const entriesCount = timeEntries?.length ?? 0;
