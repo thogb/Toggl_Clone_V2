@@ -1,28 +1,45 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { addDays, addSeconds, subDays } from "date-fns";
+import { createAsyncThunk, createSlice, current } from "@reduxjs/toolkit";
+import { addDays, addSeconds, differenceInSeconds, subDays } from "date-fns";
 import { addTE, addTimeEntry } from "./groupedEntryListSlice";
+import { timeEntryUtil } from "../utils/TimeEntryUtil";
+import { ttCloneApi } from "./apiSlice";
+import { compare } from "fast-json-patch";
 
 export const getInitialCurrentEntryState = () => {
   const newDate = Date.now();
   return {
+    id: -1,
     description: "",
     // project: {
     //   id: 1,
     //   name: ""
     // }
-    project: {},
+    projectId: -1,
     tagsChecked: [],
     duration: 0,
-    workspaceId: 0,
+    workspaceId: -1,
     startDate: newDate,
     stopDate: newDate,
     timerStarted: false,
   };
 };
 
+const getTEFromCurrentEntry = (currentEntry) => {
+  return {
+    id: currentEntry.id,
+    description: currentEntry.description,
+    projectId: currentEntry.projectId,
+    tags: [...currentEntry.tagsChecked],
+    duration: currentEntry.duration,
+    startDate: currentEntry.startDate,
+    stopDate: currentEntry.stopDate,
+    workspaceId: currentEntry.workspaceId,
+  };
+};
+
 const name = "currentEntry";
 
-const createTimerInterval = (dispatch) => {
+export const createTimerInterval = (dispatch) => {
   return setInterval(() => {
     dispatch(incrementDuration());
   }, 1000);
@@ -36,6 +53,11 @@ export const currentEntrySlice = createSlice({
       const { description } = action.payload;
       state.description = description.trim();
     },
+    updateWorkspaceId: (state, action) => {
+      console.log(action.payload);
+      const { workspaceId } = action.payload;
+      state.workspaceId = workspaceId;
+    },
     updateDuration: (state, action) => {
       const { duration, staticStop = true } = action.payload;
       state.duration = duration;
@@ -47,7 +69,7 @@ export const currentEntrySlice = createSlice({
         : state.stopDate;
     },
     updateStartTime: (state, action) => {
-      let startDate = action.payload.startDate;
+      let startDate = new Date(action.payload.startDate).getTime();
       if (state.stopDate < startDate)
         startDate = subDays(startDate, 1).getTime();
       state.startDate = startDate;
@@ -101,16 +123,17 @@ export const currentEntrySlice = createSlice({
       };
     },
     setStartTimerData: (state, action) => {
-      const { entryData, timerInterval } = action.payload;
-      if (entryData !== undefined) {
-        state.description = entryData.description;
-        state.projectId = entryData.projectId;
-        state.tagsChecked = [...entryData.tags];
-        // state.duration = entryData.duration;
-        // state.startDate = entryData.startDate;
-        // state.stopDate = entryData.startDate;
-      }
-      state.startDate = new Date().getTime();
+      const { timeEntry, timerInterval } = action.payload;
+      state.id = timeEntry.id;
+      state.description = timeEntry.description;
+      state.projectId = timeEntry.projectId;
+      state.tagsChecked = [...timeEntry.tags];
+      state.startDate = timeEntry.startDate;
+      // state.duration = -1;
+      // state.stopDate = null;
+      state.workspaceId = timeEntry.workspaceId;
+      state.duration = timeEntry.duration;
+      state.stopDate = timeEntry.startDate;
       state.timerStarted = true;
       state.timerInterval = timerInterval;
     },
@@ -162,58 +185,103 @@ export const currentEntrySlice = createSlice({
   },
 });
 
-// const createExtraActions = () => {
-//   const startTimer = () => {
-//     return createAsyncThunk(
-//       `${name}/startTimer`,
-//       async function (arg, { getState, dispatch }) {
-//         const state = getState();
-//         const currentEntry = state.currentEntry;
-//         const entryData = arg?.entryData;
-//         if (currentEntry.timerStarted) {
-//           dispatch(reducers.endTimer());
-//         }
-//         const timerInterval = createTimerInterval(dispatch);
-//         dispatch(setStartTimerData({ entryData: entryData, timerInterval }));
-//       }
-//     );
-//   };
+const createExtraActions = () => {
+  const startTimer = () => {
+    return createAsyncThunk(
+      `${name}/startTimer`,
+      async function (
+        { timeEntry, fromServer = false },
+        { getState, dispatch }
+      ) {
+        const state = getState();
+        const currentEntry = state.currentEntry;
+        if (currentEntry.timerStarted) {
+          try {
+            await dispatch(reducers.endTimer());
+          } catch (error) {
+            return;
+          }
+        }
+        const cloned = timeEntryUtil.cloneTimeEntry(timeEntry);
+        let responseTE = timeEntry;
 
-//   const endTimer = () => {
-//     return createAsyncThunk(
-//       `${name}/endTimer`,
-//       async (arg, { getState, dispatch }) => {
-//         const state = getState();
-//         const currentEntry = state.currentEntry;
-//         const entryData = {
-//           description: currentEntry.description,
-//           projectId: currentEntry.projectId,
-//           tags: [...currentEntry.tagsChecked],
-//           duration: currentEntry.duration,
-//           startDate: currentEntry.startDate,
-//           stopDate: addSeconds(
-//             currentEntry.startDate,
-//             currentEntry.duration
-//           ).getTime(),
-//         };
-//         clearInterval(currentEntry.timerInterval);
-//         dispatch(resetEntryDataAndTimer());
-//         dispatch(addTimeEntry({ entryData: entryData }));
-//       }
-//     );
-//   };
+        if (!fromServer) {
+          try {
+            cloned.startDate = Date.now();
+            cloned.duration = 0;
+            cloned.stopDate = null;
+            const { data } = await dispatch(
+              ttCloneApi.endpoints.addTimeEntry.initiate({
+                timeEntry: timeEntryUtil.convertToApiDTO(cloned),
+              })
+            );
+            responseTE = timeEntryUtil.createFromApiResponse(
+              timeEntryUtil.cloneTimeEntry(data)
+            );
+          } catch (error) {}
+        } else {
+          responseTE.duration = Math.abs(
+            differenceInSeconds(responseTE.startDate, Date.now())
+          );
+        }
+        const timerInterval = createTimerInterval(dispatch);
+        dispatch(setStartTimerData({ timeEntry: responseTE, timerInterval }));
+      }
+    );
+  };
 
-//   const reducers = {
-//     startTimer: startTimer(),
-//     endTimer: endTimer(),
-//   };
+  const endTimer = () => {
+    return createAsyncThunk(
+      `${name}/endTimer`,
+      async (arg, { getState, dispatch }) => {
+        console.log("1");
+        const state = getState();
+        const currentEntry = state.currentEntry;
+        const stopDate = Date.now();
+        const duration = Math.abs(
+          differenceInSeconds(stopDate, currentEntry.startDate)
+        );
+        const patch = compare(
+          {
+            duration: null,
+          },
+          { duration: duration }
+        );
+        const timeEntry = {
+          ...getTEFromCurrentEntry(currentEntry),
+          duration: duration,
+          stopDate: stopDate,
+        };
+        console.log(timeEntry);
+        try {
+          const { data } = await dispatch(
+            ttCloneApi.endpoints.patchTimeEntry.initiate({
+              id: timeEntry.id,
+              patch: patch,
+            })
+          );
+          clearInterval(currentEntry.timerInterval);
+          dispatch(resetEntryDataAndTimer());
+          dispatch(addTE({ timeEntry: timeEntry }));
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    );
+  };
 
-//   return reducers;
-// };
+  const reducers = {
+    startTimer: startTimer(),
+    endTimer: endTimer(),
+  };
 
-const allActions = { ...currentEntrySlice.actions };
+  return reducers;
+};
+
+const allActions = { ...currentEntrySlice.actions, ...createExtraActions() };
 
 export const {
+  updateWorkspaceId,
   updateDescription,
   updateDuration,
   updateStartTime,
@@ -230,8 +298,8 @@ export const {
   resetEntryDataAndTimer,
   resetEntryData,
 
-  // startTimer,
-  // endTimer,
+  startTimer,
+  endTimer,
 
   changeWorkspace,
 } = allActions;

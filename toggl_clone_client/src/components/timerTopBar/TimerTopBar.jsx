@@ -24,20 +24,27 @@ import { grey } from "@mui/material/colors";
 import TagsSelector from "../../scenes/timerPage/TagsSelector";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  endTimer,
   // endTimer,
   resetCurrentEntryInfo,
   resetDateInfo,
   setDateInfo,
   setTagsChecked,
+  startTimer,
   // startTimer,
   updateDescription,
+  updateWorkspaceId,
 } from "../../state/currentEntrySlice";
 import { getDiffInSeconds } from "../../utils/TTDateUtil";
 import { TTMenu } from "../ttMenu/TTMenu";
 import { TTMenuItem } from "../ttMenu/TTMenuItem";
 import TTTimeTextField from "../ttTimeTextField/TTTimeTextField";
-import { addTE } from "../../state/groupedEntryListSlice";
+import {
+  addTE,
+  useAddTimeEntryMutation,
+} from "../../state/groupedEntryListSlice";
 import { addSeconds } from "date-fns";
+import { timeEntryUtil } from "../../utils/TimeEntryUtil";
 
 const timerStates = Object.freeze({
   STARTED: "STARTED",
@@ -52,12 +59,13 @@ const TimerTopBar = () => {
   const duration = useSelector((state) => state.currentEntry.duration);
   const startDate = useSelector((state) => state.currentEntry.startDate);
   const stopDate = useSelector((state) => state.currentEntry.stopDate);
+  const workspaceId = useSelector((state) => state.currentEntry.workspaceId);
   const isTimerStarted = useSelector(
     (state) => state.currentEntry.timerStarted
   );
   const tagCheckedList = useSelector((state) => state.currentEntry.tagsChecked);
   // const tagList = useSelector((state) => state.currentEntry.tags);
-  const workspaceId =
+  const currentWorkspaceId =
     useSelector((state) => state.workspaces.currentWorkspace).id ?? 0;
   const tagList =
     useSelector((state) => state.tags.tagNames)[workspaceId] ?? [];
@@ -66,6 +74,14 @@ const TimerTopBar = () => {
   const [isTimerMode, setIsTimerMode] = useState(true);
 
   const [menuAnchor, setMenuAnchor] = useState(null);
+
+  const [addTimeEntry] = useAddTimeEntryMutation();
+
+  useEffect(() => {
+    if (!workspaceId || workspaceId < 0) {
+      dispatch(updateWorkspaceId({ workspaceId: currentWorkspaceId }));
+    }
+  }, [workspaceId]);
 
   //retrieved from redux for if timer is started
 
@@ -112,43 +128,42 @@ const TimerTopBar = () => {
 
   const getCurrentTimeEntry = () => {
     return {
-      id: Date.now(), // to be retrieved from api
       description: desciptionInput.current.value.trim(),
       projectId: null,
       tags: tagCheckedList,
       duration: duration,
       startDate: startDate,
       stopDate: addSeconds(startDate, duration).getTime(),
+      workspaceId: workspaceId,
     };
   };
 
-  const handleTimerButtonClick = () => {
+  const handleTimerButtonClick = async () => {
     switch (timerState) {
       case timerStates.IDLE:
-        // const timerInterval = setInterval(() => {
-        //   dispatch(incrementDuration());
-        // }, 1000);
-        // dispatch(startTimer({ timerInterval: timerInterval }));
-        console.log("idle");
-        // dispatch(startTimer({}));
+        dispatch(startTimer({ timeEntry: getCurrentTimeEntry() }));
         desciptionInput.current.focus();
         return;
       case timerStates.STARTED:
-        // dispatch(
-        //   addTE({
-        //     timeEntry: getCurrentTimeEntry(),
-        //   })
-        // );
-        // dispatch(endTimer());
+        dispatch(endTimer());
         return;
       case timerStates.MANUAL:
       case timerStates.CHECK:
-        dispatch(
-          addTE({
-            timeEntry: getCurrentTimeEntry(),
-          })
-        );
-        dispatch(resetCurrentEntryInfo());
+        try {
+          const timeEntry = getCurrentTimeEntry();
+          const payload = await addTimeEntry({
+            timeEntry: timeEntryUtil.convertToApiDTO(timeEntry),
+          }).unwrap();
+          const responseTE = timeEntryUtil.createFromApiResponse(
+            timeEntryUtil.cloneTimeEntry(payload)
+          );
+          dispatch(
+            addTE({
+              timeEntry: responseTE,
+            })
+          );
+          dispatch(resetCurrentEntryInfo());
+        } catch (error) {}
         return;
       default:
         return;

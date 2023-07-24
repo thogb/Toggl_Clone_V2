@@ -24,7 +24,10 @@ const isEqual = (timeEntry, groupData) => {};
 // #create
 const createFromApiResponse = (rawTimeEntry) => {
   const startDate = new Date(rawTimeEntry.startDate).getTime();
-  const stopDate = new Date(rawTimeEntry.stopDate).getTime();
+  const stopDate =
+    rawTimeEntry.stopDate !== null
+      ? new Date(rawTimeEntry.stopDate).getTime()
+      : null;
   const tags = rawTimeEntry.tags.map((tag) => tag.name);
   tags.sort();
   const timeEntry = {
@@ -45,7 +48,10 @@ const convertToApiDTO = (timeEntry) => {
   return {
     ...timeEntry,
     startDate: new Date(timeEntry.startDate),
-    stopDate: new Date(timeEntry.stopDate),
+    stopDate:
+      timeEntry.stopDate !== null
+        ? new Date(timeEntry.stopDate)
+        : timeEntry.stopDate,
   };
 };
 

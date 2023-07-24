@@ -12,7 +12,7 @@ import {
   useDeleteTimeEntryMutation,
   usePatchTimeEntryMutation,
 } from "../../state/groupedEntryListSlice";
-// import { startTimer } from "../../state/currentEntrySlice";
+import { startTimer } from "../../state/currentEntrySlice";
 import { timeEntryUtil } from "../../utils/TimeEntryUtil";
 import { listUtil } from "../../utils/listUtil";
 import { compare } from "fast-json-patch";
@@ -179,9 +179,7 @@ const TimeEntryItem = ({
 
   const onStartButtonClick = async () => {
     // dispatch(startTimer({entryData:}));
-    // dispatch(
-    //   startTimer({ entryData: timeEntryUtil.cloneTimeEntry(timeEntry) })
-    // );
+    dispatch(startTimer({ timeEntry: timeEntry }));
   };
 
   const onMenuClick = (option) => {
@@ -208,10 +206,10 @@ const TimeEntryItem = ({
       const payload = await addTimeEntry({
         timeEntry: timeEntryUtil.convertToApiDTO(timeEntry),
       }).unwrap();
-      const cloned = timeEntryUtil.createFromApiResponse(
+      const responseTE = timeEntryUtil.createFromApiResponse(
         timeEntryUtil.cloneTimeEntry(payload)
       );
-      dispatch(addTE({ timeEntry: cloned }));
+      dispatch(addTE({ timeEntry: responseTE }));
     } catch (error) {}
   };
 

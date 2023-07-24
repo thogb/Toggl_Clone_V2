@@ -21,9 +21,16 @@ import { useGetTagsQuery } from "../../state/tagSlice";
 import { useGetProjectsQuery } from "../../state/projectSlice";
 import { useGetTimeEntriesQuery } from "../../state/groupedEntryListSlice";
 import LoadingPage from "../LoadingPage";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  createTimerInterval,
+  setStartTimerData,
+  startTimer,
+} from "../../state/currentEntrySlice";
+import { timeEntryUtil } from "../../utils/TimeEntryUtil";
 
 const DashBoard = () => {
+  const dispatch = useDispatch();
   const [isMDrawerOpen, setIsMDrawerOpen] = useState(false);
 
   const theme = useTheme();
@@ -37,6 +44,23 @@ const DashBoard = () => {
   const timeEntriesQuery = useGetTimeEntriesQuery();
 
   const userId = user?.id;
+
+  useEffect(() => {
+    const data = timeEntriesQuery.data;
+    if (data) {
+      const startedTimeEntry = data.find(
+        (te) => te.duration <= -1 || te.stopDate === null
+      );
+      if (startedTimeEntry) {
+        dispatch(
+          startTimer({
+            timeEntry: timeEntryUtil.createFromApiResponse(startedTimeEntry),
+            fromServer: true,
+          })
+        );
+      }
+    }
+  }, [timeEntriesQuery.isSuccess]);
 
   useEffect(() => {
     if (userId) {

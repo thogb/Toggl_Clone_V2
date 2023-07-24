@@ -80,8 +80,11 @@ export const groupedEntryListSlice = createSlice({
     builder.addMatcher(
       ttCloneApi.endpoints.getTimeEntries.matchFulfilled,
       (state, action) => {
+        const timeEntries = action.payload.filter(
+          (te) => te.duration > -1 && te.stopDate !== null
+        );
         state.dateGroupedEntries =
-          dateGroupEntryUtil.generateDateGroupedEntries(action.payload);
+          dateGroupEntryUtil.generateDateGroupedEntries(timeEntries);
       }
     );
   },

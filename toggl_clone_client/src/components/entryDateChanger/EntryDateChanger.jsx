@@ -46,7 +46,7 @@ const EntryDateChanger = () => {
         date={startDate}
         onFocus={(e) => setAnchorEl(e.currentTarget)}
         onDateChange={(newDate) =>
-          dispatch(updateStartTime({ startDate: newDate }))
+          dispatch(updateStartTime({ startDate: newDate.getTime() }))
         }
         endAdornment={
           <InputAdornment position="end">
@@ -65,7 +65,7 @@ const EntryDateChanger = () => {
         <TTDateCalender
           value={startDate}
           onChange={(newDate) =>
-            dispatch(updateStartDate({ startDate: newDate }))
+            dispatch(updateStartDate({ startDate: newDate.getTime() }))
           }
         />
       </TTPopper>
