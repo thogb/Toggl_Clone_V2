@@ -18,7 +18,7 @@ namespace TogglTrackCloneApi.Models
         [Required]
         public DateTime StartDate { get; set; }
         /*public DateTime CreationDate { get; set; }*/
-        public DateTime? StopDate { get; set; }
+        public DateTime? StopDate { get; set; } = null;
 /*        public DateTime? DeleteDate { get; set; }*/
         [Required]
         public int WorkspaceId { get; set; }
