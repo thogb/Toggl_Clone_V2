@@ -14,6 +14,7 @@ const TagsSelector = ({
   tagList,
   tagCheckedList = [],
   onClose,
+  onCreateTagClick,
   onPopperClose,
   onSelectionComplete,
   popperAnchorEl,
@@ -32,13 +33,15 @@ const TagsSelector = ({
   const [localList, setLocalList] = useState([...tagList]);
   const [filteredLocalList, setFilteredLocalList] = useState([...tagList]);
   const [checkedList, setCheckedList] = useState([...tagCheckedList]);
+  const [createdLocalList, setCreatedLocalList] = useState([]);
 
   useEffect(() => {
+    setCreatedLocalList([]);
     reOrderTagsList();
   }, [tagCheckedList, tagList]);
 
   const reOrderTagsList = () => {
-    const newCheckedList = [...tagCheckedList].sort();
+    const newCheckedList = [...tagCheckedList, ...createdLocalList].sort();
     const filteredList = tagList
       .filter((v) => newCheckedList.indexOf(v) === -1)
       .sort();
@@ -53,12 +56,28 @@ const TagsSelector = ({
     updateFilterList(newValue);
   };
 
+  const handleSearchBlur = (e) => {
+    setSearchValue(e.target.value.trim());
+  };
+
   const updateFilterList = (newValue) => {
     setFilteredLocalList(
       localList.filter((v) => v.toLowerCase().includes(newValue.toLowerCase()))
     );
   };
 
+  const handleSearchClearClick = () => {
+    setSearchValue("");
+    updateFilterList("");
+  };
+
+  const handleCreateTagClick = () => {
+    if (onCreateTagClick) onCreateTagClick(searchValue);
+    if (searchValue) {
+      setCreatedLocalList([...createdLocalList, searchValue]);
+    }
+    handleSearchClearClick();
+  };
   const handlePopperClose = () => {
     const newCheckedList = [...checkedList].sort();
     if (onSelectionComplete) onSelectionComplete(newCheckedList);
@@ -108,11 +127,9 @@ const TagsSelector = ({
           <SearchTextField
             placeholder={"Add/filter tags."}
             value={searchValue}
+            onBlur={handleSearchBlur}
             onChange={handleSearchChange}
-            onClear={() => {
-              setSearchValue("");
-              updateFilterList("");
-            }}
+            onClear={handleSearchClearClick}
           />
         </Box>
         <Box height={"200px"} maxHeight={"200px"} overflow={"auto"} px={0.5}>
@@ -128,6 +145,7 @@ const TagsSelector = ({
           disabled={!canCreateTag}
           disableFocusRipple
           disableRipple
+          onClick={handleCreateTagClick}
           startIcon={
             <AddIcon
               style={{

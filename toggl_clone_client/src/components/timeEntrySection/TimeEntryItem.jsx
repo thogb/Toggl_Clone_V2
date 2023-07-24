@@ -16,6 +16,8 @@ import { startTimer } from "../../state/currentEntrySlice";
 import { timeEntryUtil } from "../../utils/TimeEntryUtil";
 import { listUtil } from "../../utils/listUtil";
 import { compare } from "fast-json-patch";
+import { createReplacePatch } from "../../utils/otherUtil";
+import { useAddTagMutation } from "../../state/tagSlice";
 
 export const itemMenuData = {
   DUPLICATE: {
@@ -66,6 +68,7 @@ const TimeEntryItem = ({
   const [patchTimeEntry] = usePatchTimeEntryMutation();
   const [deleteTimeEntry] = useDeleteTimeEntryMutation();
   const [addTimeEntry] = useAddTimeEntryMutation();
+  const [addTag] = useAddTagMutation();
 
   const onDescriptionEdit = async (description) => {
     if (timeEntry.description !== description) {
@@ -73,11 +76,11 @@ const TimeEntryItem = ({
       dispatch(
         updateTEDescription({ dateGroupId, gId, id: timeEntry.id, description })
       );
-      const diff = compare({ description: "" }, { description });
+      const patch = createReplacePatch({ description });
       try {
         await patchTimeEntry({
           id: timeEntry.id,
-          patch: diff,
+          patch: patch,
         }).unwrap();
       } catch (error) {
         dispatch(
@@ -96,15 +99,15 @@ const TimeEntryItem = ({
 
   const onTagsCheckedEdit = async (tagsChecked) => {
     if (!listUtil.isListEqual(tagsChecked, timeEntry.tags)) {
-      const diff = compare({ tags: null }, { tags: tagsChecked });
       const oldTags = [...timeEntry.tags];
       dispatch(
         updateTETags({ dateGroupId, gId, id: timeEntry.id, tags: tagsChecked })
       );
+      const patch = createReplacePatch({ tags: tagsChecked });
       try {
         await patchTimeEntry({
           id: timeEntry.id,
-          patch: diff,
+          patch: patch,
         }).unwrap();
       } catch (error) {
         dispatch(
@@ -157,6 +160,17 @@ const TimeEntryItem = ({
           })
         );
       }
+    }
+  };
+
+  const handleCreateTagClick = async (tagName) => {
+    if (tagName) {
+      try {
+        const payload = await addTag({
+          tagName: tagName,
+          workspaceId: workspaceId,
+        }).unwrap();
+      } catch (error) {}
     }
   };
 
@@ -252,6 +266,7 @@ const TimeEntryItem = ({
         onDeleteClick,
         onMenuClick,
         onStartButtonClick,
+        onCreateTagClick: handleCreateTagClick,
       }}
     />
   );

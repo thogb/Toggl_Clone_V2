@@ -97,6 +97,7 @@ const TimeEntryItemRecord = ({
     onExpandButonClick: (e) => {},
     onMenuClick: (option) => {},
     onStartButtonClick: (e) => {},
+    onCreateTagClick: () => {},
   },
 }) => {
   const theme = useTheme();
@@ -192,6 +193,7 @@ const TimeEntryItemRecord = ({
             tagCheckedList={tagsChecked}
             popperAnchorEl={tagSelectorAnchor}
             onClose={handleTagsSelectorClose}
+            onCreateTagClick={operations.onCreateTagClick}
             triggerTouchable={true}
             triggerComponent={
               hasTags ? (

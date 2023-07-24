@@ -243,9 +243,9 @@ const NavBar = ({ loading = false, onClose = () => {} }) => {
               variant="h6"
               sx={{ color: "white", fontSize: "1rem" }}
             >
-              {loading || !currentOrganisation?.name
+              {loading || !currentWorkspace?.name
                 ? "Loading..."
-                : currentOrganisation?.name}
+                : currentWorkspace?.name}
             </Typography>
             <Typography
               noWrap
@@ -258,7 +258,7 @@ const NavBar = ({ loading = false, onClose = () => {} }) => {
             >
               {loading || !currentOrganisation?.name
                 ? "Loading..."
-                : currentWorkspace?.name}
+                : currentOrganisation?.name}
             </Typography>
           </Box>
           {!loading && (

@@ -98,6 +98,9 @@ export const currentEntrySlice = createSlice({
       state.duration = 0;
     },
     // tags
+    addTagsChecked: (state, action) => {
+      state.tagsChecked = [...state.tagsChecked, action.payload.tagChecked];
+    },
     setTagsChecked: (state, action) => {
       state.tagsChecked = [...action.payload.tagsChecked];
     },
@@ -281,9 +284,35 @@ const createExtraActions = () => {
     );
   };
 
+  const deleteStartedTimer = () => {
+    return createAsyncThunk(
+      `${name}/endTimer`,
+      async (arg, { getState, dispatch }) => {
+        const state = getState();
+        const currentEntry = state.currentEntry;
+
+        try {
+          const { data } = await dispatch(
+            ttCloneApi.endpoints.deleteTimeEntry.initiate({
+              id: currentEntry.id,
+            })
+          );
+          clearInterval(currentEntry.timerInterval);
+          dispatch(resetEntryDataAndTimer());
+          dispatch(
+            updateWorkspaceId({
+              workspaceId: state.workspaces.currentWorkspace.id,
+            })
+          );
+        } catch (error) {}
+      }
+    );
+  };
+
   const reducers = {
     startTimer: startTimer(),
     endTimer: endTimer(),
+    deleteStartedTimer: deleteStartedTimer(),
   };
 
   return reducers;
@@ -299,6 +328,7 @@ export const {
   updateStopTime,
   updateStartDate,
   resetDateInfo,
+  addTagsChecked,
   setTagsChecked,
   setTimerStarted,
   toggleTimerStarted,
@@ -311,6 +341,7 @@ export const {
 
   startTimer,
   endTimer,
+  deleteStartedTimer,
 
   changeWorkspace,
 } = allActions;

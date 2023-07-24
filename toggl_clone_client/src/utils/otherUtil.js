@@ -1,3 +1,5 @@
+import { compare } from "fast-json-patch";
+
 export const isEmailValid = (email) => {
   return /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(email);
 };
@@ -25,4 +27,12 @@ export const findCommonValueInObjs = (objs, key) => {
     if (obj[key] !== common) return null;
   }
   return common;
+};
+
+export const createReplacePatch = (data) => {
+  const dummyData = {};
+  Object.keys(data).forEach((key) => {
+    dummyData[key] = undefined;
+  });
+  return compare(dummyData, data);
 };

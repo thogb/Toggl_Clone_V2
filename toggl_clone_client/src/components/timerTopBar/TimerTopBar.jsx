@@ -24,6 +24,8 @@ import { grey } from "@mui/material/colors";
 import TagsSelector from "../../scenes/timerPage/TagsSelector";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  addTagsChecked,
+  deleteStartedTimer,
   endTimer,
   // endTimer,
   resetCurrentEntryInfo,
@@ -42,9 +44,13 @@ import TTTimeTextField from "../ttTimeTextField/TTTimeTextField";
 import {
   addTE,
   useAddTimeEntryMutation,
+  usePatchTimeEntryMutation,
 } from "../../state/groupedEntryListSlice";
-import { addSeconds } from "date-fns";
+import { addSeconds, differenceInSeconds } from "date-fns";
 import { timeEntryUtil } from "../../utils/TimeEntryUtil";
+import { createReplacePatch } from "../../utils/otherUtil";
+import { listUtil } from "../../utils/listUtil";
+import { useAddTagMutation } from "../../state/tagSlice";
 
 const timerStates = Object.freeze({
   STARTED: "STARTED",
@@ -55,6 +61,7 @@ const timerStates = Object.freeze({
 
 const TimerTopBar = () => {
   const dispatch = useDispatch();
+  const timeEntryId = useSelector((state) => state.currentEntry.id);
   const description = useSelector((state) => state.currentEntry.description);
   const duration = useSelector((state) => state.currentEntry.duration);
   const startDate = useSelector((state) => state.currentEntry.startDate);
@@ -76,6 +83,8 @@ const TimerTopBar = () => {
   const [menuAnchor, setMenuAnchor] = useState(null);
 
   const [addTimeEntry] = useAddTimeEntryMutation();
+  const [patchTimeEntry] = usePatchTimeEntryMutation();
+  const [addTag] = useAddTagMutation();
 
   // useEffect(() => {
   //   if (!workspaceId || workspaceId < 0) {
@@ -172,8 +181,24 @@ const TimerTopBar = () => {
     }
   };
 
-  const handleDescriptionBlur = (e) => {
-    dispatch(updateDescription({ description: e.target.value }));
+  const handleDescriptionBlur = async (e) => {
+    const newDescription = e.target.value.trim();
+    if (description !== newDescription) {
+      const oldDescription = description;
+      dispatch(updateDescription({ description: newDescription }));
+      if (isTimerStarted) {
+        try {
+          const patch = createReplacePatch({ description: newDescription });
+          const payload = await patchTimeEntry({
+            id: timeEntryId,
+            patch: patch,
+          }).unwrap();
+        } catch (error) {
+          dispatch(updateDescription({ description: oldDescription }));
+        }
+      }
+    }
+    desciptionInput.current.value = newDescription;
   };
 
   const handleTimeModeChange = () => {
@@ -181,30 +206,57 @@ const TimerTopBar = () => {
     dispatch(resetDateInfo());
   };
 
-  const handleTimePopperClose = (dateInfo) => {
+  const handleCreateTagClick = async (tagName) => {
+    if (tagName) {
+      try {
+        const payload = await addTag({
+          tagName: tagName,
+          workspaceId: workspaceId,
+        }).unwrap();
+        // dispatch(addTagsChecked({ tagChecked: tagName }));
+      } catch (error) {}
+    }
+  };
+
+  const handleTimePopperClose = async (dateInfo) => {
     if (duration < 0) {
       dispatch(resetDateInfo());
     }
 
-    const { initialDateInfo } = dateInfo;
+    const { initialDateInfo, finalDateInfo } = dateInfo;
     if (
       (dateInfo.duration >= 0 &&
         dateInfo.duration !== initialDateInfo.duration) ||
       Math.abs(dateInfo.startDate - initialDateInfo.startDate) > 60 * 1000
     ) {
       if (isTimerStarted) {
-        dispatch(
-          setDateInfo({
-            dateInfo: {
-              duration: getDiffInSeconds(
-                initialDateInfo.stopDate.getTime(),
-                dateInfo.startDate.getTime()
-              ),
-              startDate: dateInfo.startDate.getTime(),
-              stopDate: initialDateInfo.stopDate.getTime(),
-            },
-          })
-        );
+        if (
+          Math.abs(
+            differenceInSeconds(
+              initialDateInfo.startDate,
+              finalDateInfo.startDate
+            )
+          ) > 0
+        ) {
+          const patch = createReplacePatch({
+            startDate: new Date(finalDateInfo.startDate),
+          });
+          try {
+            await patchTimeEntry({ id: timeEntryId, patch: patch }).unwrap();
+            dispatch(
+              setDateInfo({
+                dateInfo: {
+                  duration: getDiffInSeconds(
+                    initialDateInfo.stopDate.getTime(),
+                    dateInfo.startDate.getTime()
+                  ),
+                  startDate: dateInfo.startDate.getTime(),
+                  stopDate: initialDateInfo.stopDate.getTime(),
+                },
+              })
+            );
+          } catch (error) {}
+        }
       } else {
         dispatch(
           setDateInfo({
@@ -219,13 +271,27 @@ const TimerTopBar = () => {
     }
   };
 
-  const handleTagsSelectionComplete = (tagsChecked) => {
-    dispatch(setTagsChecked({ tagsChecked: tagsChecked }));
+  const handleTagsSelectionComplete = async (tagsChecked) => {
+    if (!listUtil.isListEqual(tagCheckedList, tagsChecked)) {
+      const oldTags = [...tagCheckedList];
+      dispatch(setTagsChecked({ tagsChecked: tagsChecked }));
+      const patch = createReplacePatch({ tags: tagsChecked });
+      if (isTimerStarted) {
+        try {
+          await patchTimeEntry({
+            id: timeEntryId,
+            patch: patch,
+          }).unwrap();
+        } catch (error) {
+          dispatch(setTagsChecked({ tagsChecked: oldTags }));
+        }
+      }
+    }
   };
 
   const handleMenuItemClick = (code) => {
     if (code === "DELETE") {
-      console.log("delete clicked");
+      dispatch(deleteStartedTimer());
     }
 
     setMenuAnchor(null);
@@ -306,6 +372,7 @@ const TimerTopBar = () => {
         </Button>
         <TagsSelector
           tagList={tagList}
+          onCreateTagClick={handleCreateTagClick}
           tagCheckedList={tagCheckedList}
           onSelectionComplete={handleTagsSelectionComplete}
         />

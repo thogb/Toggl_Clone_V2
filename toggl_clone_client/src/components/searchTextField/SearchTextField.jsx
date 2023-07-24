@@ -50,6 +50,7 @@ const Adornment = styled("div")(({ theme }) => ({
 const SearchTextField = ({
   startAdornment,
   value,
+  onBlur,
   onChange,
   clearOn = true,
   onClear,
@@ -69,6 +70,7 @@ const SearchTextField = ({
         autoFocus
         fullWidth
         value={value}
+        onBlur={onBlur}
         onChange={onChange}
         placeholder={placeholder}
       ></InputBase>
