@@ -188,6 +188,7 @@ const getEntryData = (groupedEntry) => {
     description: groupedEntry.description,
     projectId: groupedEntry.projectId,
     tags: [...groupedEntry.tags],
+    workspaceId: groupedEntry.workspaceId,
   };
 };
 

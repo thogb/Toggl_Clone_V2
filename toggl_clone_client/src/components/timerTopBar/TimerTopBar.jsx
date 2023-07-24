@@ -77,13 +77,15 @@ const TimerTopBar = () => {
 
   const [addTimeEntry] = useAddTimeEntryMutation();
 
-  useEffect(() => {
-    if (!workspaceId || workspaceId < 0) {
-      dispatch(updateWorkspaceId({ workspaceId: currentWorkspaceId }));
-    }
-  }, [workspaceId]);
+  // useEffect(() => {
+  //   if (!workspaceId || workspaceId < 0) {
+  //     console.log(Date.now());
 
-  //retrieved from redux for if timer is started
+  //     console.log(workspaceId);
+  //     console.log("settign worspace");
+  //     dispatch(updateWorkspaceId({ workspaceId: currentWorkspaceId }));
+  //   }
+  // }, [workspaceId]);
 
   const mw620 = useMediaQuery("(min-width:620px)");
   const theme = useTheme();

@@ -50,6 +50,10 @@ const TagsSelector = ({
   const handleSearchChange = (e) => {
     const newValue = e.target.value;
     setSearchValue(newValue);
+    updateFilterList(newValue);
+  };
+
+  const updateFilterList = (newValue) => {
     setFilteredLocalList(
       localList.filter((v) => v.toLowerCase().includes(newValue.toLowerCase()))
     );
@@ -105,7 +109,10 @@ const TagsSelector = ({
             placeholder={"Add/filter tags."}
             value={searchValue}
             onChange={handleSearchChange}
-            onClear={() => setSearchValue("")}
+            onClear={() => {
+              setSearchValue("");
+              updateFilterList("");
+            }}
           />
         </Box>
         <Box height={"200px"} maxHeight={"200px"} overflow={"auto"} px={0.5}>

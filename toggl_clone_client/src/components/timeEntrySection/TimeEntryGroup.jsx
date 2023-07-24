@@ -14,6 +14,8 @@ import {
 import { listUtil } from "../../utils/listUtil";
 import { timeEntryUtil } from "../../utils/TimeEntryUtil";
 import { compare } from "fast-json-patch";
+import { startTimer } from "../../state/currentEntrySlice";
+import { groupedEntryUtil } from "../../utils/groupedEntryUtil";
 
 const groupMenuData = {
   PIN_AS_FAVORITE: itemMenuData.PIN_AS_FAVORITE,
@@ -130,9 +132,9 @@ const TimeEntryGroup = ({
   };
 
   const onStartButtonClick = (e) => {
-    // dispatch(
-    //   startTimer({ entryData: groupedEntryUtil.getEntryData(groupedEntry) })
-    // );
+    dispatch(
+      startTimer({ timeEntry: groupedEntryUtil.getEntryData(groupedEntry) })
+    );
   };
 
   const onExpandButonClick = (e) => {

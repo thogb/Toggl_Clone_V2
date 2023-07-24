@@ -54,7 +54,6 @@ export const currentEntrySlice = createSlice({
       state.description = description.trim();
     },
     updateWorkspaceId: (state, action) => {
-      console.log(action.payload);
       const { workspaceId } = action.payload;
       state.workspaceId = workspaceId;
     },
@@ -183,6 +182,16 @@ export const currentEntrySlice = createSlice({
       }
     },
   },
+  extraReducers: (builder) => {
+    builder.addMatcher(
+      ttCloneApi.endpoints.getWorkspaces.matchFulfilled,
+      (state, action) => {
+        if (!state.timerStarted) {
+          state.workspaceId = action.payload[0].id;
+        }
+      }
+    );
+  },
 });
 
 const createExtraActions = () => {
@@ -208,7 +217,7 @@ const createExtraActions = () => {
         if (!fromServer) {
           try {
             cloned.startDate = Date.now();
-            cloned.duration = 0;
+            cloned.duration = -1;
             cloned.stopDate = null;
             const { data } = await dispatch(
               ttCloneApi.endpoints.addTimeEntry.initiate({
@@ -218,6 +227,7 @@ const createExtraActions = () => {
             responseTE = timeEntryUtil.createFromApiResponse(
               timeEntryUtil.cloneTimeEntry(data)
             );
+            responseTE.duration = 0;
           } catch (error) {}
         } else {
           responseTE.duration = Math.abs(
@@ -234,7 +244,6 @@ const createExtraActions = () => {
     return createAsyncThunk(
       `${name}/endTimer`,
       async (arg, { getState, dispatch }) => {
-        console.log("1");
         const state = getState();
         const currentEntry = state.currentEntry;
         const stopDate = Date.now();
@@ -252,7 +261,6 @@ const createExtraActions = () => {
           duration: duration,
           stopDate: stopDate,
         };
-        console.log(timeEntry);
         try {
           const { data } = await dispatch(
             ttCloneApi.endpoints.patchTimeEntry.initiate({
@@ -262,10 +270,13 @@ const createExtraActions = () => {
           );
           clearInterval(currentEntry.timerInterval);
           dispatch(resetEntryDataAndTimer());
+          dispatch(
+            updateWorkspaceId({
+              workspaceId: state.workspaces.currentWorkspace.id,
+            })
+          );
           dispatch(addTE({ timeEntry: timeEntry }));
-        } catch (error) {
-          console.log(error);
-        }
+        } catch (error) {}
       }
     );
   };

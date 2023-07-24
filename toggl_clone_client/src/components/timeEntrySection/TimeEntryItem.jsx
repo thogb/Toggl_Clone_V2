@@ -178,7 +178,6 @@ const TimeEntryItem = ({
   };
 
   const onStartButtonClick = async () => {
-    // dispatch(startTimer({entryData:}));
     dispatch(startTimer({ timeEntry: timeEntry }));
   };
 
