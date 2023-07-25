@@ -24,16 +24,13 @@ import { grey } from "@mui/material/colors";
 import TagsSelector from "../../scenes/timerPage/TagsSelector";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  addTagsChecked,
   deleteStartedTimer,
   endTimer,
-  // endTimer,
   resetCurrentEntryInfo,
   resetDateInfo,
   setDateInfo,
   setTagsChecked,
   startTimer,
-  // startTimer,
   updateDescription,
   updateWorkspaceId,
 } from "../../state/currentEntrySlice";
@@ -51,6 +48,8 @@ import { timeEntryUtil } from "../../utils/TimeEntryUtil";
 import { createReplacePatch } from "../../utils/otherUtil";
 import { listUtil } from "../../utils/listUtil";
 import { useAddTagMutation } from "../../state/tagSlice";
+import { Folder } from "@mui/icons-material";
+import ProjectSelector from "../projectSelector/ProjectSelector";
 
 const timerStates = Object.freeze({
   STARTED: "STARTED",
@@ -67,37 +66,30 @@ const TimerTopBar = () => {
   const startDate = useSelector((state) => state.currentEntry.startDate);
   const stopDate = useSelector((state) => state.currentEntry.stopDate);
   const workspaceId = useSelector((state) => state.currentEntry.workspaceId);
+  const projectId = useSelector((state) => state.currentEntry.projectId);
   const isTimerStarted = useSelector(
     (state) => state.currentEntry.timerStarted
   );
   const tagCheckedList = useSelector((state) => state.currentEntry.tagsChecked);
-  // const tagList = useSelector((state) => state.currentEntry.tags);
-  const currentWorkspaceId =
-    useSelector((state) => state.workspaces.currentWorkspace).id ?? 0;
+  const workspaces = useSelector((state) => state.workspaces.workspaces);
+  const currentWorkspace = useSelector(
+    (state) => state.workspaces.currentWorkspace
+  );
   const tagList =
     useSelector((state) => state.tags.tagNames)[workspaceId] ?? [];
 
   const desciptionInput = useRef();
   const [isTimerMode, setIsTimerMode] = useState(true);
-
+  const [projectAnchorEl, setProjectAnchorEl] = useState(null);
   const [menuAnchor, setMenuAnchor] = useState(null);
-
   const [addTimeEntry] = useAddTimeEntryMutation();
   const [patchTimeEntry] = usePatchTimeEntryMutation();
   const [addTag] = useAddTagMutation();
 
-  // useEffect(() => {
-  //   if (!workspaceId || workspaceId < 0) {
-  //     console.log(Date.now());
-
-  //     console.log(workspaceId);
-  //     console.log("settign worspace");
-  //     dispatch(updateWorkspaceId({ workspaceId: currentWorkspaceId }));
-  //   }
-  // }, [workspaceId]);
-
   const mw620 = useMediaQuery("(min-width:620px)");
   const theme = useTheme();
+
+  const currentWorkspaceId = currentWorkspace.id ?? 0;
 
   const timerOptionStyle = {
     shadow: {
@@ -214,7 +206,6 @@ const TimerTopBar = () => {
           tagName: tagName,
           workspaceId: workspaceId,
         }).unwrap();
-        // dispatch(addTagsChecked({ tagChecked: tagName }));
       } catch (error) {}
     }
   };
@@ -346,39 +337,31 @@ const TimerTopBar = () => {
             },
           }}
         />
-        <Button
-          variant="text"
-          color="secondary"
-          startIcon={<AddIcon fontSize="large" />}
-          disableElevation
-          disableRipple
-          disableTouchRipple
-          sx={{
-            pl: 2.5,
-            pr: 1.5,
-            textTransform: "none",
-            fontSize: 14,
-            lineHeight: "1",
-            fontWeight: "400",
-            color: "black",
-            minWidth: 0,
-            borderRadius: "8px",
-            "& .MuiSvgIcon-root": {
-              fontSize: 16,
-              color: theme.palette.secondary.main,
-            },
-          }}
+        <TTIconButton
+          style={{ margin: theme.spacing(0, 1) }}
+          onClick={(e) => setProjectAnchorEl(e.currentTarget)}
         >
-          {mw620 ? "Create a project" : ""}
-        </Button>
+          <Folder />
+        </TTIconButton>
+        {projectAnchorEl && (
+          <ProjectSelector
+            currentWorkspace={currentWorkspace}
+            workspaces={Object.values(workspaces).reduce(
+              (list, next) => [...list, ...next],
+              []
+            )}
+            anchorEl={projectAnchorEl}
+            onClose={() => setProjectAnchorEl(null)}
+          />
+        )}
         <TagsSelector
           tagList={tagList}
           onCreateTagClick={handleCreateTagClick}
           tagCheckedList={tagCheckedList}
           onSelectionComplete={handleTagsSelectionComplete}
         />
-        <TTIconButton disabled>
-          <AttachMoneyIcon />
+        <TTIconButton disabled style={{ margin: theme.spacing(0, 1) }}>
+          <AttachMoneyIcon style={{ fontSize: "1.25rem" }} />
         </TTIconButton>
         {/* time Entries */}
         {isTimerMode ? (

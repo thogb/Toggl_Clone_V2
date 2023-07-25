@@ -14,6 +14,7 @@ const SIZES = {
   sm: 238,
   md: 288,
   lg: 338,
+  xl: 438,
 };
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
