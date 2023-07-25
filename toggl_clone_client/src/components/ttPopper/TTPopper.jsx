@@ -6,6 +6,10 @@ import PropTypes from "prop-types";
 import { grey } from "@mui/material/colors";
 import classNames from "classnames/bind";
 
+export const popperClassNames = {
+  padding: "TTPopper-padding",
+};
+
 const SIZES = {
   sm: 238,
   md: 288,
@@ -18,6 +22,10 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   flexDirection: "column",
   overflowY: "auto",
   // px: 1 / 2,
+
+  [`& .${popperClassNames.padding}`]: {
+    padding: theme.spacing(theme.ttSpacings.popOver.px),
+  },
 }));
 
 const PopperRoot = styled("div")(({ theme }) => ({
@@ -49,6 +57,7 @@ const TTPopper = ({
   sameWidthAsTrigger = false,
   gap,
   offset,
+  disableBackDrop = false,
   ...other
 }) => {
   const theme = useTheme();
@@ -84,11 +93,16 @@ const TTPopper = ({
           {children}
         </StyledPaper>
       </Popper>
-      <Backdrop
-        style={{ backgroundColor: "transparent", zIndex: theme.zIndex.popper }}
-        open={openPopper}
-        onClick={() => onClose()}
-      ></Backdrop>
+      {!disableBackDrop && openPopper && (
+        <Backdrop
+          style={{
+            backgroundColor: "transparent",
+            zIndex: theme.zIndex.popper,
+          }}
+          open={openPopper}
+          onClick={() => onClose()}
+        ></Backdrop>
+      )}
     </>
   );
 

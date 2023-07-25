@@ -4,6 +4,7 @@ import { addTE, addTimeEntry } from "./groupedEntryListSlice";
 import { timeEntryUtil } from "../utils/TimeEntryUtil";
 import { ttCloneApi } from "./apiSlice";
 import { compare } from "fast-json-patch";
+import { workspaceActions } from "./workspaceSlice";
 
 export const getInitialCurrentEntryState = () => {
   const newDate = Date.now();
@@ -14,7 +15,7 @@ export const getInitialCurrentEntryState = () => {
     //   id: 1,
     //   name: ""
     // }
-    projectId: -1,
+    projectId: null,
     tagsChecked: [],
     duration: 0,
     workspaceId: -1,
@@ -186,6 +187,15 @@ export const currentEntrySlice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    builder.addCase(workspaceActions.changeWorkspace, (state, action) => {
+      if (
+        !state.timerStarted &&
+        state.projectId === null &&
+        state.tagsChecked?.length === 0
+      ) {
+        state.workspaceId = action.payload.workspaceId;
+      }
+    });
     builder.addMatcher(
       ttCloneApi.endpoints.getWorkspaces.matchFulfilled,
       (state, action) => {

@@ -22,11 +22,14 @@ import CreditCardIcon from "@mui/icons-material/CreditCard";
 import CorporateFareIcon from "@mui/icons-material/CorporateFare";
 import SettingsIcon from "@mui/icons-material/Settings";
 import TTTimerIcon from "./TTTimerIcon";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { formatSecondHMMSS } from "../../utils/TTDateUtil";
 import ProfilePopper from "./ProfilePopper";
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
+import WorkspaceSelector from "../../components/workspaceSelector/WorkspaceSelector";
+import { workspaceActions } from "../../state/workspaceSlice";
+import { organisationActions } from "../../state/organisationSlice";
 
 const analysePaths = {
   name: "analyse",
@@ -107,28 +110,44 @@ const adminPaths = {
 };
 
 const NavBar = ({ loading = false, onClose = () => {} }) => {
+  const organisations = useSelector(
+    (state) => state.organisations.organisations
+  );
   const currentOrganisation = useSelector(
     (state) => state.organisations.currentOrganisation
   );
+  const workspaces = useSelector((state) => state.workspaces.workspaces);
   const currentWorkspace = useSelector(
     (state) => state.workspaces.currentWorkspace
   );
   const timerStarted = useSelector((state) => state.currentEntry.timerStarted);
   const duration = useSelector((state) => state.currentEntry.duration);
 
+  const dispatch = useDispatch();
   const location = useLocation();
-
-  const [profileAnchorEl, setProfileAnchorEl] = useState(null);
-
   const theme = useTheme();
   const belowMd = useMediaQuery(theme.breakpoints.down("md"));
+
+  const [profileAnchorEl, setProfileAnchorEl] = useState(null);
+  const [workspaceAnchorEl, setWorkspaceAnchorEl] = useState(null);
 
   const leftDrawerWidth = 47;
 
   const username = "Test";
 
-  const handleWorkspaceClick = () => {
+  const handleWorkspaceClick = (e) => {
     if (!loading && currentWorkspace?.name && currentOrganisation?.name) {
+      setWorkspaceAnchorEl(e.currentTarget);
+    }
+  };
+
+  const handleWOrkspaceSelect = (selectionData) => {
+    const { organisationId, workspaceId } = selectionData;
+    if (currentWorkspace.id !== workspaceId) {
+      dispatch(
+        workspaceActions.changeWorkspace({ organisationId, workspaceId })
+      );
+      dispatch(organisationActions.changeOrganisation({ organisationId }));
     }
   };
 
@@ -265,6 +284,19 @@ const NavBar = ({ loading = false, onClose = () => {} }) => {
             <KeyboardArrowDownIcon sx={{ color: "primary1.main" }} />
           )}
         </Box>
+        {workspaceAnchorEl && (
+          <WorkspaceSelector
+            anchorEl={workspaceAnchorEl}
+            onClose={() => setWorkspaceAnchorEl(null)}
+            offset={[0, 0]}
+            width={"314px"}
+            workspaces={workspaces}
+            organisations={organisations}
+            currentWorkspace={currentWorkspace}
+            currentOrganisation={currentOrganisation}
+            onSelectionComplete={handleWOrkspaceSelect}
+          ></WorkspaceSelector>
+        )}
 
         {/* main nav list */}
         <Box overflow={"auto"} flexGrow={1} style={{ overflowX: "hidden" }}>

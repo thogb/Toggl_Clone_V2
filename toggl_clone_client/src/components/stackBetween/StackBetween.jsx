@@ -7,7 +7,8 @@ const StackBetween = ({ children, my, style, ...others }) => {
       direction={"row"}
       alignItems={"center"}
       justifyContent={"space-between"}
-      my={my ?? 1.5}
+      // my={my ?? 1.5}
+      // my={my}
       {...others}
     >
       {children}

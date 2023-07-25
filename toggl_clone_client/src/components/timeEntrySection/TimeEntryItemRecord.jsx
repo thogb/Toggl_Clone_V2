@@ -301,7 +301,7 @@ const TimeEntryItemRecord = ({
                   key={option.name}
                   disabled={option.disabled}
                   selected={option.selected}
-                  style={option.style}
+                  style={{ ...option.style }}
                   onClick={(e) => {
                     if (operations.onMenuClick) operations.onMenuClick(option);
                     setMenuAnchor(null);

@@ -17,6 +17,12 @@ const organisationsSlice = createSlice({
   initialState,
   reducers: {
     resetState: () => initialState,
+    changeOrganisation: (state, action) => {
+      const { organisationId } = action.payload;
+      state.currentOrganisation = state.organisations.find(
+        (o) => o.id === organisationId
+      );
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(

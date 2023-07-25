@@ -56,13 +56,14 @@ const SearchTextField = ({
   onClear,
   autoFocus = true,
   placeholder,
+  style,
 }) => {
   const handleClose = () => {
     if (onClear) onClear();
   };
 
   return (
-    <StyledTextField>
+    <StyledTextField style={style}>
       <Adornment className="SearchTextField-startAdornment">
         {startAdornment ?? <SearchIcon fontSize="small" />}
       </Adornment>

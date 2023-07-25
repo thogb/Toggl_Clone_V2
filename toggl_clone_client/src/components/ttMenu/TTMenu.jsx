@@ -3,13 +3,13 @@ import { Menu } from "@mui/material";
 
 export const TTMenu = styled((props) => (
   <Menu
-    keepMounted
+    // keepMounted
     disableScrollLock
-    disablePortal
+    // disablePortal
     slotProps={{
       paper: {
         style: {
-          width: 170,
+          // width: 170,
           borderRadius: 8,
         },
       },
@@ -35,4 +35,5 @@ export const TTMenu = styled((props) => (
       opacity: 1,
     },
   },
+  // backgroundColor: "green",
 }));

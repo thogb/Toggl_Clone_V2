@@ -3,4 +3,6 @@ import { MenuItem } from "@mui/material";
 
 export const TTMenuItem = styled((props) => (
   <MenuItem disableRipple {...props} />
-))(({ theme }) => ({}));
+))(({ theme }) => ({
+  minWidth: 170,
+}));

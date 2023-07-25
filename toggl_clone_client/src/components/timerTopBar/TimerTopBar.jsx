@@ -174,6 +174,7 @@ const TimerTopBar = () => {
             })
           );
           dispatch(resetCurrentEntryInfo());
+          dispatch(updateWorkspaceId({ workspaceId: currentWorkspaceId }));
         } catch (error) {}
         return;
       default:

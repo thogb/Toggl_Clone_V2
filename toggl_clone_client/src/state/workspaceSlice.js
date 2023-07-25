@@ -21,6 +21,12 @@ const workspacesSlice = createSlice({
   initialState,
   reducers: {
     resetState: () => initialState,
+    changeWorkspace: (state, action) => {
+      const { organisationId, workspaceId } = action.payload;
+      state.currentWorkspace = state.workspaces[organisationId].find(
+        (w) => w.id === workspaceId
+      );
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
