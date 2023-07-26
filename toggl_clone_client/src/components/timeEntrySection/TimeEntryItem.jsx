@@ -243,6 +243,7 @@ const TimeEntryItem = ({
     <TimeEntryItemRecord
       id={timeEntry.id}
       projectId={timeEntry.projectId}
+      workspaceId={timeEntry.workspaceId}
       description={timeEntry.description}
       tagsChecked={timeEntry.tags}
       duration={timeEntry.duration}

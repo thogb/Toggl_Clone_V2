@@ -165,6 +165,7 @@ const TimeEntryGroup = ({
         tagList={tagList}
         projectId={groupedEntry.projectId}
         description={groupedEntry.description}
+        workspaceId={groupedEntry.workspaceId}
         tagsChecked={groupedEntry.tags}
         duration={groupedEntry.totalDuration}
         startDate={groupedEntry.startDate}

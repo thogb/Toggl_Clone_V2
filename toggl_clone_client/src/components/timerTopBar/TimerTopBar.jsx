@@ -7,6 +7,8 @@ import {
   InputBase,
   Stack,
   Toolbar,
+  Typography,
+  styled,
   useMediaQuery,
 } from "@mui/material";
 import EntryDateChanger from "../entryDateChanger/EntryDateChanger";
@@ -49,10 +51,10 @@ import { timeEntryUtil } from "../../utils/TimeEntryUtil";
 import { createReplacePatch } from "../../utils/otherUtil";
 import { listUtil } from "../../utils/listUtil";
 import { useAddTagMutation } from "../../state/tagSlice";
-import { Folder } from "@mui/icons-material";
+import { Circle, Folder } from "@mui/icons-material";
 import ProjectSelector from "../projectSelector/ProjectSelector";
 import { useAddProjectMutation } from "../../state/projectSlice";
-
+import ProjectButton from "../projectButton/ProjectButton";
 const timerStates = Object.freeze({
   STARTED: "STARTED",
   IDLE: "IDLE",
@@ -142,10 +144,19 @@ const TimerTopBar = () => {
     return found ?? currentWorkspace;
   }, [workspaceId]);
 
+  const project = useMemo(() => {
+    let found = null;
+    for (let projectList of Object.values(projects)) {
+      found = projectList.find((p) => p.id === projectId);
+      if (found) break;
+    }
+    return found;
+  }, [projectId]);
+
   const getCurrentTimeEntry = () => {
     return {
       description: desciptionInput.current.value.trim(),
-      projectId: null,
+      projectId: projectId,
       tags: tagCheckedList,
       duration: duration,
       startDate: startDate,
@@ -278,9 +289,6 @@ const TimerTopBar = () => {
 
   const handleProjectSelectionComplete = async (selectionData) => {
     const { project, newProject } = selectionData;
-    // console.log(project);
-    // console.log(newProject);
-    // console.log(selectionData);
     if (newProject) {
       try {
         const payload = await addProject({
@@ -378,12 +386,21 @@ const TimerTopBar = () => {
             },
           }}
         />
-        <TTIconButton
-          style={{ margin: theme.spacing(0, 1) }}
-          onClick={(e) => setProjectAnchorEl(e.currentTarget)}
-        >
-          <Folder />
-        </TTIconButton>
+        {project ? (
+          <ProjectButton
+            colour={project.colour}
+            name={project.name}
+            className={projectAnchorEl ? "TTPopper-open" : null}
+            onClick={(e) => setProjectAnchorEl(e.currentTarget)}
+          />
+        ) : (
+          <TTIconButton
+            style={{ margin: theme.spacing(0, 1) }}
+            onClick={(e) => setProjectAnchorEl(e.currentTarget)}
+          >
+            <Folder />
+          </TTIconButton>
+        )}
         {projectAnchorEl && (
           <ProjectSelector
             currentProjectId={projectId}

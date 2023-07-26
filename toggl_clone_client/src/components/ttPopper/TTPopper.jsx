@@ -48,6 +48,7 @@ const TTPopper = ({
   anchorEl,
   onClose,
   placement,
+  disablePortal = true,
   size = "lg",
   triggerComponent,
   triggerClassName,
@@ -65,13 +66,13 @@ const TTPopper = ({
 
   const openPopper = Boolean(anchorEl);
   //   const id = open ? "simple-popper" : undefined;
-
+  console.log(disablePortal);
   const contents = (
     <>
       <Popper
         // id={id}
         open={openPopper}
-        disablePortal
+        disablePortal={disablePortal}
         anchorEl={anchorEl}
         placement={placement ?? "bottom-start"}
         modifiers={[{ name: "offset", options: { offset: offset ?? [0, 8] } }]}

@@ -138,6 +138,7 @@ const ProjectSelector = ({
         anchorEl={anchorEl}
         onClose={onClose}
         offset={[220, 8]}
+        {...others}
       >
         <TTPopperContainer
           padding={theme.spacing(0, theme.ttSpacings.popper.px / 2)}
@@ -158,19 +159,24 @@ const ProjectSelector = ({
           {searchDesc ? (
             Object.keys(filteredProjects).length > 0 ? (
               <>
-                {Object.keys(filteredProjects).map((workspaceId) => (
-                  <Box key={workspaceId} py={1}>
-                    <Box px={theme.ttSpacings.popper.px / 2}>
-                      {renderWorkspaceTitle(workspaces[workspaceId].name)}
-                      <TTPopperDivider spacing={8} />
+                {Object.keys(filteredProjects).map((workspaceId) => {
+                  const intWorkspaceId = Number(workspaceId);
+                  return (
+                    <Box key={workspaceId} py={1}>
+                      <Box px={theme.ttSpacings.popper.px / 2}>
+                        {renderWorkspaceTitle(
+                          workspaces.find((w) => w.id === intWorkspaceId).name
+                        )}
+                        <TTPopperDivider spacing={8} />
+                      </Box>
+                      {renderProjectList(
+                        filteredProjects,
+                        workspaceId,
+                        currentProjectId
+                      )}
                     </Box>
-                    {renderProjectList(
-                      filteredProjects,
-                      workspaceId,
-                      currentProjectId
-                    )}
-                  </Box>
-                ))}
+                  );
+                })}
               </>
             ) : (
               // No projects found in search message
