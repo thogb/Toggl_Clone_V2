@@ -71,6 +71,7 @@ const TimerTopBar = () => {
     (state) => state.currentEntry.timerStarted
   );
   const tagCheckedList = useSelector((state) => state.currentEntry.tagsChecked);
+  const projects = useSelector((state) => state.projects.projects);
   const workspaces = useSelector((state) => state.workspaces.workspaces);
   const currentWorkspace = useSelector(
     (state) => state.workspaces.currentWorkspace
@@ -263,6 +264,22 @@ const TimerTopBar = () => {
     }
   };
 
+  const handleProjectSelectionComplete = async (selectionData) => {
+    console.log(selectionData);
+    // if (selectionData.projectId !== projectId) {
+    //   const oldProjectId = projectId;
+    //   dispatch(setProjectId({ projectId: selectionData.projectId }));
+    //   if (isTimerStarted) {
+    //     try {
+    //       const patch = createReplacePatch({ projectId: selectionData.projectId });
+    //       await patchTimeEntry({ id: timeEntryId, patch: patch }).unwrap();
+    //     } catch (error) {
+    //       dispatch(setProjectId({ projectId: oldProjectId }));
+    //     }
+    //   }
+    // }
+  };
+
   const handleTagsSelectionComplete = async (tagsChecked) => {
     if (!listUtil.isListEqual(tagCheckedList, tagsChecked)) {
       const oldTags = [...tagCheckedList];
@@ -345,13 +362,16 @@ const TimerTopBar = () => {
         </TTIconButton>
         {projectAnchorEl && (
           <ProjectSelector
+            currentProjectId={projectId}
             currentWorkspace={currentWorkspace}
+            projects={projects}
             workspaces={Object.values(workspaces).reduce(
               (list, next) => [...list, ...next],
               []
             )}
             anchorEl={projectAnchorEl}
             onClose={() => setProjectAnchorEl(null)}
+            onSelectionComplete={handleProjectSelectionComplete}
           />
         )}
         <TagsSelector
