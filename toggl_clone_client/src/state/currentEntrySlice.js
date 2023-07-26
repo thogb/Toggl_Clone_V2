@@ -178,13 +178,24 @@ export const currentEntrySlice = createSlice({
       }
       state.timerStarted = !state.timerStarted;
     },
-    chnageProject: (state, action) => {
-      const { projectId } = action.payload;
-      state.projectId = projectId;
+    changeProject: (state, action) => {
+      const { projectId, workspaceId } = action.payload;
+      if (workspaceId) {
+        currentEntrySlice.caseReducers.changeWorkspace(state, {
+          payload: {
+            newWorkspaceId: workspaceId,
+          },
+        });
+        state.projectId = projectId;
+      }
     },
     changeWorkspace: (state, action) => {
+      console.log(action);
       const { newWorkspaceId } = action.payload;
+      console.log(state.workspaceId);
+      console.log(newWorkspaceId);
       if (state.workspaceId !== newWorkspaceId) {
+        console.log("Chaning workspaceid");
         state.projectId = null;
         state.tagsChecked = [];
         state.workspaceId = newWorkspaceId;
@@ -358,6 +369,7 @@ export const {
   endTimer,
   deleteStartedTimer,
 
+  changeProject,
   changeWorkspace,
 } = allActions;
 export default currentEntrySlice.reducer;

@@ -219,6 +219,7 @@ const ProjectSelector = ({
                     selected={!currentProjectId}
                     color={alpha(theme.palette.primary.main, 0.6)}
                     name={"No Project"}
+                    onClick={() => handleProjectSeletion(null, null)}
                   />
                   <TTPopperHeading mb={1} mt={2} mx={theme.spacing(1)}>
                     No client
@@ -248,13 +249,15 @@ const ProjectSelector = ({
           </Typography>
         </CreateProjectButton>
       </TTPopper>
-      <CreateProjectModal
-        open={openModal}
-        workspaces={workspaces}
-        currentWorkspace={selectedWorkspace}
-        onClose={() => setOpenModal(false)}
-        onComplete={handleProjectModalComplete}
-      />
+      {openModal && (
+        <CreateProjectModal
+          open={openModal}
+          workspaces={workspaces}
+          currentWorkspace={selectedWorkspace}
+          onClose={() => setOpenModal(false)}
+          onComplete={handleProjectModalComplete}
+        />
+      )}
     </>
   );
 };

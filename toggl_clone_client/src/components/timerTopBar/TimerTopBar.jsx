@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import CircularStartButton from "../circularStartButton/CircularStartButton";
 import {
   AppBar,
@@ -24,6 +24,7 @@ import { grey } from "@mui/material/colors";
 import TagsSelector from "../../scenes/timerPage/TagsSelector";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  changeProject,
   deleteStartedTimer,
   endTimer,
   resetCurrentEntryInfo,
@@ -50,6 +51,7 @@ import { listUtil } from "../../utils/listUtil";
 import { useAddTagMutation } from "../../state/tagSlice";
 import { Folder } from "@mui/icons-material";
 import ProjectSelector from "../projectSelector/ProjectSelector";
+import { useAddProjectMutation } from "../../state/projectSlice";
 
 const timerStates = Object.freeze({
   STARTED: "STARTED",
@@ -86,6 +88,7 @@ const TimerTopBar = () => {
   const [addTimeEntry] = useAddTimeEntryMutation();
   const [patchTimeEntry] = usePatchTimeEntryMutation();
   const [addTag] = useAddTagMutation();
+  const [addProject] = useAddProjectMutation();
 
   const mw620 = useMediaQuery("(min-width:620px)");
   const theme = useTheme();
@@ -129,6 +132,15 @@ const TimerTopBar = () => {
   useEffect(() => {
     desciptionInput.current.value = description;
   }, [description]);
+
+  const workspace = useMemo(() => {
+    let found = null;
+    for (let workspaceList of Object.values(workspaces)) {
+      found = workspaceList.find((w) => w.id === workspaceId);
+      if (found) break;
+    }
+    return found ?? currentWorkspace;
+  }, [workspaceId]);
 
   const getCurrentTimeEntry = () => {
     return {
@@ -265,19 +277,31 @@ const TimerTopBar = () => {
   };
 
   const handleProjectSelectionComplete = async (selectionData) => {
-    console.log(selectionData);
-    // if (selectionData.projectId !== projectId) {
-    //   const oldProjectId = projectId;
-    //   dispatch(setProjectId({ projectId: selectionData.projectId }));
-    //   if (isTimerStarted) {
-    //     try {
-    //       const patch = createReplacePatch({ projectId: selectionData.projectId });
-    //       await patchTimeEntry({ id: timeEntryId, patch: patch }).unwrap();
-    //     } catch (error) {
-    //       dispatch(setProjectId({ projectId: oldProjectId }));
-    //     }
-    //   }
-    // }
+    const { project, newProject } = selectionData;
+    // console.log(project);
+    // console.log(newProject);
+    // console.log(selectionData);
+    if (newProject) {
+      try {
+        const payload = await addProject({
+          project: newProject,
+          workspaceId: newProject.workspaceId,
+        }).unwrap();
+        dispatch(
+          changeProject({
+            projectId: payload.id,
+            workspaceId: payload.workspaceId,
+          })
+        );
+      } catch (error) {}
+    } else {
+      dispatch(
+        changeProject({
+          projectId: project === null ? null : project.id,
+          workspaceId: project === null ? workspaceId : project.workspaceId,
+        })
+      );
+    }
   };
 
   const handleTagsSelectionComplete = async (tagsChecked) => {
@@ -363,7 +387,7 @@ const TimerTopBar = () => {
         {projectAnchorEl && (
           <ProjectSelector
             currentProjectId={projectId}
-            currentWorkspace={currentWorkspace}
+            currentWorkspace={workspace}
             projects={projects}
             workspaces={Object.values(workspaces).reduce(
               (list, next) => [...list, ...next],
