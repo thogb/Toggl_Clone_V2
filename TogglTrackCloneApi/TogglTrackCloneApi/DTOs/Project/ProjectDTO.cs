@@ -5,7 +5,7 @@ namespace TogglTrackCloneApi.DTOs.Project
     public class ProjectDTO
     {
         [Required]
-        [StringLength(255, MinimumLength = 4, ErrorMessage = "project name must be between 4 and 255 characters long")]
+        [StringLength(255, MinimumLength = 1, ErrorMessage = "project name must be between 1 and 255 characters long")]
         public string Name { get; set; } = string.Empty;
         [Required]
         [StringLength(7, MinimumLength = 7)]
@@ -13,7 +13,6 @@ namespace TogglTrackCloneApi.DTOs.Project
         public string Colour { get; set; } = "4caf50";
         [Required]
         public bool Private { get; set; } = true;
-        [Required]
         public bool Active { get; set; } = true;
         [Required]
         [Range(1, int.MaxValue, ErrorMessage = "invalid workspace id")]

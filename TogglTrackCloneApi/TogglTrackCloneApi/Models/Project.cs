@@ -11,7 +11,7 @@ namespace TogglTrackCloneApi.Models
 
 /*        public int Id { get; set; }*/
         [Required]
-        [StringLength(255, MinimumLength = 4)]
+        [StringLength(255, MinimumLength = 1)]
         public string Name { get; set; } = string.Empty;
         [Required]
         [StringLength(6, MinimumLength = 6)]
