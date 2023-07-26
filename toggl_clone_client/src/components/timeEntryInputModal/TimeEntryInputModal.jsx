@@ -20,26 +20,11 @@ import { differenceInSeconds, format } from "date-fns";
 import { useTheme } from "@emotion/react";
 import { listUtil } from "../../utils/listUtil";
 import { withDataFromTimeEntries } from "./withDataFromTimeEntries";
+import TTDialog from "../ttDialog/TTDialog";
 
-// Using styled() to make a style component named StyledDialog with dialog
-// also including theme
-
-const StyledDialog = styled(Dialog)(({ theme }) => ({
+const StyledDialog = styled(TTDialog)(({ theme }) => ({
   // Paper
   "& .MuiDialog-paper": {
-    padding: theme.spacing(2),
-    width: 360,
-    overflow: "visible",
-    // borderRadius: "8px",
-
-    // DialogTitle
-    "& .MuiDialogTitle-root": {
-      padding: 0,
-      paddingBottom: theme.spacing(1),
-      fontSize: theme.typography.body2.fontSize,
-      lineHeight: theme.typography.body2.lineHeight,
-    },
-
     // DialogContent
     "& .MuiDialogContent-root": {
       padding: 0,
@@ -78,20 +63,6 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
           ),
         },
       },
-    },
-
-    // DialogActions
-    "& .MuiDialogActions-root": {
-      padding: 0,
-      justifyContent: "start",
-    },
-
-    "& .TimeEntryInputModal-close": {
-      cursor: "pointer",
-      position: "absolute",
-      right: theme.spacing(1),
-      top: theme.spacing(1),
-      padding: theme.spacing(1 / 2),
     },
   },
 }));
@@ -230,9 +201,9 @@ const TimeEntryInputModal = ({
 
   return (
     <StyledDialog
-      transitionDuration={300}
-      TransitionComponent={Grow}
-      TransitionProps={{ easing: "cubic-bezier(0, 0, 0.2, 1)" }}
+      // transitionDuration={300}
+      // TransitionComponent={Grow}
+      // TransitionProps={{ easing: "cubic-bezier(0, 0, 0.2, 1)" }}
       open={open}
       onClose={onClose}
     >
@@ -308,7 +279,7 @@ const TimeEntryInputModal = ({
           Save
         </Button>
       </DialogActions>
-      <CloseIcon className="TimeEntryInputModal-close" onClick={onClose} />
+      {/* <CloseIcon className="TimeEntryInputModal-close" onClick={onClose} /> */}
     </StyledDialog>
   );
 };
