@@ -13,6 +13,8 @@ import TTPopperDivider from "../ttPopper/TTPopperDivider";
 import ProjectMessage from "./ProjectMessage";
 import ProjectButton from "./ProjectButton";
 import { TTPopperHeading } from "../ttPopper/TTPopperHeading";
+import CreateProjectModal from "../createProjectModal/CreateProjectModal";
+import MiniWorkspaceSelector from "../miniWorkspaceSelector/MiniWorkspaceSelector";
 
 const CreateProjectButton = styled(SubButton)(({ theme }) => ({
   borderRadius: 0,
@@ -47,6 +49,7 @@ const ProjectSelector = ({
   const [selectedWorkspace, setSelectedWorkspace] = useState(currentWorkspace);
   const [workspaceAnchorEl, setWorkspaceAnchorEl] = useState(null);
   const [filteredProjects, setFilteredProjects] = useState({});
+  const [openModal, setOpenModal] = useState(false);
 
   useEffect(() => {
     if (searchDesc) {
@@ -64,8 +67,9 @@ const ProjectSelector = ({
     }
   }, [searchDesc]);
 
-  const handleProjectSeletion = (project) => {
-    if (onSelectionComplete) onSelectionComplete(project);
+  const handleProjectSeletion = (project, newProject) => {
+    if (onSelectionComplete)
+      onSelectionComplete({ project: project, newProject: newProject });
     onClose();
   };
 
@@ -88,6 +92,14 @@ const ProjectSelector = ({
   const handleWorkspaceSelect = (workspace) => {
     setSelectedWorkspace(workspace);
     handleMenuMouseLeave();
+  };
+
+  const handleProjectButtonClick = (e) => {
+    setOpenModal(true);
+  };
+
+  const handleProjectModalComplete = (data) => {
+    handleProjectSeletion(null, data);
   };
 
   const renderWorkspaceTitle = (workspaceName) => (
@@ -114,133 +126,156 @@ const ProjectSelector = ({
         color={project.colour}
         name={project.name}
         selected={currentProjectId === project.id}
-        onClick={() => handleProjectSeletion(project)}
+        onClick={() => handleProjectSeletion(project, null)}
       />
     ));
   };
 
   return (
-    <TTPopper size="xl" anchorEl={anchorEl} onClose={onClose} offset={[220, 8]}>
-      <TTPopperContainer
-        padding={theme.spacing(0, theme.ttSpacings.popper.px / 2)}
-        style={{ color: theme.palette.primary.light }}
+    <>
+      <TTPopper
+        size="xl"
+        anchorEl={anchorEl}
+        onClose={onClose}
+        offset={[220, 8]}
       >
-        {/* search textfield */}
-        <SearchTextField
-          placeholder={"Search by project, task or client"}
-          className={popperClassNames.padding}
-          value={searchDesc}
-          onChange={handleSearchChange}
-          onClear={handleSearchClear}
-          style={{
-            margin: theme.spacing(2.5, theme.ttSpacings.popper.px / 2),
-          }}
-        />
-        {/* show searched projects */}
-        {searchDesc ? (
-          Object.keys(filteredProjects).length > 0 ? (
-            <>
-              {Object.keys(filteredProjects).map((workspaceId) => (
-                <Box key={workspaceId} py={1}>
-                  <Box px={theme.ttSpacings.popper.px / 2}>
-                    {renderWorkspaceTitle(workspaces[workspaceId].name)}
-                    <TTPopperDivider spacing={8} />
+        <TTPopperContainer
+          padding={theme.spacing(0, theme.ttSpacings.popper.px / 2)}
+          style={{ color: theme.palette.primary.light }}
+        >
+          {/* search textfield */}
+          <SearchTextField
+            placeholder={"Search by project, task or client"}
+            className={popperClassNames.padding}
+            value={searchDesc}
+            onChange={handleSearchChange}
+            onClear={handleSearchClear}
+            style={{
+              margin: theme.spacing(2.5, theme.ttSpacings.popper.px / 2),
+            }}
+          />
+          {/* show searched projects */}
+          {searchDesc ? (
+            Object.keys(filteredProjects).length > 0 ? (
+              <>
+                {Object.keys(filteredProjects).map((workspaceId) => (
+                  <Box key={workspaceId} py={1}>
+                    <Box px={theme.ttSpacings.popper.px / 2}>
+                      {renderWorkspaceTitle(workspaces[workspaceId].name)}
+                      <TTPopperDivider spacing={8} />
+                    </Box>
+                    {renderProjectList(
+                      filteredProjects,
+                      workspaceId,
+                      currentProjectId
+                    )}
                   </Box>
+                ))}
+              </>
+            ) : (
+              // No projects found in search message
+              <ProjectMessage
+                title={"No matching projects"}
+                description={
+                  "Try a different keyword or press Ctrl+Enter to create a new project."
+                }
+              />
+            )
+          ) : (
+            // Show current workspace projects
+            <>
+              <StackBetween px={1}>
+                {renderWorkspaceTitle(selectedWorkspace?.name)}
+                <ChangeWorkspace
+                  onMouseEnter={handleMenuMouseEnter}
+                  onMouseLeave={handleMenuMouseLeave}
+                >
+                  <Typography
+                    variant="subtitle2"
+                    style={{ opacity: 0.6 }}
+                    component={"span"}
+                  >
+                    Change
+                  </Typography>
+                  <ChevronRight style={{ fontSize: "1.1rem", opacity: 0.6 }} />
+                  <MiniWorkspaceSelector
+                    disableBackDrop={true}
+                    anchorEl={workspaceAnchorEl}
+                    onClose={handleMenuMouseLeave}
+                    placement={"bottom"}
+                    offset={[0, 0]}
+                    size="sm"
+                    workspaces={workspaces}
+                    currentWorkspace={selectedWorkspace}
+                    onComplete={handleWorkspaceSelect}
+                  />
+                  {/* <TTPopper
+                    disableBackDrop={true}
+                    anchorEl={workspaceAnchorEl}
+                    onClose={handleMenuMouseLeave}
+                    placement={"bottom"}
+                    offset={[0, 0]}
+                    size="sm"
+                  >
+                    <TTPopperContainer padding={theme.spacing(1 / 2)}>
+                      {workspaces.map((workspace) => (
+                        <TTPopperButton
+                          key={workspace.id}
+                          selected={selectedWorkspace.id === workspace.id}
+                          onClick={() => handleWorkspaceSelect(workspace)}
+                        >
+                          <Work fontSize="small" />
+                          <Typography variant="subtitle2" ml={1}>
+                            {workspace.name}
+                          </Typography>
+                        </TTPopperButton>
+                      ))}
+                    </TTPopperContainer>
+                  </TTPopper> */}
+                </ChangeWorkspace>
+              </StackBetween>
+              <TTPopperDivider spacing={2} />
+              {projects[selectedWorkspace.id]?.length > 0 ? (
+                <Box pb={1}>
+                  <ProjectButton
+                    selected={!currentProjectId}
+                    color={alpha(theme.palette.primary.main, 0.6)}
+                    name={"No Project"}
+                  />
+                  <TTPopperHeading mb={1} mt={2} mx={theme.spacing(1)}>
+                    No client
+                  </TTPopperHeading>
                   {renderProjectList(
-                    filteredProjects,
-                    workspaceId,
+                    projects,
+                    selectedWorkspace.id,
                     currentProjectId
                   )}
                 </Box>
-              ))}
-            </>
-          ) : (
-            // No projects found in search message
-            <ProjectMessage
-              title={"No matching projects"}
-              description={
-                "Try a different keyword or press Ctrl+Enter to create a new project."
-              }
-            />
-          )
-        ) : (
-          // Show current workspace projects
-          <>
-            <StackBetween px={1}>
-              {renderWorkspaceTitle(selectedWorkspace?.name)}
-              <ChangeWorkspace
-                onMouseEnter={handleMenuMouseEnter}
-                onMouseLeave={handleMenuMouseLeave}
-              >
-                <Typography
-                  variant="subtitle2"
-                  style={{ opacity: 0.6 }}
-                  component={"span"}
-                >
-                  Change
-                </Typography>
-                <ChevronRight style={{ fontSize: "1.1rem", opacity: 0.6 }} />
-                <TTPopper
-                  disableBackDrop={true}
-                  anchorEl={workspaceAnchorEl}
-                  onClose={handleMenuMouseLeave}
-                  placement={"bottom"}
-                  offset={[0, 0]}
-                  size="sm"
-                >
-                  <TTPopperContainer padding={theme.spacing(1 / 2)}>
-                    {workspaces.map((workspace) => (
-                      <TTPopperButton
-                        key={workspace.id}
-                        selected={selectedWorkspace.id === workspace.id}
-                        onClick={() => handleWorkspaceSelect(workspace)}
-                      >
-                        <Work fontSize="small" />
-                        <Typography variant="subtitle2" ml={1}>
-                          {workspace.name}
-                        </Typography>
-                      </TTPopperButton>
-                    ))}
-                  </TTPopperContainer>
-                </TTPopper>
-              </ChangeWorkspace>
-            </StackBetween>
-            <TTPopperDivider spacing={2} />
-            {projects[selectedWorkspace.id]?.length > 0 ? (
-              <Box pb={1}>
-                <ProjectButton
-                  selected={!currentProjectId}
-                  color={alpha(theme.palette.primary.main, 0.6)}
-                  name={"No Project"}
+              ) : (
+                <ProjectMessage
+                  title={"There are no projects yet"}
+                  description={
+                    "Go ahead and create your first project for this workspace"
+                  }
                 />
-                <TTPopperHeading mb={1} mt={2} mx={theme.spacing(1)}>
-                  No client
-                </TTPopperHeading>
-                {renderProjectList(
-                  projects,
-                  selectedWorkspace.id,
-                  currentProjectId
-                )}
-              </Box>
-            ) : (
-              <ProjectMessage
-                title={"There are no projects yet"}
-                description={
-                  "Go ahead and create your first project for this workspace"
-                }
-              />
-            )}
-          </>
-        )}
-      </TTPopperContainer>
-      <TTPopperDivider />
-      <CreateProjectButton>
-        <Add color="secondary" fontSize="small" />
-        <Typography ml={1} variant="subtitle2" color={"primary"}>
-          Create a new project
-        </Typography>
-      </CreateProjectButton>
-    </TTPopper>
+              )}
+            </>
+          )}
+        </TTPopperContainer>
+        <TTPopperDivider />
+        <CreateProjectButton onClick={handleProjectButtonClick}>
+          <Add color="secondary" fontSize="small" />
+          <Typography ml={1} variant="subtitle2" color={"primary"}>
+            Create a new project
+          </Typography>
+        </CreateProjectButton>
+      </TTPopper>
+      <CreateProjectModal
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        onComplete={handleProjectModalComplete}
+      />
+    </>
   );
 };
 
