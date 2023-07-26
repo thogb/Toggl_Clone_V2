@@ -26,6 +26,7 @@ const StyledDialog = styled(TTDialog)(({ theme }) => ({
   // Paper
   "& .MuiDialog-paper": {
     // DialogContent
+    // DialogContent
     "& .MuiDialogContent-root": {
       padding: 0,
       marginBottom: theme.spacing(8),

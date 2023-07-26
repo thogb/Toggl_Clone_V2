@@ -23,10 +23,12 @@ const SubButton = ({
   noVerticalPadding,
   style,
   onClick,
+  type = "button",
   ...others
 }) => {
   return (
     <StyledButton
+      type={type}
       component={to ? Link : null}
       to={to}
       variant="text"

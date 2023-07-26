@@ -68,7 +68,7 @@ const SearchTextField = ({
         {startAdornment ?? <SearchIcon fontSize="small" />}
       </Adornment>
       <InputBase
-        autoFocus
+        autoFocus={autoFocus}
         fullWidth
         value={value}
         onBlur={onBlur}

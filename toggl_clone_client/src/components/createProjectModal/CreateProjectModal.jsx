@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import TTDialog from "../ttDialog/TTDialog";
 import * as yup from "yup";
 import {
+  Box,
   Button,
   DialogActions,
   DialogContent,
@@ -16,11 +17,18 @@ import {
   useTheme,
 } from "@mui/material";
 import { Form, Formik } from "formik";
-import { Visibility } from "@mui/icons-material";
+import {
+  KeyboardArrowDown,
+  KeyboardArrowUp,
+  Visibility,
+  Work,
+} from "@mui/icons-material";
 import ColourSelector, {
   ColourButton,
   colourSelectorColours,
 } from "../colourSelector/ColourSelector";
+import SubButton from "../subButton/SubButton";
+import MiniWorkspaceSelector from "../miniWorkspaceSelector/MiniWorkspaceSelector";
 
 const ProjectNameTextField = styled(TextField)(({ theme }) => ({
   "& .MuiInputBase-root": {
@@ -81,15 +89,21 @@ const CreateProjectModal = ({
 }) => {
   const theme = useTheme();
 
-  const [selectedWorkspace, setSelectedWorkspace] =
-    React.useState(currentWorkspace);
-  const [selectedColour, setSelectedColour] = React.useState(
+  const [selectedWorkspace, setSelectedWorkspace] = useState(currentWorkspace);
+  const [selectedColour, setSelectedColour] = useState(
     colourSelectorColours[0]
   );
-  const [colourSelectorAEl, setColourSelectorAEl] = React.useState(null);
+  const [colourSelectorAEl, setColourSelectorAEl] = useState(null);
+  const [workspaceSelectorAEL, setWorkspaceSelectorAEL] = useState(null);
 
   const handleFormikSubmit = (values, formikhelpers) => {
-    console.log({ ...values, colour: selectedColour });
+    const data = {
+      ...values,
+      colour: selectedColour,
+      workspaceId: selectedWorkspace.id,
+    };
+    if (onComplete) onComplete(data);
+    onClose();
   };
 
   const handleColourSelect = (colour) => {
@@ -98,6 +112,14 @@ const CreateProjectModal = ({
 
   const handleColourClick = (e) => {
     setColourSelectorAEl(e.currentTarget);
+  };
+
+  const handleWorkspaceClick = (e) => {
+    setWorkspaceSelectorAEL(e.currentTarget);
+  };
+
+  const handleWorkspaceSelect = (workspace) => {
+    setSelectedWorkspace(workspace);
   };
 
   return (
@@ -118,7 +140,7 @@ const CreateProjectModal = ({
         }) => (
           <Form onSubmit={handleSubmit}>
             <DialogContent style={{ padding: theme.spacing(1.5) }}>
-              <Stack direction={"row"} alignItems={"center"} gap={1}>
+              <Stack direction={"row"} alignItems={"center"} gap={1} mb={3}>
                 <ColourButton
                   style={{
                     backgroundColor: selectedColour,
@@ -166,6 +188,32 @@ const CreateProjectModal = ({
                   </Typography>
                 </FormControlRight>
               </StyledFormControl>
+              <Box height={"200px"}></Box>
+              <SubButton
+                style={{
+                  padding: theme.spacing(1 / 2, 1),
+                  color: alpha(theme.palette.primary.main, 0.75),
+                }}
+                onClick={handleWorkspaceClick}
+              >
+                <Work fontSize="small" />
+                <Typography ml={1} variant="subtitle2">
+                  {selectedWorkspace.name}
+                </Typography>
+                {workspaceSelectorAEL ? (
+                  <KeyboardArrowUp />
+                ) : (
+                  <KeyboardArrowDown />
+                )}
+              </SubButton>
+              <MiniWorkspaceSelector
+                size="md"
+                anchorEl={workspaceSelectorAEL}
+                onClose={() => setWorkspaceSelectorAEL(null)}
+                onComplete={handleWorkspaceSelect}
+                workspaces={workspaces}
+                currentWorkspace={selectedWorkspace}
+              />
             </DialogContent>
             <DialogActions>
               <Button

@@ -200,6 +200,7 @@ const ProjectSelector = ({
                   <ChevronRight style={{ fontSize: "1.1rem", opacity: 0.6 }} />
                   <MiniWorkspaceSelector
                     disableBackDrop={true}
+                    disableSearch={true}
                     anchorEl={workspaceAnchorEl}
                     onClose={handleMenuMouseLeave}
                     placement={"bottom"}
@@ -209,29 +210,6 @@ const ProjectSelector = ({
                     currentWorkspace={selectedWorkspace}
                     onComplete={handleWorkspaceSelect}
                   />
-                  {/* <TTPopper
-                    disableBackDrop={true}
-                    anchorEl={workspaceAnchorEl}
-                    onClose={handleMenuMouseLeave}
-                    placement={"bottom"}
-                    offset={[0, 0]}
-                    size="sm"
-                  >
-                    <TTPopperContainer padding={theme.spacing(1 / 2)}>
-                      {workspaces.map((workspace) => (
-                        <TTPopperButton
-                          key={workspace.id}
-                          selected={selectedWorkspace.id === workspace.id}
-                          onClick={() => handleWorkspaceSelect(workspace)}
-                        >
-                          <Work fontSize="small" />
-                          <Typography variant="subtitle2" ml={1}>
-                            {workspace.name}
-                          </Typography>
-                        </TTPopperButton>
-                      ))}
-                    </TTPopperContainer>
-                  </TTPopper> */}
                 </ChangeWorkspace>
               </StackBetween>
               <TTPopperDivider spacing={2} />
@@ -272,6 +250,8 @@ const ProjectSelector = ({
       </TTPopper>
       <CreateProjectModal
         open={openModal}
+        workspaces={workspaces}
+        currentWorkspace={selectedWorkspace}
         onClose={() => setOpenModal(false)}
         onComplete={handleProjectModalComplete}
       />

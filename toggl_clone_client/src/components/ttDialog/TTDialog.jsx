@@ -20,8 +20,7 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
     // DialogContent
     "& .MuiDialogContent-root": {
       padding: 0,
-      marginBottom: theme.spacing(8),
-      minHeight: 200, // to be removed
+      //   marginBottom: theme.spacing(8),
       overflow: "visible",
     },
 
