@@ -168,6 +168,8 @@ const TimeEntryHeader = ({
           patch: patch,
         }).unwrap();
         if (success?.length > 0) {
+          console.log("in");
+          console.log(finalValues);
           dispatch(
             updateBatchTE({
               dateGroupId,

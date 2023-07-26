@@ -178,9 +178,14 @@ export const currentEntrySlice = createSlice({
       }
       state.timerStarted = !state.timerStarted;
     },
+    chnageProject: (state, action) => {
+      const { projectId } = action.payload;
+      state.projectId = projectId;
+    },
     changeWorkspace: (state, action) => {
       const { newWorkspaceId } = action.payload;
       if (state.workspaceId !== newWorkspaceId) {
+        state.projectId = null;
         state.tagsChecked = [];
         state.workspaceId = newWorkspaceId;
       }
