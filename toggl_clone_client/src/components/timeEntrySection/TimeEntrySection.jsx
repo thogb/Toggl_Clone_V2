@@ -6,7 +6,6 @@ import {
   timeEntryCheckedActions,
   timeEntryCheckedReducer,
 } from "./TimeEntryCheckedReducer";
-import { useSelector } from "react-redux";
 import TimeEntryItem from "./TimeEntryItem";
 import TimeEntryGroup from "./TimeEntryGroup";
 import { alpha } from "@mui/material";
@@ -22,7 +21,6 @@ const TimeEntryList = styled("ul")(({ theme }) => ({
 }));
 
 const TimeEntrySection = ({ sectionData, ...other }) => {
-  const tagList = useSelector((state) => state.currentEntry.tags);
   const { dateGroupId, groupedEntries, totalDuration } = sectionData;
   const sectionDate = sectionData.date;
   const [timeEntryChecked, timeEntryCheckedDispatch] = useReducer(
@@ -30,15 +28,15 @@ const TimeEntrySection = ({ sectionData, ...other }) => {
     getIntialTimeEntryCheckedData()
   );
 
-  const timeEIdList = useMemo(() => {
+  const checkedTEList = useMemo(() => {
     const list = [];
     groupedEntries.forEach((groupedEntry) => {
       if (groupedEntry.entries !== undefined) {
         groupedEntry.entries.forEach((entry) => {
-          list.push(entry.id);
+          list.push(entry);
         });
       } else {
-        list.push(groupedEntry.entry.id);
+        list.push(groupedEntry.entry);
       }
     });
     if (timeEntryChecked.checkedList.length > 0) {
@@ -54,10 +52,9 @@ const TimeEntrySection = ({ sectionData, ...other }) => {
     <TimeEntryList className="TimeEntryList-root">
       <TimeEntryHeader
         key={"test"}
-        tagList={tagList}
         dateGroupId={dateGroupId}
         sectionDate={sectionDate}
-        timeEIdList={timeEIdList}
+        checkedTEList={checkedTEList}
         totalDuration={totalDuration}
         timeEntryChecked={timeEntryChecked}
         timeEntryCheckedDispatch={timeEntryCheckedDispatch}
@@ -71,7 +68,6 @@ const TimeEntrySection = ({ sectionData, ...other }) => {
               dateGroupId={sectionData.dateGroupId}
               gId={groupedEntry.gId}
               timeEntry={groupedEntry.entries[0]}
-              tagList={tagList}
               timeEntryChecked={timeEntryChecked}
               timeEntryCheckedDispatch={timeEntryCheckedDispatch}
             />
@@ -82,7 +78,6 @@ const TimeEntrySection = ({ sectionData, ...other }) => {
               key={groupedEntry.gId}
               dateGroupId={sectionData.dateGroupId}
               groupedEntry={groupedEntry}
-              tagList={tagList}
               timeEntryChecked={timeEntryChecked}
               timeEntryCheckedDispatch={timeEntryCheckedDispatch}
             />

@@ -50,35 +50,41 @@ const Adornment = styled("div")(({ theme }) => ({
 const SearchTextField = ({
   startAdornment,
   value,
+  onBlur,
   onChange,
   clearOn = true,
   onClear,
   autoFocus = true,
   placeholder,
+  style,
 }) => {
   const handleClose = () => {
     if (onClear) onClear();
   };
 
+  const showClearButton = clearOn && value !== "";
+
   return (
-    <StyledTextField>
+    <StyledTextField style={style}>
       <Adornment className="SearchTextField-startAdornment">
         {startAdornment ?? <SearchIcon fontSize="small" />}
       </Adornment>
       <InputBase
-        autoFocus
+        autoFocus={autoFocus}
         fullWidth
         value={value}
+        onBlur={onBlur}
         onChange={onChange}
         placeholder={placeholder}
-      ></InputBase>
-      {clearOn && value !== "" && (
-        <Adornment className="SearchTextField-endAdornment SearchTextField-closeIconButton">
-          <TTIconButton padding={0} onClick={handleClose}>
-            <CloseIcon fontSize="small" />
-          </TTIconButton>
-        </Adornment>
-      )}
+      />
+      <Adornment
+        className="SearchTextField-endAdornment SearchTextField-closeIconButton"
+        style={{ visibility: showClearButton ? "visible" : "hidden" }}
+      >
+        <TTIconButton padding={0} onClick={handleClose}>
+          <CloseIcon fontSize="small" />
+        </TTIconButton>
+      </Adornment>
     </StyledTextField>
   );
 };

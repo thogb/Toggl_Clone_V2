@@ -1,3 +1,5 @@
+import { timeEntryUtil } from "../../utils/TimeEntryUtil";
+
 export const getIntialTimeEntryCheckedData = () => {
   return {
     showCheckbox: false,
@@ -27,12 +29,12 @@ export const timeEntryCheckedReducer = (state, action) => {
       };
     case actions.TOGGLE_CHECKED_LIST_ITEM: {
       const newList = [...state.checkedList];
-      const ind = newList.indexOf(action.id);
+      const ind = newList.findIndex((item) => item.id === action.timeEntry.id);
 
       if (ind > -1) {
         newList.splice(ind, 1);
       } else {
-        newList.push(action.id);
+        newList.push(action.timeEntry);
       }
 
       return {
@@ -65,28 +67,28 @@ export const timeEntryCheckedReducer = (state, action) => {
     //     ...state,
     //     checkedList: state.checkedList.filter((id) => )
     //   }
-    case actions.SYNC_AGAINST_LIST:
+    case actions.SYNC_AGAINST_LIST: {
+      const ids = timeEntryUtil.convertTEListToTEIdList(action.inList);
       return {
         ...state,
-        checkedList: state.checkedList.filter((item) =>
-          action.inList.includes(item)
-        ),
+        checkedList: state.checkedList.filter((item) => ids.includes(item.id)),
       };
-    case actions.TOGGLE_OFF_FROM_LIST:
+    }
+    case actions.TOGGLE_OFF_FROM_LIST: {
+      const ids = timeEntryUtil.convertTEListToTEIdList(action.inList);
       return {
         ...state,
         checkedList: state.checkedList.filter(
-          (item) => action.inList.indexOf(item) === -1
+          (item) => ids.indexOf(item.id) === -1
         ),
       };
+    }
     case actions.TOGGLE_FROM_GROUP: {
-      console.log(action.checkOn);
+      const ids = timeEntryUtil.convertTEListToTEIdList(action.inList);
       return {
         ...state,
         checkedList: action.checkOn
-          ? state.checkedList.filter(
-              (item) => action.inList.indexOf(item) === -1
-            )
+          ? state.checkedList.filter((item) => ids.indexOf(item.id) === -1)
           : [...state.checkedList, ...action.inList],
       };
     }

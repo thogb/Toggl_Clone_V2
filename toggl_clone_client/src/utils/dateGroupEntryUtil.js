@@ -1,14 +1,19 @@
 import { compareDesc } from "date-fns";
 import { formatDateEEddMMMyyyy } from "./TTDateUtil";
-import { groupedEntryUtil as geUtil } from "./groupedEntryUtil";
+import {
+  GroupedEntrySingleton,
+  groupedEntryUtil as geUtil,
+  groupedEntryUtil,
+} from "./groupedEntryUtil";
+import { timeEntryUtil } from "./TimeEntryUtil";
 
 // #example
-const DateGroupedEntryExample = {
-  dateGroupId: "Wed, 21 Jun 2023",
-  date: Date.now(),
-  totalDuration: 0,
-  groupedEntries: [],
-};
+// const DateGroupedEntryExample = {
+//   dateGroupId: "Wed, 21 Jun 2023",
+//   date: Date.now(),
+//   totalDuration: 0,
+//   groupedEntries: [],
+// };
 
 // #create
 const createDateGroupId = (date) => {
@@ -271,6 +276,100 @@ const filterStructuredTeIdsFromIdList = (structuredTEIds, idList) => {
     .filter((structuredTEId) => structuredTEId.entries.length > 0);
 };
 
+const generateDateGroupedEntries = (timeEntries) => {
+  const grouped = {};
+  timeEntries.forEach((rawTimeEntry) => {
+    const timeEntry = timeEntryUtil.createFromApiResponse(rawTimeEntry);
+    const dateGroupId = dateGroupEntryUtil.createDateGroupId(
+      timeEntry.startDate
+    );
+
+    // timeEntry.tags.sort();
+
+    // Date group not created
+    if (grouped[dateGroupId] === undefined) {
+      // Create the date group and entry
+      grouped[dateGroupId] = {
+        dateGroupId: dateGroupId,
+        date: timeEntry.startDate,
+        totalDuration: timeEntry.duration,
+        groupedEntries: [
+          {
+            gId: GroupedEntrySingleton.getNextGroupId(),
+            description: timeEntry.description,
+            projectId: timeEntry.projectId,
+            tags: timeEntry.tags,
+            startDate: timeEntry.startDate,
+            stopDate: timeEntry.stopDate,
+            workspaceId: timeEntry.workspaceId,
+            totalDuration: timeEntry.duration,
+            // entry: timeEntry,
+            entries: [timeEntry],
+          },
+        ],
+      };
+    } else {
+      const dateGroup = grouped[dateGroupId];
+
+      const descTagGroup = dateGroup.groupedEntries.find((v) => {
+        return groupedEntryUtil.isEqualByGroupingData(v, timeEntry);
+      });
+
+      // Desc tag group not found
+      if (descTagGroup === undefined) {
+        dateGroup.groupedEntries.push({
+          gId: GroupedEntrySingleton.getNextGroupId(),
+          description: timeEntry.description,
+          projectId: timeEntry.projectId,
+          tags: timeEntry.tags,
+          startDate: timeEntry.startDate,
+          stopDate: timeEntry.stopDate,
+          totalDuration: timeEntry.duration,
+          workspaceId: timeEntry.workspaceId,
+          // entry: timeEntry,
+          entries: [timeEntry],
+        });
+      } else {
+        let entries = descTagGroup.entries;
+        // if (entries === undefined) {
+        //   descTagGroup.entries = [timeEntry, descTagGroup.entry];
+        //   delete descTagGroup.entry;
+        // } else {
+        //   entries.push(timeEntry);
+        // }
+        entries.push(timeEntry);
+        // Update desc tag group data
+        if (timeEntry.startDate < descTagGroup.startDate) {
+          descTagGroup.startDate = timeEntry.startDate;
+        }
+        if (timeEntry.stopDate > descTagGroup.stopDate) {
+          descTagGroup.stopDate = timeEntry.stopDate;
+        }
+        descTagGroup.totalDuration += timeEntry.duration;
+      }
+      dateGroup.totalDuration += timeEntry.duration;
+    }
+  });
+
+  for (let dateGroupId in grouped) {
+    const groupedEntries = grouped[dateGroupId].groupedEntries;
+    groupedEntries.sort((a, b) => compareDesc(a.stopDate, b.stopDate));
+    groupedEntries.sort((a, b) => compareDesc(a.startDate, b.startDate));
+    groupedEntries.forEach((groupedEntry) => {
+      if (groupedEntry.entries !== undefined) {
+        groupedEntry.entries.sort((a, b) =>
+          compareDesc(a.stopDate, b.stopDate)
+        );
+        groupedEntry.entries.sort((a, b) =>
+          compareDesc(a.startDate, b.startDate)
+        );
+      }
+    });
+  }
+
+  return grouped;
+};
+
 export const dateGroupEntryUtil = {
   createDateGroupId,
   createFromGroupedEntry,
@@ -294,4 +393,5 @@ export const dateGroupEntryUtil = {
 
   extractStructuredTEIds,
   filterStructuredTeIdsFromIdList,
+  generateDateGroupedEntries,
 };

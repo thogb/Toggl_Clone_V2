@@ -2,9 +2,7 @@
 
 namespace TogglTrackCloneApi.Repositories.IRepositories
 {
-    public interface IProjectRepository : IGenericWIthIDRepository<Project>
+    public interface IProjectRepository : IGenericWithIdSoftDeleteRepository<Project>
     {
-        void SoftRemove(Project project);
-        void Recover(Project project);
     }
 }

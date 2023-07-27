@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import CircularStartButton from "../circularStartButton/CircularStartButton";
 import {
   AppBar,
@@ -7,6 +7,8 @@ import {
   InputBase,
   Stack,
   Toolbar,
+  Typography,
+  styled,
   useMediaQuery,
 } from "@mui/material";
 import EntryDateChanger from "../entryDateChanger/EntryDateChanger";
@@ -24,6 +26,8 @@ import { grey } from "@mui/material/colors";
 import TagsSelector from "../../scenes/timerPage/TagsSelector";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  changeProject,
+  deleteStartedTimer,
   endTimer,
   resetCurrentEntryInfo,
   resetDateInfo,
@@ -31,14 +35,26 @@ import {
   setTagsChecked,
   startTimer,
   updateDescription,
+  updateWorkspaceId,
 } from "../../state/currentEntrySlice";
 import { getDiffInSeconds } from "../../utils/TTDateUtil";
 import { TTMenu } from "../ttMenu/TTMenu";
 import { TTMenuItem } from "../ttMenu/TTMenuItem";
 import TTTimeTextField from "../ttTimeTextField/TTTimeTextField";
-import { addTE } from "../../state/groupedEntryListSlice";
-import { addSeconds } from "date-fns";
-
+import {
+  addTE,
+  useAddTimeEntryMutation,
+  usePatchTimeEntryMutation,
+} from "../../state/groupedEntryListSlice";
+import { addSeconds, differenceInSeconds } from "date-fns";
+import { timeEntryUtil } from "../../utils/TimeEntryUtil";
+import { createReplacePatch } from "../../utils/otherUtil";
+import { listUtil } from "../../utils/listUtil";
+import { useAddTagMutation } from "../../state/tagSlice";
+import { Circle, Folder } from "@mui/icons-material";
+import ProjectSelector from "../projectSelector/ProjectSelector";
+import { useAddProjectMutation } from "../../state/projectSlice";
+import ProjectButton from "../projectButton/ProjectButton";
 const timerStates = Object.freeze({
   STARTED: "STARTED",
   IDLE: "IDLE",
@@ -48,25 +64,38 @@ const timerStates = Object.freeze({
 
 const TimerTopBar = () => {
   const dispatch = useDispatch();
+  const timeEntryId = useSelector((state) => state.currentEntry.id);
   const description = useSelector((state) => state.currentEntry.description);
   const duration = useSelector((state) => state.currentEntry.duration);
   const startDate = useSelector((state) => state.currentEntry.startDate);
   const stopDate = useSelector((state) => state.currentEntry.stopDate);
+  const workspaceId = useSelector((state) => state.currentEntry.workspaceId);
+  const projectId = useSelector((state) => state.currentEntry.projectId);
   const isTimerStarted = useSelector(
     (state) => state.currentEntry.timerStarted
   );
-  const tagList = useSelector((state) => state.currentEntry.tags);
   const tagCheckedList = useSelector((state) => state.currentEntry.tagsChecked);
+  const projects = useSelector((state) => state.projects.projects);
+  const workspaces = useSelector((state) => state.workspaces.workspaces);
+  const currentWorkspace = useSelector(
+    (state) => state.workspaces.currentWorkspace
+  );
+  const tagList =
+    useSelector((state) => state.tags.tagNames)[workspaceId] ?? [];
 
   const desciptionInput = useRef();
   const [isTimerMode, setIsTimerMode] = useState(true);
-
+  const [projectAnchorEl, setProjectAnchorEl] = useState(null);
   const [menuAnchor, setMenuAnchor] = useState(null);
-
-  //retrieved from redux for if timer is started
+  const [addTimeEntry] = useAddTimeEntryMutation();
+  const [patchTimeEntry] = usePatchTimeEntryMutation();
+  const [addTag] = useAddTagMutation();
+  const [addProject] = useAddProjectMutation();
 
   const mw620 = useMediaQuery("(min-width:620px)");
   const theme = useTheme();
+
+  const currentWorkspaceId = currentWorkspace.id ?? 0;
 
   const timerOptionStyle = {
     shadow: {
@@ -106,53 +135,87 @@ const TimerTopBar = () => {
     desciptionInput.current.value = description;
   }, [description]);
 
+  const workspace = useMemo(() => {
+    let found = null;
+    for (let workspaceList of Object.values(workspaces)) {
+      found = workspaceList.find((w) => w.id === workspaceId);
+      if (found) break;
+    }
+    return found ?? currentWorkspace;
+  }, [workspaceId]);
+
+  const project = useMemo(() => {
+    let found = null;
+    for (let projectList of Object.values(projects)) {
+      found = projectList.find((p) => p.id === projectId);
+      if (found) break;
+    }
+    return found;
+  }, [projectId]);
+
   const getCurrentTimeEntry = () => {
     return {
-      id: Date.now(), // to be retrieved from api
       description: desciptionInput.current.value.trim(),
-      projectId: null,
+      projectId: projectId,
       tags: tagCheckedList,
       duration: duration,
       startDate: startDate,
       stopDate: addSeconds(startDate, duration).getTime(),
+      workspaceId: workspaceId,
     };
   };
 
-  const handleTimerButtonClick = () => {
+  const handleTimerButtonClick = async () => {
     switch (timerState) {
       case timerStates.IDLE:
-        // const timerInterval = setInterval(() => {
-        //   dispatch(incrementDuration());
-        // }, 1000);
-        // dispatch(startTimer({ timerInterval: timerInterval }));
-        console.log("idle");
-        dispatch(startTimer({}));
+        dispatch(startTimer({ timeEntry: getCurrentTimeEntry() }));
         desciptionInput.current.focus();
         return;
       case timerStates.STARTED:
-        // dispatch(
-        //   addTE({
-        //     timeEntry: getCurrentTimeEntry(),
-        //   })
-        // );
         dispatch(endTimer());
         return;
       case timerStates.MANUAL:
       case timerStates.CHECK:
-        dispatch(
-          addTE({
-            timeEntry: getCurrentTimeEntry(),
-          })
-        );
-        dispatch(resetCurrentEntryInfo());
+        try {
+          const timeEntry = getCurrentTimeEntry();
+          const payload = await addTimeEntry({
+            timeEntry: timeEntryUtil.convertToApiDTO(timeEntry),
+          }).unwrap();
+          const responseTE = timeEntryUtil.createFromApiResponse(
+            timeEntryUtil.cloneTimeEntry(payload)
+          );
+          dispatch(
+            addTE({
+              timeEntry: responseTE,
+            })
+          );
+          dispatch(resetCurrentEntryInfo());
+          dispatch(updateWorkspaceId({ workspaceId: currentWorkspaceId }));
+        } catch (error) {}
         return;
       default:
         return;
     }
   };
 
-  const handleDescriptionBlur = (e) => {
-    dispatch(updateDescription({ description: e.target.value }));
+  const handleDescriptionBlur = async (e) => {
+    const newDescription = e.target.value.trim();
+    if (description !== newDescription) {
+      const oldDescription = description;
+      dispatch(updateDescription({ description: newDescription }));
+      if (isTimerStarted) {
+        try {
+          const patch = createReplacePatch({ description: newDescription });
+          const payload = await patchTimeEntry({
+            id: timeEntryId,
+            patch: patch,
+          }).unwrap();
+        } catch (error) {
+          dispatch(updateDescription({ description: oldDescription }));
+        }
+      }
+    }
+    desciptionInput.current.value = newDescription;
   };
 
   const handleTimeModeChange = () => {
@@ -160,30 +223,56 @@ const TimerTopBar = () => {
     dispatch(resetDateInfo());
   };
 
-  const handleTimePopperClose = (dateInfo) => {
+  const handleCreateTagClick = async (tagName) => {
+    if (tagName) {
+      try {
+        const payload = await addTag({
+          tagName: tagName,
+          workspaceId: workspaceId,
+        }).unwrap();
+      } catch (error) {}
+    }
+  };
+
+  const handleTimePopperClose = async (dateInfo) => {
     if (duration < 0) {
       dispatch(resetDateInfo());
     }
 
-    const { initialDateInfo } = dateInfo;
+    const { initialDateInfo, finalDateInfo } = dateInfo;
     if (
       (dateInfo.duration >= 0 &&
         dateInfo.duration !== initialDateInfo.duration) ||
       Math.abs(dateInfo.startDate - initialDateInfo.startDate) > 60 * 1000
     ) {
       if (isTimerStarted) {
-        dispatch(
-          setDateInfo({
-            dateInfo: {
-              duration: getDiffInSeconds(
-                initialDateInfo.stopDate.getTime(),
-                dateInfo.startDate.getTime()
-              ),
-              startDate: dateInfo.startDate.getTime(),
-              stopDate: initialDateInfo.stopDate.getTime(),
-            },
-          })
-        );
+        if (
+          Math.abs(
+            differenceInSeconds(
+              initialDateInfo.startDate,
+              finalDateInfo.startDate
+            )
+          ) > 0
+        ) {
+          const patch = createReplacePatch({
+            startDate: new Date(finalDateInfo.startDate),
+          });
+          try {
+            await patchTimeEntry({ id: timeEntryId, patch: patch }).unwrap();
+            dispatch(
+              setDateInfo({
+                dateInfo: {
+                  duration: getDiffInSeconds(
+                    initialDateInfo.stopDate.getTime(),
+                    dateInfo.startDate.getTime()
+                  ),
+                  startDate: dateInfo.startDate.getTime(),
+                  stopDate: initialDateInfo.stopDate.getTime(),
+                },
+              })
+            );
+          } catch (error) {}
+        }
       } else {
         dispatch(
           setDateInfo({
@@ -198,13 +287,37 @@ const TimerTopBar = () => {
     }
   };
 
-  const handleTagsSelectionComplete = (tagsChecked) => {
-    dispatch(setTagsChecked({ tagsChecked: tagsChecked }));
+  const handleProjectSelectionComplete = async (selectionData) => {
+    const { project } = selectionData;
+    dispatch(
+      changeProject({
+        projectId: project === null ? null : project.id,
+        workspaceId: project === null ? workspaceId : project.workspaceId,
+      })
+    );
+  };
+
+  const handleTagsSelectionComplete = async (tagsChecked) => {
+    if (!listUtil.isListEqual(tagCheckedList, tagsChecked)) {
+      const oldTags = [...tagCheckedList];
+      dispatch(setTagsChecked({ tagsChecked: tagsChecked }));
+      const patch = createReplacePatch({ tags: tagsChecked });
+      if (isTimerStarted) {
+        try {
+          await patchTimeEntry({
+            id: timeEntryId,
+            patch: patch,
+          }).unwrap();
+        } catch (error) {
+          dispatch(setTagsChecked({ tagsChecked: oldTags }));
+        }
+      }
+    }
   };
 
   const handleMenuItemClick = (code) => {
     if (code === "DELETE") {
-      console.log("delete clicked");
+      dispatch(deleteStartedTimer());
     }
 
     setMenuAnchor(null);
@@ -225,7 +338,11 @@ const TimerTopBar = () => {
 
   return (
     // <AppBar position="sticky" sx={{ height: APPBAR_HEIGHT }} color="background">
-    <AppBar position="fixed" sx={{ height: APPBAR_HEIGHT, width: "auto"}} color="background">
+    <AppBar
+      position="fixed"
+      sx={{ height: APPBAR_HEIGHT, width: "auto" }}
+      color="background"
+    >
       <Toolbar disableGutters>
         <InputBase
           inputRef={desciptionInput}
@@ -254,38 +371,44 @@ const TimerTopBar = () => {
             },
           }}
         />
-        <Button
-          variant="text"
-          color="secondary"
-          startIcon={<AddIcon fontSize="large" />}
-          disableElevation
-          disableRipple
-          disableTouchRipple
-          sx={{
-            pl: 2.5,
-            pr: 1.5,
-            textTransform: "none",
-            fontSize: 14,
-            lineHeight: "1",
-            fontWeight: "400",
-            color: "black",
-            minWidth: 0,
-            borderRadius: "8px",
-            "& .MuiSvgIcon-root": {
-              fontSize: 16,
-              color: theme.palette.secondary.main,
-            },
-          }}
-        >
-          {mw620 ? "Create a project" : ""}
-        </Button>
+        {project ? (
+          <ProjectButton
+            colour={project.colour}
+            name={project.name}
+            className={projectAnchorEl ? "TTPopper-open" : null}
+            onClick={(e) => setProjectAnchorEl(e.currentTarget)}
+          />
+        ) : (
+          <TTIconButton
+            style={{ margin: theme.spacing(0, 1) }}
+            onClick={(e) => setProjectAnchorEl(e.currentTarget)}
+          >
+            <Folder />
+          </TTIconButton>
+        )}
+        {projectAnchorEl && (
+          <ProjectSelector
+            offset={[200, 8]}
+            currentProjectId={projectId}
+            currentWorkspace={workspace}
+            projects={projects}
+            workspaces={Object.values(workspaces).reduce(
+              (list, next) => [...list, ...next],
+              []
+            )}
+            anchorEl={projectAnchorEl}
+            onClose={() => setProjectAnchorEl(null)}
+            onSelectionComplete={handleProjectSelectionComplete}
+          />
+        )}
         <TagsSelector
           tagList={tagList}
+          onCreateTagClick={handleCreateTagClick}
           tagCheckedList={tagCheckedList}
           onSelectionComplete={handleTagsSelectionComplete}
         />
-        <TTIconButton disabled>
-          <AttachMoneyIcon />
+        <TTIconButton disabled style={{ margin: theme.spacing(0, 1) }}>
+          <AttachMoneyIcon style={{ fontSize: "1.25rem" }} />
         </TTIconButton>
         {/* time Entries */}
         {isTimerMode ? (

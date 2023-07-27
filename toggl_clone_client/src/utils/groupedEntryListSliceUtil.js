@@ -37,9 +37,10 @@ const updateGroupingDataInGE = (state, dateGroupId, gId, groupingData) => {
 
 const updateBatchTEInDGE = (state, dateGroupId, idList, newTEData) => {
   const delTEList = removeBatchTimeEntryFromDGE(state, dateGroupId, idList);
-  const newTags = newTEData.tags;
+  const newTags = [...newTEData.tags];
   newTags.sort();
   const newDate = new Date(newTEData.startDate);
+
   const newTEList = delTEList.map((te) => {
     const newStartDate = set(te.startDate, {
       year: newDate.getFullYear(),
@@ -55,7 +56,8 @@ const updateBatchTEInDGE = (state, dateGroupId, idList, newTEData) => {
       tags: [...newTags],
     };
   });
-  addGroupedEntry(state, geUtil.createFromTimeEntryList(newTEList));
+  const ge = geUtil.createFromTimeEntryList(newTEList);
+  addGroupedEntry(state, ge);
 };
 
 // #add

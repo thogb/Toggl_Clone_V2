@@ -43,6 +43,9 @@ export const themeSettings = (mode) => {
       popOver: {
         px: 2,
       },
+      popper: {
+        px: 2,
+      },
     },
     shape: {
       borderRadius: 8,

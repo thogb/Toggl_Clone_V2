@@ -16,28 +16,16 @@ import TimeEntryInputExpand from "./TimeEntryInputExpand";
 import TagsSelector from "../../scenes/timerPage/TagsSelector";
 import TTPopper from "../ttPopper/TTPopper";
 import TTDateCalender from "../TTDateCalender/TTDateCalender";
-import { format } from "date-fns";
+import { differenceInSeconds, format } from "date-fns";
 import { useTheme } from "@emotion/react";
+import { listUtil } from "../../utils/listUtil";
+import { withDataFromTimeEntries } from "./withDataFromTimeEntries";
+import TTDialog from "../ttDialog/TTDialog";
 
-// Using styled() to make a style component named StyledDialog with dialog
-// also including theme
-
-const StyledDialog = styled(Dialog)(({ theme }) => ({
+const StyledDialog = styled(TTDialog)(({ theme }) => ({
   // Paper
   "& .MuiDialog-paper": {
-    padding: theme.spacing(2),
-    width: 360,
-    overflow: "visible",
-    // borderRadius: "8px",
-
-    // DialogTitle
-    "& .MuiDialogTitle-root": {
-      padding: 0,
-      paddingBottom: theme.spacing(1),
-      fontSize: theme.typography.body2.fontSize,
-      lineHeight: theme.typography.body2.lineHeight,
-    },
-
+    // DialogContent
     // DialogContent
     "& .MuiDialogContent-root": {
       padding: 0,
@@ -77,22 +65,30 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
         },
       },
     },
-
-    // DialogActions
-    "& .MuiDialogActions-root": {
-      padding: 0,
-      justifyContent: "start",
-    },
-
-    "& .TimeEntryInputModal-close": {
-      cursor: "pointer",
-      position: "absolute",
-      right: theme.spacing(1),
-      top: theme.spacing(1),
-      padding: theme.spacing(1 / 2),
-    },
   },
 }));
+
+const getInputModalDataDifferent = (initialValues, currentValues) => {
+  const changed = {};
+  if (initialValues === null) {
+    return changed;
+  }
+  if (initialValues.description !== currentValues.description) {
+    changed.description = currentValues.description;
+  }
+  if (initialValues.projectId !== currentValues.projectId) {
+    changed.projectId = currentValues.projectId;
+  }
+  if (!listUtil.isListEqual(initialValues.tags, currentValues.tags)) {
+    changed.tags = currentValues.tags;
+  }
+  if (
+    differenceInSeconds(initialValues.startDate, currentValues.startDate) !== 0
+  ) {
+    changed.startDate = currentValues.startDate;
+  }
+  return changed;
+};
 
 const TimeEntryInputModal = ({
   open,
@@ -105,6 +101,7 @@ const TimeEntryInputModal = ({
 
   tagList,
 
+  onOpen,
   onSave,
   onClose,
 }) => {
@@ -119,6 +116,7 @@ const TimeEntryInputModal = ({
   const [dateString, setDateString] = useState(format(startDate, formatString));
   const [localStartDate, setLocalStartDate] = useState(startDate);
   const [calenderAnchorEl, setCalenderAnchorEl] = useState(null);
+  const [initialValues, setInitialValues] = useState(null);
 
   //   useEffect(() => {
   //     setLocalCheckedTagList([...checkedTagList]);
@@ -127,14 +125,24 @@ const TimeEntryInputModal = ({
   useEffect(() => {
     if (open) {
       resetValues();
+      setInitialValues(getIntialValues());
+    }
+  }, [description, projectId, checkedTagList, startDate.getTime()]);
+
+  useEffect(() => {
+    if (open) {
+      resetValues();
+      setInitialValues(getIntialValues());
+      if (onOpen) onOpen();
     }
   }, [open]);
 
   const resetValues = () => {
-    setLocalDescription("");
+    const justDate = new Date(startDate.toDateString());
+    setLocalDescription(description);
     setLocalCheckedTagList(checkedTagList);
-    setDateString(format(startDate, formatString));
-    setLocalStartDate(startDate);
+    setDateString(format(justDate, formatString));
+    setLocalStartDate(justDate);
     setCalenderAnchorEl(null);
     setTagsAnchorEl(null);
   };
@@ -143,13 +151,31 @@ const TimeEntryInputModal = ({
     setLocalDescription(e.target.value);
   };
 
+  const getIntialValues = () => {
+    return {
+      description: description,
+      projectId: projectId,
+      tags: checkedTagList,
+      startDate: new Date(startDate.toDateString()),
+    };
+  };
+
+  const getCurrentValues = () => {
+    return {
+      description: localDescription,
+      projectId: projectId,
+      tags: localCheckedTagList,
+      startDate: localStartDate,
+    };
+  };
+
   const handleSaveClick = () => {
     if (onSave) {
+      const finalValues = getCurrentValues();
       onSave({
-        description: localDescription,
-        projectId: projectId,
-        tags: localCheckedTagList,
-        startDate: localStartDate,
+        initialValues: initialValues,
+        finalValues: finalValues,
+        changed: getInputModalDataDifferent(initialValues, finalValues),
       });
     }
     onClose();
@@ -170,14 +196,15 @@ const TimeEntryInputModal = ({
 
   const handleCalenderChange = (newDate) => {
     setDateString(format(newDate, formatString));
-    setLocalStartDate(newDate.getTime());
+    // setLocalStartDate(newDate.getTime());
+    setLocalStartDate(newDate);
   };
 
   return (
     <StyledDialog
-      transitionDuration={300}
-      TransitionComponent={Grow}
-      TransitionProps={{ easing: "cubic-bezier(0, 0, 0.2, 1)" }}
+      // transitionDuration={300}
+      // TransitionComponent={Grow}
+      // TransitionProps={{ easing: "cubic-bezier(0, 0, 0.2, 1)" }}
       open={open}
       onClose={onClose}
     >
@@ -187,6 +214,9 @@ const TimeEntryInputModal = ({
           variant="outlined"
           placeholder="New description..."
           value={localDescription}
+          onBlur={(e) => {
+            setLocalDescription(e.target.value.trim());
+          }}
           onChange={handleDescriptionChange}
         ></TextField>
         <FormControl>
@@ -250,9 +280,10 @@ const TimeEntryInputModal = ({
           Save
         </Button>
       </DialogActions>
-      <CloseIcon className="TimeEntryInputModal-close" onClick={onClose} />
+      {/* <CloseIcon className="TimeEntryInputModal-close" onClick={onClose} /> */}
     </StyledDialog>
   );
 };
 
 export default TimeEntryInputModal;
+export const TEInputModalFromTEs = withDataFromTimeEntries(TimeEntryInputModal);

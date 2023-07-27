@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState } from "react";
+import React, { memo, useEffect, useMemo, useState } from "react";
 import TimeEntryItemBase, {
   RightTools,
   TimeEntryLeftSection,
@@ -23,6 +23,9 @@ import { TTMenu } from "../ttMenu/TTMenu";
 import { TTMenuItem } from "../ttMenu/TTMenuItem";
 import TimeEntryDateInfo from "./TimeEntryDateInfo";
 import TimeEntryDateInfoChanger from "./TimeEntryDateInfoChanger";
+import { useSelector } from "react-redux";
+import ProjectButton from "../projectButton/ProjectButton";
+import ProjectSelector from "../projectSelector/ProjectSelector";
 
 const StyledTimeEntryItemBase = styled(TimeEntryItemBase)(({ theme }) => ({
   "&:hover": {
@@ -66,6 +69,7 @@ const inputPlaceHolder = "Add description";
 const TimeEntryItemRecord = ({
   id,
   projectId,
+  workspaceId,
   description,
   tagsChecked,
   duration,
@@ -97,16 +101,37 @@ const TimeEntryItemRecord = ({
     onExpandButonClick: (e) => {},
     onMenuClick: (option) => {},
     onStartButtonClick: (e) => {},
+    onCreateTagClick: () => {},
   },
 }) => {
   const theme = useTheme();
+
+  const projects = useSelector((state) => state.projects.projects);
+  const workspaces = useSelector((state) => state.workspaces.workspaces);
+
   const [teDescription, setTeDescription] = useState(description);
   const [tagSelectorAnchor, setTagSelectorAnchor] = useState(null);
   const [menuAnchor, setMenuAnchor] = useState(null);
+  const [projectAnchorEl, setProjectAnchorEl] = useState(null);
 
   useEffect(() => {
     setTeDescription(description);
   }, [description]);
+
+  const workspace = useMemo(() => {
+    let found = null;
+    for (let workspaceList of Object.values(workspaces)) {
+      found = workspaceList.find((w) => w.id === workspaceId);
+      if (found) break;
+    }
+    return found;
+  }, [workspaceId]);
+
+  const project = useMemo(() => {
+    if (projectId && workspaceId) {
+      return projects[workspaceId].find((project) => project.id === projectId);
+    }
+  }, [projectId]);
 
   const handleTeDescriptionChange = (e) => {
     setTeDescription(e.target.value);
@@ -115,7 +140,9 @@ const TimeEntryItemRecord = ({
   const handleTeDescriptionInputComplete = (e) => {
     // Api call to update description of entry
     // console.log(e.target.value);
-    operations.onDescriptionEdit(e.target.value);
+    const trimmedValue = e.target.value.trim();
+    setTeDescription(trimmedValue);
+    operations.onDescriptionEdit(trimmedValue);
   };
 
   const handleCheckboxClick = () => {
@@ -124,7 +151,6 @@ const TimeEntryItemRecord = ({
 
   const handleTagsSelectorClose = (newCheckedList) => {
     setTagSelectorAnchor(null);
-    console.log(newCheckedList);
     operations.onTagsCheckedEdit(newCheckedList);
   };
 
@@ -134,8 +160,6 @@ const TimeEntryItemRecord = ({
 
   const hasTags = tagsChecked.length > 0;
   const commonTextColor = alpha(theme.palette.primary.main, 0.7);
-
-  // console.log("End time: " + Date.now());
 
   return (
     <StyledTimeEntryItemBase
@@ -174,9 +198,43 @@ const TimeEntryItemRecord = ({
             marginLeft: "0px",
           }}
         />
-        <TTIconButton colorStrength={5} className={"TT-hidden"}>
-          <FolderIcon />
-        </TTIconButton>
+        {project ? (
+          <ProjectButton
+            colour={project.colour}
+            name={project.name}
+            onClick={(e) => setProjectAnchorEl(e.currentTarget)}
+          />
+        ) : (
+          <TTIconButton
+            colorStrength={5}
+            className={"TT-hidden"}
+            onClick={(e) => setProjectAnchorEl(e.currentTarget)}
+          >
+            <FolderIcon />
+          </TTIconButton>
+        )}
+        {projectAnchorEl && (
+          <ProjectSelector
+            currentProjectId={projectId}
+            currentWorkspace={workspace}
+            projects={{ [workspaceId]: projects[workspaceId] }}
+            workspaces={[workspace]}
+            anchorEl={projectAnchorEl}
+            onClose={() => setProjectAnchorEl(null)}
+            onSelectionComplete={operations.onProjectEdit}
+            offset={[-60, 8]}
+            // https://stackoverflow.com/questions/69120842/mui-popper-placement-not-working-as-intended-when-using-disableportal
+            // modifiers={[
+            //   {
+            //     preventOverflow: {
+            //       enabled: true,
+            //       escapeWithReference: true,
+            //       boundariesElement: "viewport",
+            //     },
+            //   },
+            // ]}
+          />
+        )}
       </TimeEntryLeftSection>
       <Stack
         className="TimeEntryItemRecord-tags"
@@ -193,6 +251,7 @@ const TimeEntryItemRecord = ({
             tagCheckedList={tagsChecked}
             popperAnchorEl={tagSelectorAnchor}
             onClose={handleTagsSelectorClose}
+            onCreateTagClick={operations.onCreateTagClick}
             triggerTouchable={true}
             triggerComponent={
               hasTags ? (
@@ -300,7 +359,7 @@ const TimeEntryItemRecord = ({
                   key={option.name}
                   disabled={option.disabled}
                   selected={option.selected}
-                  style={option.style}
+                  style={{ ...option.style }}
                   onClick={(e) => {
                     if (operations.onMenuClick) operations.onMenuClick(option);
                     setMenuAnchor(null);

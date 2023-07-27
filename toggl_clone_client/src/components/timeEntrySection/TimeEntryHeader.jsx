@@ -11,14 +11,21 @@ import ChecklistIcon from "@mui/icons-material/Checklist";
 import styled from "@emotion/styled";
 import { grey, red } from "@mui/material/colors";
 import { timeEntryCheckedActions } from "./TimeEntryCheckedReducer";
-import { formatSecondHMMSS } from "../../utils/TTDateUtil";
-import { useDispatch } from "react-redux";
+import { formatDateyyyyMMdd, formatSecondHMMSS } from "../../utils/TTDateUtil";
+import { useDispatch, useSelector } from "react-redux";
 import {
+  addTE,
   deleteBatchTE,
   deleteDGE,
   updateBatchTE,
+  useBatchDeleteTimeEntryMutation,
+  useBatchPatchTimeEntryMutation,
 } from "../../state/groupedEntryListSlice";
-import TimeEntryInputModal from "../timeEntryInputModal/TimeEntryInputModal";
+import TimeEntryInputModal, {
+  TEInputModalFromTEs,
+} from "../timeEntryInputModal/TimeEntryInputModal";
+import { timeEntryUtil } from "../../utils/TimeEntryUtil";
+import { compare } from "fast-json-patch";
 
 const OutlinedIconButton = styled("button")(({ theme }) => ({
   border: "1px solid",
@@ -60,19 +67,22 @@ const DeleteTextButton = styled(TTTextButton)(({ theme }) => ({
 }));
 
 const TimeEntryHeader = ({
-  tagList,
   dateGroupId,
   sectionDate,
-  timeEIdList,
+  checkedTEList,
   totalDuration,
   timeEntryChecked,
   timeEntryCheckedDispatch,
 }) => {
   const dispatch = useDispatch();
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const tagNames = useSelector((state) => state.tags.tagNames);
+
+  const [batchDeleteTimeEntry] = useBatchDeleteTimeEntryMutation();
+  const [batchPatchTimeEntry] = useBatchPatchTimeEntryMutation();
 
   // const dateFormat = "EEE, dd MMM";
-  const checked = timeEIdList.length === timeEntryChecked.checkedList.length;
+  const checked = checkedTEList.length === timeEntryChecked.checkedList.length;
   const indeterminate = !checked && timeEntryChecked.checkedList.length > 0;
   const isCheckOn = checked || indeterminate;
 
@@ -80,21 +90,39 @@ const TimeEntryHeader = ({
     setIsUpdateModalOpen(true);
   };
 
-  const handleBulkDelete = () => {
+  const handleBulkDelete = async () => {
+    let ids = timeEntryUtil.convertTEListToTEIdList(
+      timeEntryChecked.checkedList
+    );
+    const timeEntries = timeEntryChecked.checkedList;
     if (checked) {
       dispatch(deleteDGE({ dateGroupId: dateGroupId }));
     } else {
-      console.log(timeEntryChecked.checkedList);
       dispatch(
         deleteBatchTE({
           dateGroupId: dateGroupId,
-          idList: timeEntryChecked.checkedList,
+          idList: timeEntryUtil.convertTEListToTEIdList(
+            timeEntryChecked.checkedList
+          ),
         })
       );
     }
     timeEntryCheckedDispatch({
       type: timeEntryCheckedActions.RESET_CHECKED_LIST,
     });
+    try {
+      const payload = await batchDeleteTimeEntry({ ids: ids }).unwrap();
+      const { failure } = payload.failure;
+      if (failure?.length > 0) {
+        const failedIds = failure.map((f) => f.id);
+        const failedTimeEntries = timeEntries.filter((t) =>
+          failedIds.includes(t.id)
+        );
+        failedTimeEntries.forEach((failedTimeEntry) => {
+          dispatch(addTE({ timeEntry: failedTimeEntry }));
+        });
+      }
+    } catch (error) {}
   };
 
   const handleCheckBoxToggle = () => {
@@ -111,26 +139,50 @@ const TimeEntryHeader = ({
     } else {
       timeEntryCheckedDispatch({
         type: timeEntryCheckedActions.SET_CHECKED_LIST,
-        checkedList: timeEIdList,
+        checkedList: checkedTEList,
       });
     }
   };
 
-  const handleInputModalComplete = (editData) => {
-    console.log(editData);
-    dispatch(
-      updateBatchTE({
-        dateGroupId,
-        idList: timeEntryChecked.checkedList,
-        editData: {
-          ...editData,
-          startDate: new Date(editData.startDate).getTime(),
-        },
-      })
-    );
-    timeEntryCheckedDispatch({
-      type: timeEntryCheckedActions.TOGGLE_AND_RESET_CHECKED_LIST,
-    });
+  const handleInputModalComplete = async (editData) => {
+    const { initialValues, finalValues, changed } = editData;
+    if (Object.values(changed).length > 0) {
+      timeEntryCheckedDispatch({
+        type: timeEntryCheckedActions.TOGGLE_AND_RESET_CHECKED_LIST,
+      });
+      let ids = timeEntryUtil.convertTEListToTEIdList(
+        timeEntryChecked.checkedList
+      );
+      if (changed.startDate) {
+        changed.startDate = formatDateyyyyMMdd(changed.startDate);
+        changed.changeStartTime = false;
+      }
+      const dummy = { ...changed };
+      Object.keys(dummy).forEach((key) => {
+        dummy[key] = null;
+      });
+      const patch = compare(dummy, changed);
+      try {
+        const { success, failure } = await batchPatchTimeEntry({
+          ids: ids,
+          patch: patch,
+        }).unwrap();
+        if (success?.length > 0) {
+          console.log("in");
+          console.log(finalValues);
+          dispatch(
+            updateBatchTE({
+              dateGroupId,
+              idList: success,
+              editData: {
+                ...finalValues,
+                startDate: new Date(finalValues.startDate).getTime(),
+              },
+            })
+          );
+        }
+      } catch (error) {}
+    }
   };
 
   const nSelected = timeEntryChecked.checkedList.length;
@@ -159,18 +211,18 @@ const TimeEntryHeader = ({
               <Typography
                 variant="body2"
                 color={"GrayText"}
-              >{`${nSelected}/${timeEIdList.length} items selected`}</Typography>
+              >{`${nSelected}/${checkedTEList.length} items selected`}</Typography>
               <TTTextButton
                 disabled={!isCheckOn}
                 text={"Bulk edit"}
                 onClick={handleBulkEdit}
               />
-              <TimeEntryInputModal
-                tagList={tagList}
+              <TEInputModalFromTEs
+                tagList={
+                  tagNames[timeEntryChecked.checkedList[0]?.workspaceId] ?? []
+                }
+                timeEntries={timeEntryChecked.checkedList}
                 startDate={new Date(sectionDate)}
-                title={`Bulk edit ${nSelected} time ${
-                  nSelected > 1 ? "entries" : "entry"
-                }`}
                 open={isUpdateModalOpen}
                 onClose={() => setIsUpdateModalOpen(false)}
                 onSave={handleInputModalComplete}

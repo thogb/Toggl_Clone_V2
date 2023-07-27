@@ -9,6 +9,7 @@ import TrackFooter from "./components/TrackFooter";
 import TrackCopyright from "./components/TrackCopyright";
 import TTNameIcon from "../../fromTogglTrack/TTNameIcon";
 import { relativeURL } from "../../utils/constants";
+import { useRegisterUserMutation } from "../../state/authSlice";
 
 const StyledLink = styled(Link)(({ theme }) => ({
   color: "inherit",
@@ -20,6 +21,13 @@ const StyledLink = styled(Link)(({ theme }) => ({
 
 const SignUpPage = () => {
   const theme = useTheme();
+  const [registerUser, { isLoading, error }] = useRegisterUserMutation();
+
+  const onSignUp = async ({ email, password }) => {
+    if (!isLoading) {
+      registerUser({ email, password });
+    }
+  };
 
   return (
     <Box bgcolor={"primary.light"}>
@@ -83,7 +91,7 @@ const SignUpPage = () => {
           gap={2}
         >
           <Box px={theme.spacing(3)}>
-            <SignInForm />
+            <SignInForm errorMsg={error?.data} onComplete={onSignUp} />
           </Box>
           <Box padding={4} flexBasis={"40%"}>
             <Typography

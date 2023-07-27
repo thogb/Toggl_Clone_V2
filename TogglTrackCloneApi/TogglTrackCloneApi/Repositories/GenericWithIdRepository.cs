@@ -17,14 +17,19 @@ namespace TogglTrackCloneApi.Repositories
             _context.Entry(entity).Property(e => e.CreationDate).IsModified = false;
         }
 
-        public async Task<bool> Exists(int id)
+        public virtual async Task<bool> Exists(int id)
         {
             return await _context.Set<T>().AnyAsync(t => t.Id == id);
         }
 
-        public async Task<List<T>> GetByIdList(IEnumerable<int> ids)
+        public virtual async Task<List<T>> GetByIdList(IEnumerable<int> ids, bool tracked = true)
         {
-            return await _context.Set<T>().Where(t => ids.Contains(t.Id)).ToListAsync();
+            return await GetByIdListQuery(ids, tracked: tracked).ToListAsync();
+        }
+
+        public IQueryable<T> GetByIdListQuery(IEnumerable<int> ids, bool tracked = true)
+        {
+            return GetByFilterQuery(t => ids.Contains(t.Id), tracked: tracked);
         }
     }
 }

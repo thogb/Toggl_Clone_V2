@@ -10,6 +10,7 @@ namespace TogglTrackCloneApi.Mappers
         {
             this.CreateMap<TagDTO, Tag>();
             this.CreateMap<Tag, TagResponseDTO>();
+            this.CreateMap<Tag, TagInTEResponseDTO>();
         }
     }
 }

@@ -1,17 +1,6 @@
 import { useTheme } from "@emotion/react";
-import {
-  AppBar,
-  Badge,
-  Box,
-  Drawer,
-  IconButton,
-  Toolbar,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
-import React, { useState } from "react";
-import { Outlet } from "react-router-dom";
-import { APPBAR_HEIGHT, DRAWER_WIDTH } from "../../utils/constants";
+import { Badge, Box, Typography, useMediaQuery } from "@mui/material";
+import React from "react";
 import SideNavBarButton from "./SideNavBarButton";
 import HelpIcon from "@mui/icons-material/Help";
 import NotificationsIcon from "@mui/icons-material/Notifications";
@@ -32,31 +21,137 @@ import PowerIcon from "@mui/icons-material/Power";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import CorporateFareIcon from "@mui/icons-material/CorporateFare";
 import SettingsIcon from "@mui/icons-material/Settings";
-import MenuIcon from "@mui/icons-material/Menu";
 import TTTimerIcon from "./TTTimerIcon";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { formatSecondHMMSS } from "../../utils/TTDateUtil";
+import ProfilePopper from "./ProfilePopper";
+import { useState } from "react";
+import { useLocation } from "react-router-dom";
+import WorkspaceSelector from "../../components/workspaceSelector/WorkspaceSelector";
+import { workspaceActions } from "../../state/workspaceSlice";
+import { organisationActions } from "../../state/organisationSlice";
 
-const NavBar = () => {
+const analysePaths = {
+  name: "analyse",
+  paths: [
+    {
+      name: "Reports",
+      path: "/theme",
+      icon: <ArticleIcon />,
+    },
+    {
+      name: "Insights",
+      path: "/insights",
+      icon: <AssessmentIcon />,
+    },
+  ],
+};
+
+const managePaths = {
+  name: "manage",
+  paths: [
+    {
+      name: "Projects",
+      path: "/projects",
+      icon: <FolderIcon />,
+    },
+    {
+      name: "Clients",
+      path: "/clients",
+      icon: <AccountBoxIcon />,
+    },
+    {
+      name: "Teams",
+      path: "/teams",
+      icon: <GroupIcon />,
+    },
+    {
+      name: "Tags",
+      path: "/tags",
+      icon: <LocalOfferIcon />,
+    },
+    {
+      name: "Integrations",
+      path: "/integrations",
+      icon: <PowerIcon />,
+    },
+    {
+      name: "Testing",
+      path: "/testing",
+      icon: <PowerIcon />,
+    },
+    {
+      name: "Api",
+      path: "/api",
+      icon: <PowerIcon />,
+    },
+  ],
+};
+
+const adminPaths = {
+  name: "admin",
+  paths: [
+    {
+      name: "Subscription",
+      path: "/subscription",
+      icon: <CreditCardIcon />,
+    },
+    {
+      name: "Organisation",
+      path: "/organisation",
+      icon: <CorporateFareIcon />,
+    },
+    {
+      name: "Settings",
+      path: "/settings",
+      icon: <SettingsIcon />,
+    },
+  ],
+};
+
+const NavBar = ({ loading = false, onClose = () => {} }) => {
+  const organisations = useSelector(
+    (state) => state.organisations.organisations
+  );
+  const currentOrganisation = useSelector(
+    (state) => state.organisations.currentOrganisation
+  );
+  const workspaces = useSelector((state) => state.workspaces.workspaces);
+  const currentWorkspace = useSelector(
+    (state) => state.workspaces.currentWorkspace
+  );
   const timerStarted = useSelector((state) => state.currentEntry.timerStarted);
   const duration = useSelector((state) => state.currentEntry.duration);
 
-  const [isMDrawerOpen, setIsMDrawerOpen] = useState(false);
-
+  const dispatch = useDispatch();
+  const location = useLocation();
   const theme = useTheme();
   const belowMd = useMediaQuery(theme.breakpoints.down("md"));
 
-  const drawerWidth = DRAWER_WIDTH;
-  const appbarHeight = APPBAR_HEIGHT;
+  const [profileAnchorEl, setProfileAnchorEl] = useState(null);
+  const [workspaceAnchorEl, setWorkspaceAnchorEl] = useState(null);
+
   const leftDrawerWidth = 47;
 
   const username = "Test";
 
-  const handleDrawerToggle = () => {
-    setIsMDrawerOpen(!isMDrawerOpen);
+  const handleWorkspaceClick = (e) => {
+    if (!loading && currentWorkspace?.name && currentOrganisation?.name) {
+      setWorkspaceAnchorEl(e.currentTarget);
+    }
   };
 
-  const drawer = (
+  const handleWorkspaceSelect = (selectionData) => {
+    const { organisationId, workspaceId } = selectionData;
+    if (currentWorkspace.id !== workspaceId) {
+      dispatch(
+        workspaceActions.changeWorkspace({ organisationId, workspaceId })
+      );
+      dispatch(organisationActions.changeOrganisation({ organisationId }));
+    }
+  };
+
+  return (
     <Box
       display={"flex"}
       flexDirection={"row"}
@@ -81,7 +176,7 @@ const NavBar = () => {
         {/* top */}
         <Box width={"100%"} display={"flex"} flexDirection={"column"}>
           {belowMd && (
-            <SideNavBarButton onClick={() => setIsMDrawerOpen(false)}>
+            <SideNavBarButton onClick={onClose}>
               <Box
                 bgcolor={"primary.light"}
                 display={"flex"}
@@ -102,15 +197,27 @@ const NavBar = () => {
 
         {/* bottom */}
         <Box width={"100%"} display={"flex"} flexDirection={"column"}>
-          <SideNavBarButton>
-            <Box display={"flex"} flexDirection={"column"}>
-              <AccountCircleIcon
-                fontSize="large"
-                sx={{ color: orange[400], mb: 0.5 }}
-              />
-              <span style={{ fontSize: "8px", color: grey[500] }}>PROFILE</span>
-            </Box>
-          </SideNavBarButton>
+          <ProfilePopper
+            anchorEl={profileAnchorEl}
+            onClose={() => setProfileAnchorEl(null)}
+            placement={"right"}
+            offset={[-30, 8]}
+            triggerComponent={
+              <SideNavBarButton
+                onClick={(e) => setProfileAnchorEl(e.currentTarget)}
+              >
+                <Box display={"flex"} flexDirection={"column"}>
+                  <AccountCircleIcon
+                    fontSize="large"
+                    sx={{ color: orange[400], mb: 0.5 }}
+                  />
+                  <span style={{ fontSize: "8px", color: grey[500] }}>
+                    PROFILE
+                  </span>
+                </Box>
+              </SideNavBarButton>
+            }
+          />
           <SideNavBarButton>
             <Badge
               variant="dot"
@@ -144,17 +251,21 @@ const NavBar = () => {
           justifyContent={"space-between"}
           sx={{
             "&:hover": {
-              cursor: "pointer",
+              cursor: loading ? "default" : "pointer",
             },
           }}
-          onClick={() => {}}
+          onClick={handleWorkspaceClick}
         >
-          <Box minWidth={0}>
+          <Box minWidth={0} visibility={loading ? "hidden" : "visible"}>
             <Typography
               noWrap
               variant="h6"
               sx={{ color: "white", fontSize: "1rem" }}
-            >{`${username}'s workspaces`}</Typography>
+            >
+              {loading || !currentWorkspace?.name
+                ? "Loading..."
+                : currentWorkspace?.name}
+            </Typography>
             <Typography
               noWrap
               variant="body2"
@@ -163,175 +274,90 @@ const NavBar = () => {
                 fontSize: "0.75rem",
                 textTransform: "uppercase",
               }}
-            >{`${username}'s organisation`}</Typography>
+            >
+              {loading || !currentOrganisation?.name
+                ? "Loading..."
+                : currentOrganisation?.name}
+            </Typography>
           </Box>
-          <KeyboardArrowDownIcon sx={{ color: "primary1.main" }} />
+          {!loading && (
+            <KeyboardArrowDownIcon sx={{ color: "primary1.main" }} />
+          )}
         </Box>
+        {workspaceAnchorEl && (
+          <WorkspaceSelector
+            anchorEl={workspaceAnchorEl}
+            onClose={() => setWorkspaceAnchorEl(null)}
+            offset={[0, 0]}
+            width={"314px"}
+            workspaces={workspaces}
+            organisations={organisations}
+            currentWorkspace={currentWorkspace}
+            currentOrganisation={currentOrganisation}
+            onSelectionComplete={handleWorkspaceSelect}
+          ></WorkspaceSelector>
+        )}
 
         {/* main nav list */}
-        <Box overflow={"auto"} flexGrow={1}>
+        <Box overflow={"auto"} flexGrow={1} style={{ overflowX: "hidden" }}>
           <TTSectionHeading>track</TTSectionHeading>
           <TTSideMenuList>
             <TTListItemButton
               label={timerStarted ? formatSecondHMMSS(duration) : "Timer"}
               icon={<WatchLaterIcon />}
               to={"/timer"}
+              disabled={loading}
+              selected={location.pathname === "/timer"}
             />
           </TTSideMenuList>
 
-          <TTSectionHeading>analyse</TTSectionHeading>
+          {/* analyse */}
+          <TTSectionHeading>{analysePaths.name}</TTSectionHeading>
           <TTSideMenuList>
-            <TTListItemButton
-              label={"Reports"}
-              icon={<ArticleIcon />}
-              to={"/theme"}
-            />
-            <TTListItemButton
-              label={"Insights"}
-              icon={<AssessmentIcon />}
-              to={"/insights"}
-            />
+            {analysePaths.paths.map((item) => (
+              <TTListItemButton
+                key={item.name}
+                label={item.name}
+                icon={item.icon}
+                to={item.path}
+                disabled={loading}
+                selected={location.pathname === item.path}
+              />
+            ))}
           </TTSideMenuList>
 
-          <TTSectionHeading>manage</TTSectionHeading>
+          {/* manage */}
+          <TTSectionHeading>{managePaths.name}</TTSectionHeading>
           <TTSideMenuList>
-            <TTListItemButton
-              label={"Projects"}
-              icon={<FolderIcon />}
-              to={"/projects"}
-            />
-            <TTListItemButton
-              label={"Clients"}
-              icon={<AccountBoxIcon />}
-              to={"/clients"}
-            />
-            <TTListItemButton
-              label={"Team"}
-              icon={<GroupIcon />}
-              to={"/team"}
-            />
-            <TTListItemButton
-              label={"Tags"}
-              icon={<LocalOfferIcon />}
-              to={"/tags"}
-            />
-            <TTListItemButton
-              label={"Integerations"}
-              icon={<PowerIcon />}
-              to={"/integerations"}
-            />
-            <TTListItemButton
-              label={"Testing"}
-              icon={<PowerIcon />}
-              to={"/testing"}
-            />
+            {managePaths.paths.map((item) => (
+              <TTListItemButton
+                key={item.name}
+                label={item.name}
+                icon={item.icon}
+                to={item.path}
+                disabled={loading}
+                selected={location.pathname === item.path}
+              />
+            ))}
           </TTSideMenuList>
         </Box>
 
         {/* bottom sticky nav list */}
         <Box>
-          <TTSectionHeading>admin</TTSectionHeading>
+          <TTSectionHeading>{adminPaths.name}</TTSectionHeading>
           <TTSideMenuList>
-            <TTListItemButton
-              label={"Subscription"}
-              icon={<CreditCardIcon />}
-              to={"/subscription"}
-            />
-            <TTListItemButton
-              label={"Organisation"}
-              icon={<CorporateFareIcon />}
-              to={"/organisation"}
-            />
-            <TTListItemButton
-              label={"Settings"}
-              icon={<SettingsIcon />}
-              to={"/settings"}
-            />
+            {adminPaths.paths.map((item) => (
+              <TTListItemButton
+                key={item.name}
+                label={item.name}
+                icon={item.icon}
+                to={item.path}
+                disabled={loading}
+                selected={location.pathname === item.path}
+              />
+            ))}
           </TTSideMenuList>
         </Box>
-      </Box>
-    </Box>
-  );
-
-  return (
-    <Box
-    // height={"100%"}
-    // minHeight={"100%"}
-    // overflow={"hidden"}
-    >
-      {/* Drawer */}
-      {belowMd && (
-        <Drawer
-          variant="temporary"
-          open={isMDrawerOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{ keepMounted: true }}
-          sx={{
-            "& .MuiDrawer-paper": {
-              boxSizing: "border-box",
-              width: { xs: drawerWidth * 2.0, md: drawerWidth },
-            },
-          }}
-        >
-          {drawer}
-        </Drawer>
-      )}
-      <Drawer
-        variant="permanent"
-        sx={{
-          "& .MuiDrawer-paper": {
-            boxSizing: "border-box",
-            width: { xs: 0, md: drawerWidth },
-            transition: "all 0.2s linear",
-            borderRight: "none",
-          },
-        }}
-      >
-        {drawer}
-      </Drawer>
-
-      {/* Main Page */}
-      <Box
-        pl={{ xs: "0", md: `${drawerWidth}px` }}
-        pt={{ xs: `${appbarHeight}px`, md: "0px" }}
-        sx={{
-          // minHeight: "100vh",
-          // height: "100%",
-          position: "relative",
-          "&>:nth-of-type(n+1) header:first-of-type": {
-            left: `${DRAWER_WIDTH}px`,
-            [theme.breakpoints.down("md")]: {
-              top: `${appbarHeight}px`,
-              left: 0,
-            },
-          },
-        }}
-      >
-        {/* Topbar */}
-        <AppBar position="fixed" sx={{ display: { xs: "block", md: "none" } }}>
-          <Toolbar sx={{ height: `${appbarHeight}px` }}>
-            <IconButton
-              sx={{ color: "white", mr: (theme) => theme.spacing(1) }}
-              onClick={handleDrawerToggle}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography
-              variant="h4"
-              color={"secondary.light"}
-              fontWeight={900}
-              mr={1}
-            >
-              toggl
-            </Typography>
-            <Typography variant="h5" color={"secondary.light"}>
-              track
-            </Typography>
-          </Toolbar>
-        </AppBar>
-
-        {/* main content */}
-        <Outlet />
       </Box>
     </Box>
   );

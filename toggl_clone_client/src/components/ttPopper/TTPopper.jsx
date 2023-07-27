@@ -6,10 +6,15 @@ import PropTypes from "prop-types";
 import { grey } from "@mui/material/colors";
 import classNames from "classnames/bind";
 
+export const popperClassNames = {
+  padding: "TTPopper-padding",
+};
+
 const SIZES = {
   sm: 238,
   md: 288,
   lg: 338,
+  xl: 438,
 };
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
@@ -18,6 +23,10 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   flexDirection: "column",
   overflowY: "auto",
   // px: 1 / 2,
+
+  [`& .${popperClassNames.padding}`]: {
+    padding: theme.spacing(theme.ttSpacings.popOver.px),
+  },
 }));
 
 const PopperRoot = styled("div")(({ theme }) => ({
@@ -39,6 +48,7 @@ const TTPopper = ({
   anchorEl,
   onClose,
   placement,
+  disablePortal = true,
   size = "lg",
   triggerComponent,
   triggerClassName,
@@ -49,19 +59,20 @@ const TTPopper = ({
   sameWidthAsTrigger = false,
   gap,
   offset,
+  disableBackDrop = false,
+  modifiers,
   ...other
 }) => {
   const theme = useTheme();
 
   const openPopper = Boolean(anchorEl);
   //   const id = open ? "simple-popper" : undefined;
-
   const contents = (
     <>
       <Popper
         // id={id}
         open={openPopper}
-        disablePortal
+        disablePortal={disablePortal}
         anchorEl={anchorEl}
         placement={placement ?? "bottom-start"}
         modifiers={[{ name: "offset", options: { offset: offset ?? [0, 8] } }]}
@@ -84,11 +95,16 @@ const TTPopper = ({
           {children}
         </StyledPaper>
       </Popper>
-      <Backdrop
-        style={{ backgroundColor: "transparent", zIndex: theme.zIndex.popper }}
-        open={openPopper}
-        onClick={() => onClose()}
-      ></Backdrop>
+      {!disableBackDrop && openPopper && (
+        <Backdrop
+          style={{
+            backgroundColor: "transparent",
+            zIndex: theme.zIndex.popper,
+          }}
+          open={openPopper}
+          onClick={() => onClose()}
+        ></Backdrop>
+      )}
     </>
   );
 

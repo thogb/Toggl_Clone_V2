@@ -8,6 +8,7 @@ namespace TogglTrackCloneApi.MapperProfiles
     {
         public OrganisationProfile() {
             this.CreateMap<OrganisationAddDTO, Organisation>();
+            this.CreateMap<Organisation, OrganisatioResponseDTO>();
         }
     }
 }

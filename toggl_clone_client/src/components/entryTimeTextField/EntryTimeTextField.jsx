@@ -136,15 +136,14 @@ const EntryTimeTextField = ({
   };
 
   const handlePopperClose = () => {
-    console.log({
-      initialDateInfo: initialDateInfo,
-      duration: localDuration,
-      startDate: localStartDate,
-      stopDate: localStopDate,
-    });
     if (onPopperClose)
       onPopperClose({
         initialDateInfo: initialDateInfo,
+        finalDateInfo: {
+          duration: localDuration,
+          startDate: localStartDate,
+          stopDate: localStopDate,
+        },
         duration: localDuration,
         startDate: localStartDate,
         stopDate: localStopDate,

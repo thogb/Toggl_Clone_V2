@@ -6,12 +6,15 @@ const StyledBox = styled(Box)(({ theme }) => ({
   padding: "var(--TTPopper-container-padding)",
 }));
 
-const TTPopperContainer = ({ padding, children }) => {
-  const style = {
+const TTPopperContainer = ({ padding, children, style }) => {
+  const fStyle = {
     "--TTPopper-container-padding": padding ?? "16px",
+    display: "flex",
+    flexDirection: "column",
+    ...style,
   };
 
-  return <StyledBox style={style}>{children}</StyledBox>;
+  return <StyledBox style={fStyle}>{children}</StyledBox>;
 };
 
 export default TTPopperContainer;

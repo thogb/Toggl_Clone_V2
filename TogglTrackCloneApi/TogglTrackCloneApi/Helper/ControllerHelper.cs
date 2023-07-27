@@ -12,5 +12,25 @@ namespace TogglTrackCloneApi.Helper
                 throw new APIException("Invalid NameIdentifier in request header");
             return userId;
         }
+
+        public static List<int> TryParseStrIds(string strIds)
+        {
+            List<int> intIds;
+            string[] splits = strIds.Split(',');
+
+            try
+            {
+                intIds = splits.Select(s => Int32.Parse(s)).ToList();
+                foreach (int id in intIds)
+                {
+                    if (id < 0) return new List<int>();
+                }
+            } catch
+            {
+                intIds = new List<int>();
+            }
+
+            return intIds;
+        }
     }
 }

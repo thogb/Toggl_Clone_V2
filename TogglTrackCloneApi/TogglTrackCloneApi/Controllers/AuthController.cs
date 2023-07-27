@@ -6,9 +6,11 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using TogglTrackCloneApi.DTOs.Organisation;
 using TogglTrackCloneApi.DTOs.User;
 using TogglTrackCloneApi.Models;
 using TogglTrackCloneApi.Repositories.IRepositories;
+using TogglTrackCloneApi.Services.IServices;
 
 namespace TogglTrackCloneApi.Controllers
 {
@@ -18,17 +20,23 @@ namespace TogglTrackCloneApi.Controllers
     {
         private readonly IConfiguration _configuration;
         private readonly IUserRepository _userRepository;
+        private readonly IOrganisationService _organisationService;
         private readonly IMapper _mapper;
 
-        public AuthController(IConfiguration configuration, IUserRepository userRepository, IMapper mapper)
+        public AuthController(
+            IConfiguration configuration, 
+            IUserRepository userRepository,
+            IOrganisationService organisationService,
+            IMapper mapper)
         {
             _configuration = configuration;
             this._userRepository = userRepository;
+            this._organisationService = organisationService;
             this._mapper = mapper;
         }
 
         [HttpPost("Register")]
-        public async Task<ActionResult<string>> Register(UserAuthDTO request)
+        public async Task<ActionResult<UserAuthResponseDTO>> Register(UserAuthDTO request)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -41,8 +49,19 @@ namespace TogglTrackCloneApi.Controllers
                 _userRepository.Add(user);
 
                 if (!(await _userRepository.SaveChangesAsync())) return BadRequest("failed in creating the account.");
+                string emailName = request.Email.Split('@')[0];
+                OrganisationAddDTO organisationAddDTO = new OrganisationAddDTO()
+                {
+                    Name=$"{emailName}'s Organisation",
+                };
+                await _organisationService.AddOrganisation(organisationAddDTO, user.Id);
 
-                return Ok("Successfully registered account");
+                UserAuthResponseDTO response = _mapper.Map<UserAuthResponseDTO>(user);
+                string token = CreateToken(user.Id, user.Email);
+                response.Token = token;
+                Response.Cookies.Append("jwt", token, new CookieOptions { HttpOnly = true });
+
+                return Ok(response);
             }
             catch (Exception ex)
             {

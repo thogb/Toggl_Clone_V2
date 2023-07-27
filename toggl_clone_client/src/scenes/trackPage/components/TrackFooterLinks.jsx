@@ -106,7 +106,7 @@ const TrackFooterLinks = () => {
         justifyContent={"start"}
       >
         {Object.values(linksMap).map((linkObj) => (
-          <Box flexGrow={1}>
+          <Box key={linkObj.headerName} flexGrow={1}>
             <Typography
               my={1}
               variant="subtitle1"
@@ -119,7 +119,7 @@ const TrackFooterLinks = () => {
             </Typography>
             <StyledUl>
               {linkObj.links.map((link) => (
-                <StyledLi>
+                <StyledLi key={link.name}>
                   <Link>{link.name}</Link>
                 </StyledLi>
               ))}

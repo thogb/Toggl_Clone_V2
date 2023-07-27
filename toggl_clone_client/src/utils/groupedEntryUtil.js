@@ -1,18 +1,18 @@
 import { compareDesc } from "date-fns";
-import { isListEqual } from "./listUtil";
+import { listUtil } from "./listUtil";
 import { timeEntryUtil } from "./TimeEntryUtil";
 
 // #example
-const groupedEntryExample = {
-  gId: "Wed, 21 Jun 2023 - 0", // from groupCount
-  description: "desc",
-  projectId: 1234123,
-  tags: ["tag1", "tag2"], //sorted as string
-  startDate: new Date().getTime(),
-  stopDate: new Date().getTime(),
-  totalDuration: 12,
-  entries: [],
-};
+// const groupedEntryExample = {
+//   gId: "Wed, 21 Jun 2023 - 0", // from groupCount
+//   description: "desc",
+//   projectId: 1234123,
+//   tags: ["tag1", "tag2"], //sorted as string
+//   startDate: new Date().getTime(),
+//   stopDate: new Date().getTime(),
+//   totalDuration: 12,
+//   entries: [],
+// };
 
 // #create
 const createGroupId = (count) => {
@@ -30,6 +30,7 @@ const createFromTimeEntry = (timeEntry) => {
     startDate: timeEntry.startDate,
     stopDate: timeEntry.stopDate,
     totalDuration: timeEntry.duration,
+    workspaceId: timeEntry.workspaceId,
     entries: [timeEntry],
   };
 };
@@ -108,19 +109,23 @@ const isEqual = (groupedEntry, groupData) => {
 
 const isEqualByGroupingData = (a, b) => {
   return (
+    a.workspaceId === b.workspaceId &&
     a.description === b.description &&
     a.projectId === b.projectId &&
-    isListEqual(a.tags, b.tags)
+    listUtil.isListEqual(a.tags, b.tags)
   );
 };
 
 const isEqualByExistingGroupingData = (a, groupingData) => {
   return (
+    (groupingData.workspaceId === undefined ||
+      a.workspaceId === groupingData.workspaceId) &&
     (groupingData.description === undefined ||
       a.description === groupingData.description) &&
     (groupingData.projectId === undefined ||
       a.projectId === groupingData.projectId) &&
-    (groupingData.tags === undefined || isListEqual(a.tags, groupingData.tags))
+    (groupingData.tags === undefined ||
+      listUtil.isListEqual(a.tags, groupingData.tags))
   );
 };
 
@@ -183,6 +188,7 @@ const getEntryData = (groupedEntry) => {
     description: groupedEntry.description,
     projectId: groupedEntry.projectId,
     tags: [...groupedEntry.tags],
+    workspaceId: groupedEntry.workspaceId,
   };
 };
 

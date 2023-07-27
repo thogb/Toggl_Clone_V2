@@ -1,15 +1,24 @@
 import React, { memo } from "react";
 import TimeEntryItemRecord from "./TimeEntryItemRecord";
 import { timeEntryCheckedActions } from "./TimeEntryCheckedReducer";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
+  addTE,
   deleteTE,
   updateTEDateInfo,
   updateTEDescription,
+  updateTEProjectId,
   updateTETags,
+  useAddTimeEntryMutation,
+  useDeleteTimeEntryMutation,
+  usePatchTimeEntryMutation,
 } from "../../state/groupedEntryListSlice";
 import { startTimer } from "../../state/currentEntrySlice";
 import { timeEntryUtil } from "../../utils/TimeEntryUtil";
+import { listUtil } from "../../utils/listUtil";
+import { compare } from "fast-json-patch";
+import { createReplacePatch } from "../../utils/otherUtil";
+import { useAddTagMutation } from "../../state/tagSlice";
 
 export const itemMenuData = {
   DUPLICATE: {
@@ -47,65 +56,179 @@ const TimeEntryItem = ({
 
   timeEntry,
   isChildrenOfGroup = false,
-  tagList,
 
   //   checked = false,
   timeEntryChecked,
   timeEntryCheckedDispatch,
 }) => {
   const dispatch = useDispatch();
+  const workspaceId = timeEntry.workspaceId;
+  const tagList =
+    useSelector((state) => state.tags.tagNames)[workspaceId] ?? [];
 
-  const onDescriptionEdit = (description) => {
-    dispatch(
-      updateTEDescription({ dateGroupId, gId, id: timeEntry.id, description })
-    );
+  const [patchTimeEntry] = usePatchTimeEntryMutation();
+  const [deleteTimeEntry] = useDeleteTimeEntryMutation();
+  const [addTimeEntry] = useAddTimeEntryMutation();
+  const [addTag] = useAddTagMutation();
+
+  const onDescriptionEdit = async (description) => {
+    if (timeEntry.description !== description) {
+      const oldDescription = timeEntry.description;
+      dispatch(
+        updateTEDescription({ dateGroupId, gId, id: timeEntry.id, description })
+      );
+      const patch = createReplacePatch({ description });
+      try {
+        await patchTimeEntry({
+          id: timeEntry.id,
+          patch: patch,
+        }).unwrap();
+      } catch (error) {
+        dispatch(
+          updateTEDescription({
+            dateGroupId,
+            gId,
+            id: timeEntry.id,
+            description: oldDescription,
+          })
+        );
+      }
+    }
   };
 
-  const onProjectEdit = (projectInfo) => {};
-
-  const onTagsCheckedEdit = (tagsChecked) => {
-    dispatch(
-      updateTETags({ dateGroupId, gId, id: timeEntry.id, tags: tagsChecked })
-    );
+  const onProjectEdit = async (projectInfo) => {
+    const { project } = projectInfo;
+    if (project.id !== timeEntry.projectId) {
+      const oldProjectId = timeEntry.projectId;
+      const patch = createReplacePatch({ projectId: project.id });
+      dispatch(
+        updateTEProjectId({
+          dateGroupId,
+          gId,
+          id: timeEntry.id,
+          projectId: project.id,
+        })
+      );
+      try {
+        await patchTimeEntry({
+          id: timeEntry.id,
+          patch: patch,
+        }).unwrap;
+      } catch (error) {
+        dispatch(
+          updateTEProjectId({
+            dateGroupId,
+            gId,
+            id: timeEntry.id,
+            projectId: oldProjectId,
+          })
+        );
+      }
+    }
   };
 
-  const onDateInfoChange = (dateInfo) => {
-    dispatch(
-      updateTEDateInfo({
-        dateGroupId,
-        gId,
-        id: timeEntry.id,
-        dateInfo: {
-          duration: dateInfo.duration,
-          startDate: dateInfo.startDate.getTime(),
-          stopDate: dateInfo.stopDate.getTime(),
-        },
-      })
-    );
+  const onTagsCheckedEdit = async (tagsChecked) => {
+    if (!listUtil.isListEqual(tagsChecked, timeEntry.tags)) {
+      const oldTags = [...timeEntry.tags];
+      dispatch(
+        updateTETags({ dateGroupId, gId, id: timeEntry.id, tags: tagsChecked })
+      );
+      const patch = createReplacePatch({ tags: tagsChecked });
+      try {
+        await patchTimeEntry({
+          id: timeEntry.id,
+          patch: patch,
+        }).unwrap();
+      } catch (error) {
+        dispatch(
+          updateTETags({
+            dateGroupId,
+            gId,
+            id: timeEntry.id,
+            tags: oldTags,
+          })
+        );
+      }
+    }
   };
 
-  const onDeleteClick = (e) => {
-    console.log("delete clicked");
+  const onDateInfoChange = async (dateInfo) => {
+    if (
+      !timeEntryUtil.isDateInfoEqualBySeconds(
+        dateInfo.initialDateInfo,
+        dateInfo.finalDateInfo
+      )
+    ) {
+      const diff = compare(
+        timeEntryUtil.getInvalidDate(),
+        dateInfo.finalDateInfo
+      );
+      dispatch(
+        updateTEDateInfo({
+          dateGroupId,
+          gId,
+          id: timeEntry.id,
+          dateInfo: timeEntryUtil.convertDateInfoToIntDateInfo(
+            dateInfo.finalDateInfo
+          ),
+        })
+      );
+      try {
+        await patchTimeEntry({
+          id: timeEntry.id,
+          patch: diff,
+        }).unwrap();
+      } catch (error) {
+        dispatch(
+          updateTEDateInfo({
+            dateGroupId,
+            gId,
+            id: timeEntry.id,
+            dateInfo: timeEntryUtil.convertDateInfoToIntDateInfo(
+              dateInfo.initialDateInfo
+            ),
+          })
+        );
+      }
+    }
+  };
+
+  const handleCreateTagClick = async (tagName) => {
+    if (tagName) {
+      try {
+        const payload = await addTag({
+          tagName: tagName,
+          workspaceId: workspaceId,
+        }).unwrap();
+      } catch (error) {}
+    }
+  };
+
+  const onDeleteClick = async (e) => {
+    const cloned = timeEntryUtil.cloneTimeEntry(timeEntry);
     dispatch(deleteTE({ dateGroupId, gId, id: timeEntry.id }));
+    try {
+      deleteTimeEntry({ id: timeEntry.id });
+    } catch (error) {
+      dispatch(addTE({ timeEntry: cloned }));
+    }
   };
 
   const onCheckBoxClick = () => {
     timeEntryCheckedDispatch({
       type: timeEntryCheckedActions.TOGGLE_CHECKED_LIST_ITEM,
-      id: timeEntry.id,
+      timeEntry: timeEntry,
     });
   };
 
   const onStartButtonClick = async () => {
-    // dispatch(startTimer({entryData:}));
-    dispatch(
-      startTimer({ entryData: timeEntryUtil.cloneTimeEntry(timeEntry) })
-    );
+    dispatch(startTimer({ timeEntry: timeEntry }));
   };
 
   const onMenuClick = (option) => {
     switch (option.name) {
       case itemMenuData.DUPLICATE.name:
+        onDuplicateClick();
         break;
       case itemMenuData.SPLIT.name:
         break;
@@ -119,6 +242,18 @@ const TimeEntryItem = ({
       default:
         break;
     }
+  };
+
+  const onDuplicateClick = async () => {
+    try {
+      const payload = await addTimeEntry({
+        timeEntry: timeEntryUtil.convertToApiDTO(timeEntry),
+      }).unwrap();
+      const responseTE = timeEntryUtil.createFromApiResponse(
+        timeEntryUtil.cloneTimeEntry(payload)
+      );
+      dispatch(addTE({ timeEntry: responseTE }));
+    } catch (error) {}
   };
 
   // const operations = useMemo(() => {
@@ -138,6 +273,7 @@ const TimeEntryItem = ({
     <TimeEntryItemRecord
       id={timeEntry.id}
       projectId={timeEntry.projectId}
+      workspaceId={timeEntry.workspaceId}
       description={timeEntry.description}
       tagsChecked={timeEntry.tags}
       duration={timeEntry.duration}
@@ -145,7 +281,11 @@ const TimeEntryItem = ({
       stopDate={timeEntry.stopDate}
       tagList={tagList}
       isChildrenOfGroup={isChildrenOfGroup}
-      checked={timeEntryChecked.checkedList.indexOf(timeEntry.id) !== -1}
+      checked={
+        timeEntryChecked.checkedList.findIndex(
+          (te) => te.id === timeEntry.id
+        ) !== -1
+      }
       showCheckbox={timeEntryChecked.showCheckbox}
       menuOptions={itemMenuOptions}
       operations={{
@@ -157,6 +297,7 @@ const TimeEntryItem = ({
         onDeleteClick,
         onMenuClick,
         onStartButtonClick,
+        onCreateTagClick: handleCreateTagClick,
       }}
     />
   );

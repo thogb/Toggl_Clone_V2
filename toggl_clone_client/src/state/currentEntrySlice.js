@@ -1,106 +1,46 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { addDays, addSeconds, subDays } from "date-fns";
+import { createAsyncThunk, createSlice, current } from "@reduxjs/toolkit";
+import { addDays, addSeconds, differenceInSeconds, subDays } from "date-fns";
 import { addTE, addTimeEntry } from "./groupedEntryListSlice";
-
-const initialState = {
-  description: "",
-  projectId: null,
-  projectName: null,
-  tags: [],
-  tagsChecked: [],
-  duration: 0,
-  startDate: new Date().getTime(),
-  stopDate: new Date().getTime(),
-  timerStarted: false,
-};
-
-const testState = {
-  description: "",
-  projectId: null,
-  projectName: null,
-  // tags: [
-  //   "Java",
-  //   "Python",
-  //   "C",
-  //   ".net Core",
-  //   "React",
-  //   "Web",
-  //   "full stack",
-  //   "font end",
-  //   "back end",
-  //   "srd",
-  //   "cits1003",
-  //   "icts",
-  //   "osts",
-  //   "leetcode",
-  //   "brain training",
-  // ],
-  tags: [
-    "backend",
-    "Brain_training",
-    "C#",
-    "C#_Web",
-    "Dual-n-back",
-    "email",
-    "frontend",
-    "fullstack",
-    "ISC",
-    "ITCS",
-    "java",
-    "Leetcode",
-    ".net_Core",
-    ".net_Core_Web",
-    "newtest",
-    "OSTS",
-    "project",
-    "python",
-    "reactjs",
-    "Schulte_table",
-    "SRD",
-    "SRD_Assignment",
-    "SRD_Book",
-    "SRD_Lec",
-    "testtag",
-    "toggl_clone",
-    "uni_work",
-  ],
-  tagsChecked: [],
-  duration: 0,
-  startDate: new Date().getTime(),
-  stopDate: new Date().getTime(),
-  timerStarted: false,
-  timerInterval: null,
-};
+import { timeEntryUtil } from "../utils/TimeEntryUtil";
+import { ttCloneApi } from "./apiSlice";
+import { compare } from "fast-json-patch";
+import { workspaceActions } from "./workspaceSlice";
 
 export const getInitialCurrentEntryState = () => {
   const newDate = Date.now();
   return {
+    id: -1,
     description: "",
+    // project: {
+    //   id: 1,
+    //   name: ""
+    // }
     projectId: null,
-    projectName: null,
-    tags: [],
     tagsChecked: [],
     duration: 0,
+    workspaceId: -1,
     startDate: newDate,
     stopDate: newDate,
     timerStarted: false,
   };
 };
 
-const name = "currentEntry";
-const getIntialEntryData = () => {
+const getTEFromCurrentEntry = (currentEntry) => {
   return {
-    description: "",
-    projectId: null,
-    projectName: null,
-    tagsChecked: [],
-    duration: 0,
-    startDate: Date.now(),
-    stopDate: Date.now(),
+    id: currentEntry.id,
+    description: currentEntry.description,
+    projectId: currentEntry.projectId,
+    tags: [...currentEntry.tagsChecked],
+    duration: currentEntry.duration,
+    startDate: currentEntry.startDate,
+    stopDate: currentEntry.stopDate,
+    workspaceId: currentEntry.workspaceId,
   };
 };
 
-const createTimerInterval = (dispatch) => {
+const name = "currentEntry";
+
+export const createTimerInterval = (dispatch) => {
   return setInterval(() => {
     dispatch(incrementDuration());
   }, 1000);
@@ -108,11 +48,15 @@ const createTimerInterval = (dispatch) => {
 
 export const currentEntrySlice = createSlice({
   name: name,
-  initialState: testState,
+  initialState: getInitialCurrentEntryState(),
   reducers: {
     updateDescription: (state, action) => {
       const { description } = action.payload;
       state.description = description.trim();
+    },
+    updateWorkspaceId: (state, action) => {
+      const { workspaceId } = action.payload;
+      state.workspaceId = workspaceId;
     },
     updateDuration: (state, action) => {
       const { duration, staticStop = true } = action.payload;
@@ -125,7 +69,7 @@ export const currentEntrySlice = createSlice({
         : state.stopDate;
     },
     updateStartTime: (state, action) => {
-      let startDate = action.payload.startDate;
+      let startDate = new Date(action.payload.startDate).getTime();
       if (state.stopDate < startDate)
         startDate = subDays(startDate, 1).getTime();
       state.startDate = startDate;
@@ -155,6 +99,9 @@ export const currentEntrySlice = createSlice({
       state.duration = 0;
     },
     // tags
+    addTagsChecked: (state, action) => {
+      state.tagsChecked = [...state.tagsChecked, action.payload.tagChecked];
+    },
     setTagsChecked: (state, action) => {
       state.tagsChecked = [...action.payload.tagsChecked];
     },
@@ -167,28 +114,29 @@ export const currentEntrySlice = createSlice({
     resetEntryData: (state) => {
       return {
         ...state,
-        ...getIntialEntryData(),
+        ...getInitialCurrentEntryState(),
       };
     },
     resetEntryDataAndTimer: (state) => {
       return {
         ...state,
-        ...getIntialEntryData(),
+        ...getInitialCurrentEntryState(),
         timerStarted: false,
         timerInterval: null,
       };
     },
     setStartTimerData: (state, action) => {
-      const { entryData, timerInterval } = action.payload;
-      if (entryData !== undefined) {
-        state.description = entryData.description;
-        state.projectId = entryData.projectId;
-        state.tagsChecked = [...entryData.tags];
-        // state.duration = entryData.duration;
-        // state.startDate = entryData.startDate;
-        // state.stopDate = entryData.startDate;
-      }
-      state.startDate = new Date().getTime();
+      const { timeEntry, timerInterval } = action.payload;
+      state.id = timeEntry.id;
+      state.description = timeEntry.description;
+      state.projectId = timeEntry.projectId;
+      state.tagsChecked = [...timeEntry.tags];
+      state.startDate = timeEntry.startDate;
+      // state.duration = -1;
+      // state.stopDate = null;
+      state.workspaceId = timeEntry.workspaceId;
+      state.duration = timeEntry.duration;
+      state.stopDate = timeEntry.startDate;
       state.timerStarted = true;
       state.timerInterval = timerInterval;
     },
@@ -230,6 +178,48 @@ export const currentEntrySlice = createSlice({
       }
       state.timerStarted = !state.timerStarted;
     },
+    changeProject: (state, action) => {
+      const { projectId, workspaceId } = action.payload;
+      if (workspaceId) {
+        currentEntrySlice.caseReducers.changeWorkspace(state, {
+          payload: {
+            newWorkspaceId: workspaceId,
+          },
+        });
+        state.projectId = projectId;
+      }
+    },
+    changeWorkspace: (state, action) => {
+      console.log(action);
+      const { newWorkspaceId } = action.payload;
+      console.log(state.workspaceId);
+      console.log(newWorkspaceId);
+      if (state.workspaceId !== newWorkspaceId) {
+        console.log("Chaning workspaceid");
+        state.projectId = null;
+        state.tagsChecked = [];
+        state.workspaceId = newWorkspaceId;
+      }
+    },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(workspaceActions.changeWorkspace, (state, action) => {
+      if (
+        !state.timerStarted &&
+        state.projectId === null &&
+        state.tagsChecked?.length === 0
+      ) {
+        state.workspaceId = action.payload.workspaceId;
+      }
+    });
+    builder.addMatcher(
+      ttCloneApi.endpoints.getWorkspaces.matchFulfilled,
+      (state, action) => {
+        if (!state.timerStarted) {
+          state.workspaceId = action.payload[0].id;
+        }
+      }
+    );
   },
 });
 
@@ -237,15 +227,44 @@ const createExtraActions = () => {
   const startTimer = () => {
     return createAsyncThunk(
       `${name}/startTimer`,
-      async function (arg, { getState, dispatch }) {
+      async function (
+        { timeEntry, fromServer = false },
+        { getState, dispatch }
+      ) {
         const state = getState();
         const currentEntry = state.currentEntry;
-        const entryData = arg?.entryData;
         if (currentEntry.timerStarted) {
-          dispatch(reducers.endTimer());
+          try {
+            await dispatch(reducers.endTimer());
+          } catch (error) {
+            return;
+          }
+        }
+        const cloned = timeEntryUtil.cloneTimeEntry(timeEntry);
+        let responseTE = timeEntry;
+
+        if (!fromServer) {
+          try {
+            cloned.startDate = Date.now();
+            cloned.duration = -1;
+            cloned.stopDate = null;
+            const { data } = await dispatch(
+              ttCloneApi.endpoints.addTimeEntry.initiate({
+                timeEntry: timeEntryUtil.convertToApiDTO(cloned),
+              })
+            );
+            responseTE = timeEntryUtil.createFromApiResponse(
+              timeEntryUtil.cloneTimeEntry(data)
+            );
+            responseTE.duration = 0;
+          } catch (error) {}
+        } else {
+          responseTE.duration = Math.abs(
+            differenceInSeconds(responseTE.startDate, Date.now())
+          );
         }
         const timerInterval = createTimerInterval(dispatch);
-        dispatch(setStartTimerData({ entryData: entryData, timerInterval }));
+        dispatch(setStartTimerData({ timeEntry: responseTE, timerInterval }));
       }
     );
   };
@@ -256,20 +275,62 @@ const createExtraActions = () => {
       async (arg, { getState, dispatch }) => {
         const state = getState();
         const currentEntry = state.currentEntry;
-        const entryData = {
-          description: currentEntry.description,
-          projectId: currentEntry.projectId,
-          tags: [...currentEntry.tagsChecked],
-          duration: currentEntry.duration,
-          startDate: currentEntry.startDate,
-          stopDate: addSeconds(
-            currentEntry.startDate,
-            currentEntry.duration
-          ).getTime(),
+        const stopDate = Date.now();
+        const duration = Math.abs(
+          differenceInSeconds(stopDate, currentEntry.startDate)
+        );
+        const patch = compare(
+          {
+            duration: null,
+          },
+          { duration: duration }
+        );
+        const timeEntry = {
+          ...getTEFromCurrentEntry(currentEntry),
+          duration: duration,
+          stopDate: stopDate,
         };
-        clearInterval(currentEntry.timerInterval);
-        dispatch(resetEntryDataAndTimer());
-        dispatch(addTimeEntry({ entryData: entryData }));
+        try {
+          const { data } = await dispatch(
+            ttCloneApi.endpoints.patchTimeEntry.initiate({
+              id: timeEntry.id,
+              patch: patch,
+            })
+          );
+          clearInterval(currentEntry.timerInterval);
+          dispatch(resetEntryDataAndTimer());
+          dispatch(
+            updateWorkspaceId({
+              workspaceId: state.workspaces.currentWorkspace.id,
+            })
+          );
+          dispatch(addTE({ timeEntry: timeEntry }));
+        } catch (error) {}
+      }
+    );
+  };
+
+  const deleteStartedTimer = () => {
+    return createAsyncThunk(
+      `${name}/endTimer`,
+      async (arg, { getState, dispatch }) => {
+        const state = getState();
+        const currentEntry = state.currentEntry;
+
+        try {
+          const { data } = await dispatch(
+            ttCloneApi.endpoints.deleteTimeEntry.initiate({
+              id: currentEntry.id,
+            })
+          );
+          clearInterval(currentEntry.timerInterval);
+          dispatch(resetEntryDataAndTimer());
+          dispatch(
+            updateWorkspaceId({
+              workspaceId: state.workspaces.currentWorkspace.id,
+            })
+          );
+        } catch (error) {}
       }
     );
   };
@@ -277,6 +338,7 @@ const createExtraActions = () => {
   const reducers = {
     startTimer: startTimer(),
     endTimer: endTimer(),
+    deleteStartedTimer: deleteStartedTimer(),
   };
 
   return reducers;
@@ -285,12 +347,14 @@ const createExtraActions = () => {
 const allActions = { ...currentEntrySlice.actions, ...createExtraActions() };
 
 export const {
+  updateWorkspaceId,
   updateDescription,
   updateDuration,
   updateStartTime,
   updateStopTime,
   updateStartDate,
   resetDateInfo,
+  addTagsChecked,
   setTagsChecked,
   setTimerStarted,
   toggleTimerStarted,
@@ -303,5 +367,9 @@ export const {
 
   startTimer,
   endTimer,
+  deleteStartedTimer,
+
+  changeProject,
+  changeWorkspace,
 } = allActions;
 export default currentEntrySlice.reducer;
