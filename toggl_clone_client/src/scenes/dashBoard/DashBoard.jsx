@@ -28,6 +28,9 @@ import {
   startTimer,
 } from "../../state/currentEntrySlice";
 import { timeEntryUtil } from "../../utils/TimeEntryUtil";
+import { SnackbarProvider } from "notistack";
+import TTSuccessSnackbar from "../../components/customSnackbar/TTSuccessSnackbar";
+import TTErrorSnackbar from "../../components/customSnackbar/TTErrorSnackbar";
 
 const DashBoard = () => {
   const dispatch = useDispatch();
@@ -91,89 +94,105 @@ const DashBoard = () => {
   };
 
   return (
-    <Box
-    // height={"100%"}
-    // minHeight={"100%"}
-    // overflow={"hidden"}
+    <SnackbarProvider
+      maxSnack={10}
+      anchorOrigin={{
+        vertical: "bottom",
+        horizontal: "right",
+      }}
+      autoHideDuration={3000}
+      Components={{
+        success: TTSuccessSnackbar,
+        error: TTErrorSnackbar,
+      }}
     >
-      {/* Drawer */}
-      {belowMd && (
+      <Box
+      // height={"100%"}
+      // minHeight={"100%"}
+      // overflow={"hidden"}
+      >
+        {/* Drawer */}
+        {belowMd && (
+          <Drawer
+            variant="temporary"
+            open={isMDrawerOpen}
+            onClose={handleDrawerToggle}
+            ModalProps={{ keepMounted: true }}
+            sx={{
+              "& .MuiDrawer-paper": {
+                boxSizing: "border-box",
+                width: { xs: drawerWidth * 2.0, md: drawerWidth },
+                overflow: "unset",
+              },
+            }}
+          >
+            <NavBar onClose={onDrawerClose} />
+          </Drawer>
+        )}
         <Drawer
-          variant="temporary"
-          open={isMDrawerOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{ keepMounted: true }}
+          variant="permanent"
           sx={{
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
-              width: { xs: drawerWidth * 2.0, md: drawerWidth },
-              overflow: "unset",
+              width: { xs: 0, md: drawerWidth },
+              transition: "all 0.2s linear",
+              borderRight: "none",
+              overflow: belowMd ? "hidden" : "unset",
+              // overflowY: belowMd ? "hidden" : "visible",
             },
           }}
         >
-          <NavBar onClose={onDrawerClose} />
+          <NavBar loading={loading} onClose={onDrawerClose} />
         </Drawer>
-      )}
-      <Drawer
-        variant="permanent"
-        sx={{
-          "& .MuiDrawer-paper": {
-            boxSizing: "border-box",
-            width: { xs: 0, md: drawerWidth },
-            transition: "all 0.2s linear",
-            borderRight: "none",
-            overflow: belowMd ? "hidden" : "unset",
-            // overflowY: belowMd ? "hidden" : "visible",
-          },
-        }}
-      >
-        <NavBar loading={loading} onClose={onDrawerClose} />
-      </Drawer>
 
-      {/* Main Page */}
-      <Box
-        pl={{ xs: "0", md: `${drawerWidth}px` }}
-        pt={{ xs: `${appbarHeight}px`, md: "0px" }}
-        sx={{
-          // minHeight: "100vh",
-          // height: "100%",
-          position: "relative",
-          "&>:nth-of-type(n+1) header:first-of-type": {
-            left: `${DRAWER_WIDTH}px`,
-            [theme.breakpoints.down("md")]: {
-              top: `${appbarHeight}px`,
-              left: 0,
+        {/* Main Page */}
+        <Box
+          pl={{ xs: "0", md: `${drawerWidth}px` }}
+          pt={{ xs: `${appbarHeight}px`, md: "0px" }}
+          sx={{
+            // minHeight: "100vh",
+            // height: "100%",
+            position: "relative",
+            "&>:nth-of-type(n+1) header:first-of-type": {
+              left: `${DRAWER_WIDTH}px`,
+              [theme.breakpoints.down("md")]: {
+                top: `${appbarHeight}px`,
+                left: 0,
+              },
             },
-          },
-        }}
-      >
-        {/* Topbar */}
-        <AppBar position="fixed" sx={{ display: { xs: "block", md: "none" } }}>
-          <Toolbar sx={{ height: `${appbarHeight}px` }}>
-            <IconButton
-              sx={{ color: "white", mr: (theme) => theme.spacing(1) }}
-              onClick={handleDrawerToggle}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography
-              variant="h4"
-              color={"secondary.light"}
-              fontWeight={900}
-              mr={1}
-            >
-              toggl
-            </Typography>
-            <Typography variant="h5" color={"secondary.light"}>
-              track
-            </Typography>
-          </Toolbar>
-        </AppBar>
+          }}
+        >
+          {/* Topbar */}
+          <AppBar
+            position="fixed"
+            sx={{ display: { xs: "block", md: "none" } }}
+          >
+            <Toolbar sx={{ height: `${appbarHeight}px` }}>
+              <IconButton
+                sx={{ color: "white", mr: (theme) => theme.spacing(1) }}
+                onClick={handleDrawerToggle}
+              >
+                <MenuIcon />
+              </IconButton>
+              <Typography
+                variant="h4"
+                color={"secondary.light"}
+                fontWeight={900}
+                mr={1}
+              >
+                toggl
+              </Typography>
+              <Typography variant="h5" color={"secondary.light"}>
+                track
+              </Typography>
+            </Toolbar>
+          </AppBar>
 
-        {/* main content */}
-        {loading ? <LoadingPage /> : <Outlet />}
+          {/* main content */}
+          {loading ? <LoadingPage /> : <Outlet />}
+        </Box>
       </Box>
-    </Box>
+    </SnackbarProvider>
   );
 };
 

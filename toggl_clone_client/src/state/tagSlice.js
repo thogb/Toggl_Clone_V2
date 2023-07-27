@@ -1,6 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { tagsUtil } from "../utils/tagsUtil";
 import { ttCloneApi } from "./apiSlice";
+import { notificationStatus, notificationsActions } from "./notificationSlice";
+import { enqueueSnackbar } from "notistack";
 
 const intitialState = {
   // tags: {
@@ -78,6 +80,23 @@ const extendedApi = ttCloneApi.injectEndpoints({
           name: tagName,
         },
       }),
+      async onQueryStarted(
+        { tagName, workspaceId },
+        { dispatch, queryFulfilled }
+      ) {
+        try {
+          await queryFulfilled;
+          enqueueSnackbar({
+            message: "Successfully created tag",
+            variant: "success",
+          });
+        } catch (error) {
+          enqueueSnackbar({
+            message: error.error.data.message,
+            variant: "success",
+          });
+        }
+      },
     }),
     deleteTag: builder.mutation({
       query: ({ tagId, workspaceId, localData }) => ({
@@ -90,7 +109,19 @@ const extendedApi = ttCloneApi.injectEndpoints({
       ) {
         const { tag } = localData;
         dispatch(tagActions.removeTag({ tagId, workspaceId }));
-        queryFulfilled.catch(() => dispatch(tagActions.addTag({ tag })));
+        try {
+          await queryFulfilled;
+          enqueueSnackbar({
+            message: "Tag deleted successfully",
+            variant: "success",
+          });
+        } catch (error) {
+          dispatch(tagActions.addTag({ tag }));
+          enqueueSnackbar({
+            message: error.message,
+            variant: "error",
+          });
+        }
       },
     }),
     updateTag: builder.mutation({
@@ -107,11 +138,22 @@ const extendedApi = ttCloneApi.injectEndpoints({
       ) {
         const { oldTagName } = localData;
         dispatch(tagActions.updateTag({ tagId, workspaceId, tagName }));
-        queryFulfilled.catch(() =>
+        try {
+          await queryFulfilled;
+          enqueueSnackbar({
+            message: "Successfully updated tag",
+            variant: "success",
+          });
+        } catch (error) {
+          const { data } = error.error;
           dispatch(
             tagActions.updateTag({ tagId, workspaceId, tagName: oldTagName })
-          )
-        );
+          );
+          enqueueSnackbar({
+            message: data.message,
+            variant: "error",
+          });
+        }
       },
     }),
   }),

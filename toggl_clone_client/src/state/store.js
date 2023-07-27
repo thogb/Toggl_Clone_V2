@@ -7,6 +7,7 @@ import workspacesReducer from "./workspaceSlice";
 import organisationsReducer from "./organisationSlice";
 import tagsReducer from "./tagSlice";
 import projectsReducer from "./projectSlice";
+import notificationsReducer from "./notificationSlice";
 
 export const store = configureStore({
   reducer: combineReducers({
@@ -17,6 +18,7 @@ export const store = configureStore({
     workspaces: workspacesReducer,
     tags: tagsReducer,
     projects: projectsReducer,
+    notifications: notificationsReducer,
     [ttCloneApi.reducerPath]: ttCloneApi.reducer,
   }),
   middleware: (getDefaultMiddleware) =>
