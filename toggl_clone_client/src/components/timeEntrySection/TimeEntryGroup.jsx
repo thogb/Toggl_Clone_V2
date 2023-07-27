@@ -16,6 +16,7 @@ import { timeEntryUtil } from "../../utils/TimeEntryUtil";
 import { compare } from "fast-json-patch";
 import { startTimer } from "../../state/currentEntrySlice";
 import { groupedEntryUtil } from "../../utils/groupedEntryUtil";
+import { createReplacePatch } from "../../utils/otherUtil";
 
 const groupMenuData = {
   PIN_AS_FAVORITE: itemMenuData.PIN_AS_FAVORITE,
@@ -85,10 +86,26 @@ const TimeEntryGroup = ({
     }
   };
 
-  const onProjectEdit = (projectInfo) => {
-    dispatch(
-      updateGEProjectId({ dateGroupId, gId: groupedEntry.gId, projectInfo })
-    );
+  const onProjectEdit = async (projectInfo) => {
+    const { project } = projectInfo;
+    if (project.id !== groupedEntry.projectId) {
+      const entries = groupedEntry.entries;
+      try {
+        const ids = timeEntryUtil.convertTEListToTEIdList(entries);
+        const patch = createReplacePatch({ projectId: project.id });
+        const payload = await batchPatchTimeEntry({
+          ids: ids,
+          patch: patch,
+        }).unwrap();
+        dispatch(
+          updateGEProjectId({
+            dateGroupId,
+            gId: groupedEntry.gId,
+            projectId: project.id,
+          })
+        );
+      } catch (error) {}
+    }
   };
 
   const onTagsCheckedEdit = async (tagsChecked) => {

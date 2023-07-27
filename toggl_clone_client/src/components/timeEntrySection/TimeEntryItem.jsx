@@ -7,6 +7,7 @@ import {
   deleteTE,
   updateTEDateInfo,
   updateTEDescription,
+  updateTEProjectId,
   updateTETags,
   useAddTimeEntryMutation,
   useDeleteTimeEntryMutation,
@@ -96,7 +97,34 @@ const TimeEntryItem = ({
   };
 
   const onProjectEdit = async (projectInfo) => {
-    console.log(projectInfo);
+    const { project } = projectInfo;
+    if (project.id !== timeEntry.projectId) {
+      const oldProjectId = timeEntry.projectId;
+      const patch = createReplacePatch({ projectId: project.id });
+      dispatch(
+        updateTEProjectId({
+          dateGroupId,
+          gId,
+          id: timeEntry.id,
+          projectId: project.id,
+        })
+      );
+      try {
+        await patchTimeEntry({
+          id: timeEntry.id,
+          patch: patch,
+        }).unwrap;
+      } catch (error) {
+        dispatch(
+          updateTEProjectId({
+            dateGroupId,
+            gId,
+            id: timeEntry.id,
+            projectId: oldProjectId,
+          })
+        );
+      }
+    }
   };
 
   const onTagsCheckedEdit = async (tagsChecked) => {

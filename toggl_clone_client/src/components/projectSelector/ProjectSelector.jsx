@@ -229,7 +229,7 @@ const ProjectSelector = ({
                     selected={!currentProjectId}
                     color={alpha(theme.palette.primary.main, 0.6)}
                     name={"No Project"}
-                    onClick={() => handleProjectSeletion(null, null)}
+                    onClick={() => handleProjectSeletion({ id: null })}
                   />
                   <TTPopperHeading mb={1} mt={2} mx={theme.spacing(1)}>
                     No client
