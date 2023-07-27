@@ -9,8 +9,7 @@ export const TTMenu = styled((props) => (
     slotProps={{
       paper: {
         style: {
-          // width: 170,
-          borderRadius: 8,
+          width: 170,
         },
       },
     }}
