@@ -30,6 +30,10 @@ const tagsSlice = createSlice({
       const rawTags = action.payload.tags;
       tagsUtil.populateFromRaw(state, rawTags);
     },
+    addTag(state, action) {
+      const { tag } = action.payload;
+      tagsUtil.addTag(state, tag);
+    },
     removeTag(state, action) {
       const { tagId, workspaceId } = action.payload;
       tagsUtil.removeTag(state, tagId, workspaceId);
@@ -76,10 +80,18 @@ const extendedApi = ttCloneApi.injectEndpoints({
       }),
     }),
     deleteTag: builder.mutation({
-      query: ({ tagId, workspaceId }) => ({
+      query: ({ tagId, workspaceId, localData }) => ({
         url: `workspaces/${workspaceId}/tags/${tagId}`,
         method: "DELETE",
       }),
+      async onQueryStarted(
+        { tagId, workspaceId, localData },
+        { dispatch, queryFulfilled }
+      ) {
+        const { tag } = localData;
+        dispatch(tagActions.removeTag({ tagId, workspaceId }));
+        queryFulfilled.catch(() => dispatch(tagActions.addTag({ tag })));
+      },
     }),
     updateTag: builder.mutation({
       query: ({ tagId, workspaceId, tagName }) => ({
@@ -89,6 +101,18 @@ const extendedApi = ttCloneApi.injectEndpoints({
           name: tagName,
         },
       }),
+      async onQueryStarted(
+        { tagId, workspaceId, tagName, localData },
+        { dispatch, queryFulfilled }
+      ) {
+        const { oldTagName } = localData;
+        dispatch(tagActions.updateTag({ tagId, workspaceId, tagName }));
+        queryFulfilled.catch(() =>
+          dispatch(
+            tagActions.updateTag({ tagId, workspaceId, tagName: oldTagName })
+          )
+        );
+      },
     }),
   }),
 });

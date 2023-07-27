@@ -27,7 +27,8 @@ const TagsCreateModal = ({ open, onClose, workspaceId, tags, ...others }) => {
   };
 
   const handleSubmit = (values) => {
-    console.log(values);
+    addTag({ tagName: values.name, workspaceId: workspaceId });
+    onClose();
   };
 
   return (
@@ -63,6 +64,12 @@ const TagsCreateModal = ({ open, onClose, workspaceId, tags, ...others }) => {
                     fontSize: "0.875rem",
                     padding: "8px 12px",
                   },
+                }}
+                onKeyDown={(e) => {
+                  //   if (e.key === "Enter") {
+                  //     handleSubmit();
+                  //     onClose();
+                  //   }
                 }}
               />
             </DialogContent>

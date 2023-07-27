@@ -18,10 +18,18 @@ const populateFromRaw = (state, rawTags) => {
 
 const addTag = (state, tag) => {
   const workspaceId = tag.workspaceId;
+  if (!state.tags[workspaceId]) {
+    state.tags[workspaceId] = [];
+  }
+  if (!state.tagNames[workspaceId]) {
+    state.tagNames[workspaceId] = [];
+  }
   const tags = state.tags[workspaceId];
   const tagNames = state.tagNames[workspaceId];
   tags.push(tag);
   tagNames.push(tag.name);
+  tags.sort();
+  tagNames.sort();
 };
 
 const removeTag = (state, tagId, workspaceId) => {
@@ -43,6 +51,8 @@ const updateTag = (state, tagId, workspaceId, name) => {
   const tag = tags[index];
   tag.name = name;
   tagNames[tagNames.findIndex((tagName) => tagName === tag.name)] = name;
+  tags.sort();
+  tagNames.sort();
 };
 
 export const tagsUtil = {

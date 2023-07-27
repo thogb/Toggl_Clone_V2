@@ -19,7 +19,11 @@ import { Add } from "@mui/icons-material";
 import SearchTextField from "../../components/searchTextField/SearchTextField";
 import { useDispatch, useSelector } from "react-redux";
 import TagEditButton from "./TagEditButton";
-import { tagActions } from "../../state/tagSlice";
+import {
+  tagActions,
+  useDeleteTagMutation,
+  useUpdateTagMutation,
+} from "../../state/tagSlice";
 import TagsCreateModal from "./TagsCreateModal";
 
 const TagsPage = () => {
@@ -30,6 +34,10 @@ const TagsPage = () => {
 
   const workspace = useSelector((state) => state.workspaces.currentWorkspace);
   const allTags = useSelector((state) => state.tags.tags);
+
+  const [deleteTag] = useDeleteTagMutation();
+  const [updateTag] = useUpdateTagMutation();
+
   const tags = useMemo(
     () => allTags[workspace.id] ?? [],
     [workspace.id, allTags]
@@ -51,20 +59,31 @@ const TagsPage = () => {
   const handleTagEdit = (tag, editData) => {
     const newTagName = editData.name;
     if (newTagName && newTagName !== tag.name) {
-      dispatch(
-        tagActions.updateTag({
-          tagId: tag.id,
-          workspaceId: workspace.id,
-          tagName: newTagName,
-        })
-      );
+      updateTag({
+        tagId: tag.id,
+        workspaceId: workspace.id,
+        tagName: newTagName,
+        localData: { oldTagName: tag.name },
+      });
+      //   dispatch(
+      //     tagActions.updateTag({
+      //       tagId: tag.id,
+      //       workspaceId: workspace.id,
+      //       tagName: newTagName,
+      //     })
+      //   );
     }
   };
 
   const handleTagDelete = (tag) => {
-    dispatch(
-      tagActions.removeTag({ tagId: tag.id, workspaceId: workspace.id })
-    );
+    deleteTag({
+      tagId: tag.id,
+      workspaceId: workspace.id,
+      localData: { tag: tag },
+    });
+    // dispatch(
+    //   tagActions.removeTag({ tagId: tag.id, workspaceId: workspace.id })
+    // );
   };
 
   return (
