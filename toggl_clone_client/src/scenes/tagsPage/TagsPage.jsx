@@ -20,11 +20,13 @@ import SearchTextField from "../../components/searchTextField/SearchTextField";
 import { useDispatch, useSelector } from "react-redux";
 import TagEditButton from "./TagEditButton";
 import { tagActions } from "../../state/tagSlice";
+import TagsCreateModal from "./TagsCreateModal";
 
 const TagsPage = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const [searchDesc, setSearchDesc] = useState("");
+  const [openCreateTagDialog, setOpenCreateTagDialog] = useState(false);
 
   const workspace = useSelector((state) => state.workspaces.currentWorkspace);
   const allTags = useSelector((state) => state.tags.tags);
@@ -86,6 +88,7 @@ const TagsPage = () => {
               startIcon={<Add fontSize="small" />}
               variant="contained"
               color="secondary"
+              onClick={() => setOpenCreateTagDialog(true)}
             >
               New tags
             </Button>
@@ -117,6 +120,12 @@ const TagsPage = () => {
           {filteredTags.length === 0 && <Typography>No Tags Found</Typography>}
         </Stack>
       </Box>
+      <TagsCreateModal
+        open={openCreateTagDialog}
+        workspaceId={workspace.id}
+        tags={tags}
+        onClose={() => setOpenCreateTagDialog(false)}
+      />
     </PageContainer>
   );
 };
