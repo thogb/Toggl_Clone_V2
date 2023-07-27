@@ -141,7 +141,7 @@ const NavBar = ({ loading = false, onClose = () => {} }) => {
     }
   };
 
-  const handleWOrkspaceSelect = (selectionData) => {
+  const handleWorkspaceSelect = (selectionData) => {
     const { organisationId, workspaceId } = selectionData;
     if (currentWorkspace.id !== workspaceId) {
       dispatch(
@@ -294,7 +294,7 @@ const NavBar = ({ loading = false, onClose = () => {} }) => {
             organisations={organisations}
             currentWorkspace={currentWorkspace}
             currentOrganisation={currentOrganisation}
-            onSelectionComplete={handleWOrkspaceSelect}
+            onSelectionComplete={handleWorkspaceSelect}
           ></WorkspaceSelector>
         )}
 

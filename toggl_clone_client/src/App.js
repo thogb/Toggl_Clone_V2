@@ -22,6 +22,7 @@ import UnAuthorizedPageWrapper from "./routes/UnAuthorizedPageWrapper";
 import DashBoard from "./scenes/dashBoard/DashBoard";
 import ApiPage from "./scenes/testingPage/ApiPage";
 import LoadingPage from "./scenes/LoadingPage";
+import TagsPage from "./scenes/tagsPage/TagsPage";
 
 function App() {
   const mode = "light";
@@ -53,6 +54,7 @@ function App() {
               <Route path={ROUTES.TIMER} element={<TimerPage />} />
               <Route path="/theme" element={<ThemePage />} />
               <Route path="/testing" element={<TestingPage />} />
+              <Route path="/tags" element={<TagsPage />} />
               {/* <Route path="/api" element={<LoadingPage />} /> */}
               <Route path="/api" element={<ApiPage />} />
             </Route>

@@ -62,6 +62,8 @@ const SearchTextField = ({
     if (onClear) onClear();
   };
 
+  const showClearButton = clearOn && value !== "";
+
   return (
     <StyledTextField style={style}>
       <Adornment className="SearchTextField-startAdornment">
@@ -74,14 +76,15 @@ const SearchTextField = ({
         onBlur={onBlur}
         onChange={onChange}
         placeholder={placeholder}
-      ></InputBase>
-      {clearOn && value !== "" && (
-        <Adornment className="SearchTextField-endAdornment SearchTextField-closeIconButton">
-          <TTIconButton padding={0} onClick={handleClose}>
-            <CloseIcon fontSize="small" />
-          </TTIconButton>
-        </Adornment>
-      )}
+      />
+      <Adornment
+        className="SearchTextField-endAdornment SearchTextField-closeIconButton"
+        style={{ visibility: showClearButton ? "visible" : "hidden" }}
+      >
+        <TTIconButton padding={0} onClick={handleClose}>
+          <CloseIcon fontSize="small" />
+        </TTIconButton>
+      </Adornment>
     </StyledTextField>
   );
 };

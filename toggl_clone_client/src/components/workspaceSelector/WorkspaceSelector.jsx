@@ -88,17 +88,28 @@ const WorkspaceSelector = ({
     setSelectedWorkspace(workspace);
     onClose();
     if (onSelectionComplete) {
-      onSelectionComplete({
-        organisation: selectedOrganisation,
-        organisationId: selectedOrganisation.id,
-        workspaceId: selectedWorkspace.id,
-        workspace: selectedWorkspace,
-      });
+      onSelectionComplete(getSelectionData());
     }
   };
 
+  const handleClose = () => {
+    onClose();
+    if (onSelectionComplete) {
+      onSelectionComplete(getSelectionData());
+    }
+  };
+
+  const getSelectionData = () => {
+    return {
+      organisation: selectedOrganisation,
+      organisationId: selectedOrganisation.id,
+      workspaceId: selectedWorkspace.id,
+      workspace: selectedWorkspace,
+    };
+  };
+
   return (
-    <WorkspacePopper anchorEl={anchorEl} onClose={onClose} {...others}>
+    <WorkspacePopper anchorEl={anchorEl} onClose={handleClose} {...others}>
       <TTPopperContainer padding={"0px 4px"}>
         <SearchTextField
           placeholder={"Find workspaces..."}
