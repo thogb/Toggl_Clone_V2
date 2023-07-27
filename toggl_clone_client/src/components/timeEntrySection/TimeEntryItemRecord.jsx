@@ -215,13 +215,24 @@ const TimeEntryItemRecord = ({
         )}
         {projectAnchorEl && (
           <ProjectSelector
-            currentProject={projectId}
+            currentProjectId={projectId}
             currentWorkspace={workspace}
             projects={{ [workspaceId]: projects[workspaceId] }}
             workspaces={[workspace]}
             anchorEl={projectAnchorEl}
             onClose={() => setProjectAnchorEl(null)}
-            onSelectionComplete={null}
+            onSelectionComplete={operations.onProjectEdit}
+            offset={[-60, 8]}
+            // https://stackoverflow.com/questions/69120842/mui-popper-placement-not-working-as-intended-when-using-disableportal
+            // modifiers={[
+            //   {
+            //     preventOverflow: {
+            //       enabled: true,
+            //       escapeWithReference: true,
+            //       boundariesElement: "viewport",
+            //     },
+            //   },
+            // ]}
           />
         )}
       </TimeEntryLeftSection>

@@ -60,13 +60,13 @@ const TTPopper = ({
   gap,
   offset,
   disableBackDrop = false,
+  modifiers,
   ...other
 }) => {
   const theme = useTheme();
 
   const openPopper = Boolean(anchorEl);
   //   const id = open ? "simple-popper" : undefined;
-  console.log(disablePortal);
   const contents = (
     <>
       <Popper

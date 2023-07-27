@@ -95,7 +95,9 @@ const TimeEntryItem = ({
     }
   };
 
-  const onProjectEdit = async (projectInfo) => {};
+  const onProjectEdit = async (projectInfo) => {
+    console.log(projectInfo);
+  };
 
   const onTagsCheckedEdit = async (tagsChecked) => {
     if (!listUtil.isListEqual(tagsChecked, timeEntry.tags)) {

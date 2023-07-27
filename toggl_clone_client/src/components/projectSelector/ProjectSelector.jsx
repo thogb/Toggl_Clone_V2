@@ -67,9 +67,8 @@ const ProjectSelector = ({
     }
   }, [searchDesc]);
 
-  const handleProjectSeletion = (project, newProject) => {
-    if (onSelectionComplete)
-      onSelectionComplete({ project: project, newProject: newProject });
+  const handleProjectSeletion = (project) => {
+    if (onSelectionComplete) onSelectionComplete({ project: project });
     onClose();
   };
 
@@ -98,8 +97,13 @@ const ProjectSelector = ({
     setOpenModal(true);
   };
 
-  const handleProjectModalComplete = (data) => {
-    handleProjectSeletion(null, data);
+  const handleProjectModalClose = () => {
+    setOpenModal(false);
+    onClose();
+  };
+
+  const handleProjectModalComplete = (project) => {
+    if (onSelectionComplete) onSelectionComplete({ project: project });
   };
 
   const renderWorkspaceTitle = (workspaceName) => (
@@ -137,7 +141,7 @@ const ProjectSelector = ({
         size="xl"
         anchorEl={anchorEl}
         onClose={onClose}
-        offset={[220, 8]}
+        // offset={[220, 8]}
         {...others}
       >
         <TTPopperContainer
@@ -260,7 +264,7 @@ const ProjectSelector = ({
           open={openModal}
           workspaces={workspaces}
           currentWorkspace={selectedWorkspace}
-          onClose={() => setOpenModal(false)}
+          onClose={handleProjectModalClose}
           onComplete={handleProjectModalComplete}
         />
       )}

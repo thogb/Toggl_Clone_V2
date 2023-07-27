@@ -288,28 +288,13 @@ const TimerTopBar = () => {
   };
 
   const handleProjectSelectionComplete = async (selectionData) => {
-    const { project, newProject } = selectionData;
-    if (newProject) {
-      try {
-        const payload = await addProject({
-          project: newProject,
-          workspaceId: newProject.workspaceId,
-        }).unwrap();
-        dispatch(
-          changeProject({
-            projectId: payload.id,
-            workspaceId: payload.workspaceId,
-          })
-        );
-      } catch (error) {}
-    } else {
-      dispatch(
-        changeProject({
-          projectId: project === null ? null : project.id,
-          workspaceId: project === null ? workspaceId : project.workspaceId,
-        })
-      );
-    }
+    const { project } = selectionData;
+    dispatch(
+      changeProject({
+        projectId: project === null ? null : project.id,
+        workspaceId: project === null ? workspaceId : project.workspaceId,
+      })
+    );
   };
 
   const handleTagsSelectionComplete = async (tagsChecked) => {
@@ -403,6 +388,7 @@ const TimerTopBar = () => {
         )}
         {projectAnchorEl && (
           <ProjectSelector
+            offset={[200, 8]}
             currentProjectId={projectId}
             currentWorkspace={workspace}
             projects={projects}

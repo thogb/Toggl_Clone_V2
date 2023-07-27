@@ -29,6 +29,7 @@ import ColourSelector, {
 } from "../colourSelector/ColourSelector";
 import SubButton from "../subButton/SubButton";
 import MiniWorkspaceSelector from "../miniWorkspaceSelector/MiniWorkspaceSelector";
+import { useAddProjectMutation } from "../../state/projectSlice";
 
 const ProjectNameTextField = styled(TextField)(({ theme }) => ({
   "& .MuiInputBase-root": {
@@ -96,14 +97,22 @@ const CreateProjectModal = ({
   const [colourSelectorAEl, setColourSelectorAEl] = useState(null);
   const [workspaceSelectorAEL, setWorkspaceSelectorAEL] = useState(null);
 
-  const handleFormikSubmit = (values, formikhelpers) => {
-    const data = {
+  const [addProject] = useAddProjectMutation();
+
+  const handleFormikSubmit = async (values, formikhelpers) => {
+    const project = {
       ...values,
       colour: selectedColour,
       workspaceId: selectedWorkspace.id,
     };
-    if (onComplete) onComplete(data);
     onClose();
+    try {
+      const payload = await addProject({
+        project: project,
+        workspaceId: project.workspaceId,
+      }).unwrap();
+      if (onComplete) onComplete(payload);
+    } catch (error) {}
   };
 
   const handleColourSelect = (colour) => {
