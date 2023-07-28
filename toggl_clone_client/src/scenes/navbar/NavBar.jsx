@@ -36,7 +36,7 @@ const analysePaths = {
   paths: [
     {
       name: "Reports",
-      path: "/theme",
+      path: "/reports",
       icon: <ArticleIcon />,
     },
     {
@@ -73,11 +73,6 @@ const managePaths = {
     {
       name: "Integrations",
       path: "/integrations",
-      icon: <PowerIcon />,
-    },
-    {
-      name: "Testing",
-      path: "/testing",
       icon: <PowerIcon />,
     },
     {

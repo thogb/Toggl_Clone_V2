@@ -36,7 +36,7 @@ const TagsSelector = ({
   const [createdLocalList, setCreatedLocalList] = useState([]);
 
   useEffect(() => {
-    setCreatedLocalList([]);
+    // setCreatedLocalList([]);
     reOrderTagsList();
   }, [tagCheckedList, tagList]);
 
@@ -82,6 +82,7 @@ const TagsSelector = ({
     const newCheckedList = [...checkedList].sort();
     if (onSelectionComplete) onSelectionComplete(newCheckedList);
     setAnchorEl(null);
+    setCreatedLocalList([]);
     setCheckedList(newCheckedList);
     setSearchValue("");
   };

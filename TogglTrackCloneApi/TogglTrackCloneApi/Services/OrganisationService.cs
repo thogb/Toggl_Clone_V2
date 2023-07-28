@@ -48,7 +48,10 @@ namespace TogglTrackCloneApi.Services
             _organisationRepository.Add(organisation);
             await _organisationRepository.SaveChangesAsync();
 
-            return new OrganisationAddResponseDTO() { OrganisationId=organisation.Id, OrganisationName=organisation.Name, WorkspaceId=workspace.Id, WorkspaceName=workspace.Name };
+            return new OrganisationAddResponseDTO() {
+                Organisation = _mapper.Map<OrganisatioResponseDTO>(organisation),
+                Workspace = _mapper.Map<WorkspaceResponseDTO>(workspace),
+            };
         }
 
         public async Task CanUserAddOrganisation(int userId)

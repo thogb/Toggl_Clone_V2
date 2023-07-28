@@ -1,16 +1,9 @@
 import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import { Route, Routes } from "react-router-dom";
 import TimerPage from "./scenes/timerPage/TimerPage";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { themeSettings } from "./theme";
-import ThemePage from "./scenes/themePage/ThemePage";
 import "./App.css";
-import HomePage from "./scenes/homePage/HomePage";
-import TestingPage from "./scenes/testingPage/TestingPage";
-import {
-  generateDateGroupedEntries,
-  setDateGroupedEntries,
-} from "./state/groupedEntryListSlice";
 import { useDispatch } from "react-redux";
 import SignUpPage from "./scenes/trackPage/SignUpPage";
 import LogInPage from "./scenes/trackPage/LogInPage";
@@ -21,7 +14,6 @@ import DefaultRoute from "./routes/DefaultRoute";
 import UnAuthorizedPageWrapper from "./routes/UnAuthorizedPageWrapper";
 import DashBoard from "./scenes/dashBoard/DashBoard";
 import ApiPage from "./scenes/testingPage/ApiPage";
-import LoadingPage from "./scenes/LoadingPage";
 import TagsPage from "./scenes/tagsPage/TagsPage";
 
 function App() {
@@ -50,12 +42,8 @@ function App() {
           </Route>
           <Route element={<AuthorizedPageWrapper />}>
             <Route element={<DashBoard />}>
-              <Route path="/" element={<HomePage />} />
               <Route path={ROUTES.TIMER} element={<TimerPage />} />
-              <Route path="/theme" element={<ThemePage />} />
-              <Route path="/testing" element={<TestingPage />} />
               <Route path="/tags" element={<TagsPage />} />
-              {/* <Route path="/api" element={<LoadingPage />} /> */}
               <Route path="/api" element={<ApiPage />} />
             </Route>
           </Route>

@@ -27,6 +27,14 @@ const workspacesSlice = createSlice({
         (w) => w.id === workspaceId
       );
     },
+    addWorkspace: (state, action) => {
+      const { workspace } = action.payload;
+      if (state.workspaces[workspace.organisationId]) {
+        state.workspaces[workspace.organisationId].push(workspace);
+      } else {
+        state.workspaces[workspace.organisationId] = [workspace];
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(

@@ -16,6 +16,7 @@ import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { TTMenu } from "../ttMenu/TTMenu";
 import { TTMenuItem } from "../ttMenu/TTMenuItem";
 import AddIcon from "@mui/icons-material/Add";
+import CreateOrganisationModal from "../createOrganisationModal/CreateOrganisationModal";
 
 const ManageWorkspaceLink = styled(Link)(({ theme }) => ({
   textAlign: "center",
@@ -65,6 +66,7 @@ const WorkspaceSelector = ({
   const [selectedOrganisation, setSelectedOrganisation] =
     useState(currentOrganisation);
   const [selectedWorkspace, setSelectedWorkspace] = useState(currentWorkspace);
+  const [openCreateOrgModal, setOpenCreateOrgModal] = useState(false);
 
   const handleSearchDescChange = (e) => {
     setSearchDesc(e.target.value);
@@ -97,6 +99,10 @@ const WorkspaceSelector = ({
     if (onSelectionComplete) {
       onSelectionComplete(getSelectionData());
     }
+  };
+
+  const handleOrgCreateComplete = (values) => {
+    onClose();
   };
 
   const getSelectionData = () => {
@@ -172,12 +178,14 @@ const WorkspaceSelector = ({
                 ))}
               </TTPopperContainer>
               <TTPopperDivider />
-              <CreateOrganisationLink>
+              <CreateOrganisationLink
+                onClick={() => setOpenCreateOrgModal(true)}
+              >
                 <AddIcon
                   fontSize="small"
                   sx={{ mr: 1, color: theme.palette.secondary.main }}
                 />{" "}
-                Create Organisation
+                New Organisation
               </CreateOrganisationLink>
             </TTPopper>
           </div>
@@ -204,6 +212,11 @@ const WorkspaceSelector = ({
         <TTPopperDivider />
         <ManageWorkspaceLink>Manage Workspaces</ManageWorkspaceLink>
       </TTPopperContainer>
+      <CreateOrganisationModal
+        open={openCreateOrgModal}
+        onClose={() => setOpenCreateOrgModal(false)}
+        onComplete={handleOrgCreateComplete}
+      />
     </WorkspacePopper>
   );
 };
