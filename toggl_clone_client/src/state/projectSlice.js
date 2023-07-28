@@ -26,7 +26,11 @@ const projectsSlice = createSlice({
     resetState: () => initialState,
     addProject: (state, action) => {
       const { project } = action.payload;
-      state.projects[project.workspaceId].push(project);
+      if (state.projects[project.workspaceId]) {
+        state.projects[project.workspaceId].push(project);
+      } else {
+        state.projects[project.workspaceId] = [project];
+      }
     },
   },
   extraReducers: (builder) => {
