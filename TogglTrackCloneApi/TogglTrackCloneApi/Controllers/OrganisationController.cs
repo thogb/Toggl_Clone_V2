@@ -27,17 +27,9 @@ namespace TogglTrackCloneApi.Controllers
         [HttpPost]
         public async Task<ActionResult<OrganisationAddResponseDTO>> AddOrganisation([FromBody] OrganisationAddDTO organisationAddDTO)
         {
-            try
-            {
-                int userId = ControllerHelper.GetUserId(User);
-                var response = await _organisationService.AddOrganisation(organisationAddDTO, userId);
-                return Ok(response);
-            } catch (APIException apiE) { 
-                return BadRequest(apiE.Message);
-            } catch (Exception ex) {
-                _logger.LogError(ex.Message, ex);
-                return StatusCode(StatusCodes.Status500InternalServerError, "Failed");
-            }
+            int userId = ControllerHelper.GetUserId(User);
+            var response = await _organisationService.AddOrganisation(organisationAddDTO, userId);
+            return Ok(response);
         }
     }
 }

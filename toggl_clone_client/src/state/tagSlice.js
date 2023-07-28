@@ -94,7 +94,7 @@ const extendedApi = ttCloneApi.injectEndpoints({
         } catch (error) {
           enqueueSnackbar({
             message: error.error.data.message,
-            variant: "success",
+            variant: "error",
           });
         }
       },
