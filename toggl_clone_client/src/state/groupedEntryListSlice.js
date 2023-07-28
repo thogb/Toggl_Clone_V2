@@ -36,6 +36,10 @@ export const groupedEntryListSlice = createSlice({
       const { dateGroupId, gId, tags } = action.payload;
       gelsUtil.updateGroupingDataInGE(state, dateGroupId, gId, { tags });
     },
+    updateWorkspaceTag: (state, action) => {
+      const { workspaceId, newTagName, oldTagName } = action.payload;
+      gelsUtil.updateWorkspaceTag(state, workspaceId, newTagName, oldTagName);
+    },
     updateTEProjectId: (state, action) => {
       const { dateGroupId, gId, id, projectId } = action.payload;
       gelsUtil.updateTEGroupingData(state, dateGroupId, gId, id, { projectId });
@@ -103,6 +107,7 @@ export const {
   updateGEDescription,
   updateTETags,
   updateGETags,
+  updateWorkspaceTag,
   updateTEProjectId,
   updateGEProjectId,
   updateTEDateInfo,

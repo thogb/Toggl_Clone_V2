@@ -60,6 +60,18 @@ const updateBatchTEInDGE = (state, dateGroupId, idList, newTEData) => {
   addGroupedEntry(state, ge);
 };
 
+const updateWorkspaceTag = (state, workspaceId, newTagName, oldTagName) => {
+  const dateGroupedEntries = state.dateGroupedEntries;
+  for (let dateGroupedEntry of Object.values(dateGroupedEntries)) {
+    dgeUtil.updateWorkspaceTag(
+      dateGroupedEntry,
+      workspaceId,
+      newTagName,
+      oldTagName
+    );
+  }
+};
+
 // #add
 const addTimeEntry = (state, timeEntry) => {
   const dateGroupedEntries = state.dateGroupedEntries;
@@ -163,6 +175,7 @@ export const groupedEntryListSliceUtil = {
   updateTEDateInfo,
   updateGroupingDataInGE,
   updateBatchTEInDGE,
+  updateWorkspaceTag,
 
   removeDateGroupedEntry,
   //   removeTimeEntryFromGE,

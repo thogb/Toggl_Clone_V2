@@ -79,6 +79,17 @@ const updateObjWithGroupingData = (obj, groupingData) => {
   }
 };
 
+const updateWorkspaceTag = (groupedEntry, newTagName, oldTagName) => {
+  const newTags = groupedEntry.tags.filter((tag) => tag !== oldTagName);
+  if (newTagName) {
+    newTags.push(newTagName);
+    newTags.sort();
+  }
+  groupedEntry.tags = newTags;
+  for (let entry of groupedEntry.entries) {
+    entry.tags = [...newTags];
+  }
+};
 // #add
 const addTimeEntry = (groupedEntry, timeEntry) => {
   groupedEntry.entries.push(timeEntry);
@@ -206,6 +217,7 @@ export const groupedEntryUtil = {
   updateTEDateInfo,
   updateGroupingData,
   updateTEWithGroupingData,
+  updateWorkspaceTag,
 
   addTimeEntry,
 

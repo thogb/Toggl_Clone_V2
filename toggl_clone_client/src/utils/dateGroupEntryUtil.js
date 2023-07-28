@@ -49,12 +49,9 @@ const updateTEGroupingData = (dateGroupedEntry, gId, id, groupingData) => {
     gId
   );
 
-  console.log(groupingData);
-
   if (!groupedEntry) return;
 
   const timeEntry = geUtil.findTimeEntryById(groupedEntry.entries, id);
-  console.log({ ...timeEntry });
 
   geUtil.updateTEWithGroupingData(timeEntry, groupingData);
 
@@ -63,9 +60,6 @@ const updateTEGroupingData = (dateGroupedEntry, gId, id, groupingData) => {
     dateGroupedEntry.groupedEntries,
     timeEntry
   );
-
-  console.log(newGroupedEntry);
-  console.log(groupedEntry === newGroupedEntry);
 
   // If same groupEntry then it means that there are no actual changes
   if (groupedEntry === newGroupedEntry) return;
@@ -110,6 +104,20 @@ const updateBatchTEGroupingDatainGE = (dateGroupEntry, gId, groupingData) => {
     geUtil.mergeWithGroupedEntry(otherGroupedEntry, groupedEntry);
     removeGroupedEntry(dateGroupEntry, groupedEntry);
     refresh(dateGroupEntry);
+  }
+};
+
+const updateWorkspaceTag = (
+  dateGroupedEntry,
+  workspaceId,
+  newTagName,
+  oldTagName
+) => {
+  const groupedEntries = dateGroupedEntry.groupedEntries;
+  for (let groupedEntry of groupedEntries) {
+    if (groupedEntry.workspaceId === workspaceId) {
+      geUtil.updateWorkspaceTag(groupedEntry, newTagName, oldTagName);
+    }
   }
 };
 
@@ -378,6 +386,7 @@ export const dateGroupEntryUtil = {
   updateTEDateInfo,
   updateTEGroupingData,
   updateBatchTEGroupingDatainGE,
+  updateWorkspaceTag,
 
   addTimeEntry,
   addGroupedEntry,

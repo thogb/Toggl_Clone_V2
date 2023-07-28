@@ -3,6 +3,7 @@ import { tagsUtil } from "../utils/tagsUtil";
 import { ttCloneApi } from "./apiSlice";
 import { notificationStatus, notificationsActions } from "./notificationSlice";
 import { enqueueSnackbar } from "notistack";
+import { updateWorkspaceTag } from "./groupedEntryListSlice";
 
 const intitialState = {
   // tags: {
@@ -111,6 +112,13 @@ const extendedApi = ttCloneApi.injectEndpoints({
         dispatch(tagActions.removeTag({ tagId, workspaceId }));
         try {
           await queryFulfilled;
+          dispatch(
+            updateWorkspaceTag({
+              workspaceId: workspaceId,
+              newTagName: null,
+              oldTagName: tag.name,
+            })
+          );
           enqueueSnackbar({
             message: "Tag deleted successfully",
             variant: "success",
@@ -140,6 +148,13 @@ const extendedApi = ttCloneApi.injectEndpoints({
         dispatch(tagActions.updateTag({ tagId, workspaceId, tagName }));
         try {
           await queryFulfilled;
+          dispatch(
+            updateWorkspaceTag({
+              workspaceId: workspaceId,
+              newTagName: tagName,
+              oldTagName: oldTagName,
+            })
+          );
           enqueueSnackbar({
             message: "Successfully updated tag",
             variant: "success",
