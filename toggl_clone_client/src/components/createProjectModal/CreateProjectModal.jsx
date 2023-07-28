@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import TTDialog from "../ttDialog/TTDialog";
-import * as yup from "yup";
+import { object, string, bool } from "yup";
 import {
   Box,
   Button,
@@ -71,9 +71,9 @@ const FormControlTitle = styled("span")(({ theme }) => ({
   marginLeft: 8,
 }));
 
-const projectScheme = yup.object().shape({
-  name: yup.string().required("Please enter a Project name"),
-  private: yup.bool(),
+const projectScheme = object().shape({
+  name: string().required("Please enter a Project name"),
+  private: bool(),
 });
 
 const intialValues = {

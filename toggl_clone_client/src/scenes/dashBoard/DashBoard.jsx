@@ -22,11 +22,7 @@ import { useGetProjectsQuery } from "../../state/projectSlice";
 import { useGetTimeEntriesQuery } from "../../state/groupedEntryListSlice";
 import LoadingPage from "../LoadingPage";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  createTimerInterval,
-  setStartTimerData,
-  startTimer,
-} from "../../state/currentEntrySlice";
+import { startTimer } from "../../state/currentEntrySlice";
 import { timeEntryUtil } from "../../utils/TimeEntryUtil";
 import { SnackbarProvider } from "notistack";
 import TTSuccessSnackbar from "../../components/customSnackbar/TTSuccessSnackbar";

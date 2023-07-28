@@ -1,5 +1,5 @@
 import { Close } from "@mui/icons-material";
-import { Dialog, Grow, alpha, styled } from "@mui/material";
+import { Dialog, Grow, styled } from "@mui/material";
 import React from "react";
 
 const StyledDialog = styled(Dialog)(({ theme }) => ({

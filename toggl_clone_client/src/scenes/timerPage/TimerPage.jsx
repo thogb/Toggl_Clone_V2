@@ -1,11 +1,5 @@
-import {
-  Box,
-  ThemeProvider,
-  createTheme,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
-import React, { useState } from "react";
+import { Box, ThemeProvider, createTheme, useTheme } from "@mui/material";
+import React from "react";
 import { grey, orange } from "@mui/material/colors";
 import TimerTopBar from "../../components/timerTopBar/TimerTopBar";
 import TimerListView from "./TimerListView";
@@ -19,8 +13,6 @@ export const viewTypes = {
 };
 
 const TimerPage = () => {
-  const [BColor, setBColor] = useState(false);
-  const mw620 = useMediaQuery("(min-width:620px)");
   const theme = useTheme();
 
   const viewType = "LIST";

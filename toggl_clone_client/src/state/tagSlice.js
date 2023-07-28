@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { tagsUtil } from "../utils/tagsUtil";
 import { ttCloneApi } from "./apiSlice";
-import { notificationStatus, notificationsActions } from "./notificationSlice";
 import { enqueueSnackbar } from "notistack";
 import { updateWorkspaceTag } from "./groupedEntryListSlice";
 

@@ -1,6 +1,5 @@
 import { Box, Typography, alpha } from "@mui/material";
 import React from "react";
-import { popperClassNames } from "../ttPopper/TTPopper";
 import { useTheme } from "@emotion/react";
 
 const ProjectMessage = ({ title, description }) => {

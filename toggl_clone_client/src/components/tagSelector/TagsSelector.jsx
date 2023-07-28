@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
-import TTIconButton from "../../components/ttIconButton/TTIconButton";
+import TTIconButton from "../ttIconButton/TTIconButton";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import { useTheme } from "@emotion/react";
-import TTPopper from "../../components/ttPopper/TTPopper";
+import TTPopper from "../ttPopper/TTPopper";
 import { Box, Button, Typography } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import TTPopperDivider from "../../components/ttPopper/TTPopperDivider";
-import CheckboxList from "../../components/checkboxList/CheckboxList";
-import SearchTextField from "../../components/searchTextField/SearchTextField";
+import TTPopperDivider from "../ttPopper/TTPopperDivider";
+import CheckboxList from "../checkboxList/CheckboxList";
+import SearchTextField from "../searchTextField/SearchTextField";
 import { grey } from "@mui/material/colors";
 
 const TagsSelector = ({

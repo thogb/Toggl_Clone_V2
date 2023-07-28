@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import { InputBase } from "@mui/material";
 import { grey } from "@mui/material/colors";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { secondToTimeObj } from "../../utils/TTDateUtil";
 import classNames from "classnames";
 
@@ -52,18 +52,6 @@ const TTTimeTextField = ({
   useEffect(() => {
     formatSecond(second);
   }, [second]);
-
-  // Styled wrapper adds a className
-
-  // const className = useMemo(() => {
-  //   const classNames = [];
-  //   if (size) {
-  //     if (size === "sm") classNames.push("TTTimeTextField-small");
-  //   }
-  //   if (withPopOver) classNames.push("TTTimeTextField-withPopOver");
-
-  //   return classNames.length > 0 ? classNames.join(" ") : null;
-  // }, [size, withPopOver]);
 
   const fClassName = classNames(
     "TTTimeTextField",

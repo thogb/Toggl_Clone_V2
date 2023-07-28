@@ -4,7 +4,6 @@ import TimerPage from "./scenes/timerPage/TimerPage";
 import { useMemo } from "react";
 import { themeSettings } from "./theme";
 import "./App.css";
-import { useDispatch } from "react-redux";
 import SignUpPage from "./scenes/trackPage/SignUpPage";
 import LogInPage from "./scenes/trackPage/LogInPage";
 import AuthorizedPageWrapper from "./routes/AuthorizedPageWrapper";
@@ -19,7 +18,6 @@ import TagsPage from "./scenes/tagsPage/TagsPage";
 function App() {
   const mode = "light";
   // const mode = "dark";
-  const dispatch = useDispatch();
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
 
   // TODO: to be replaced with api calls

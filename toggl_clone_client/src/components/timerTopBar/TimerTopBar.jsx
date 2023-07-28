@@ -3,12 +3,9 @@ import CircularStartButton from "../circularStartButton/CircularStartButton";
 import {
   AppBar,
   Box,
-  Button,
   InputBase,
   Stack,
   Toolbar,
-  Typography,
-  styled,
   useMediaQuery,
 } from "@mui/material";
 import EntryDateChanger from "../entryDateChanger/EntryDateChanger";
@@ -23,7 +20,7 @@ import StopIcon from "@mui/icons-material/Stop";
 import CheckIcon from "@mui/icons-material/Check";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { grey } from "@mui/material/colors";
-import TagsSelector from "../../scenes/timerPage/TagsSelector";
+import TagsSelector from "../tagSelector/TagsSelector";
 import { useDispatch, useSelector } from "react-redux";
 import {
   changeProject,
@@ -51,7 +48,7 @@ import { timeEntryUtil } from "../../utils/TimeEntryUtil";
 import { createReplacePatch } from "../../utils/otherUtil";
 import { listUtil } from "../../utils/listUtil";
 import { useAddTagMutation } from "../../state/tagSlice";
-import { Circle, Folder } from "@mui/icons-material";
+import { Folder } from "@mui/icons-material";
 import ProjectSelector from "../projectSelector/ProjectSelector";
 import { useAddProjectMutation } from "../../state/projectSlice";
 import ProjectButton from "../projectButton/ProjectButton";

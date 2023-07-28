@@ -1,4 +1,4 @@
-import { AppBar, Stack, Toolbar, Typography, styled } from "@mui/material";
+import { AppBar, Stack, Typography, styled } from "@mui/material";
 import React from "react";
 import { TTAPPBAR_HEIGHT } from "../../utils/constants";
 

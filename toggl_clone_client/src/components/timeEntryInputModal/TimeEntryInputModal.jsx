@@ -1,19 +1,16 @@
 import styled from "@emotion/styled";
 import {
   Button,
-  Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   FormControl,
-  Grow,
   TextField,
   alpha,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import CloseIcon from "@mui/icons-material/Close";
 import TimeEntryInputExpand from "./TimeEntryInputExpand";
-import TagsSelector from "../../scenes/timerPage/TagsSelector";
+import TagsSelector from "../tagSelector/TagsSelector";
 import TTPopper from "../ttPopper/TTPopper";
 import TTDateCalender from "../TTDateCalender/TTDateCalender";
 import { differenceInSeconds, format } from "date-fns";

@@ -1,6 +1,6 @@
-import { createAsyncThunk, createSlice, current } from "@reduxjs/toolkit";
-import { addDays, addSeconds, differenceInSeconds, subDays } from "date-fns";
-import { addTE, addTimeEntry } from "./groupedEntryListSlice";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { addDays, differenceInSeconds, subDays } from "date-fns";
+import { addTE } from "./groupedEntryListSlice";
 import { timeEntryUtil } from "../utils/TimeEntryUtil";
 import { ttCloneApi } from "./apiSlice";
 import { compare } from "fast-json-patch";

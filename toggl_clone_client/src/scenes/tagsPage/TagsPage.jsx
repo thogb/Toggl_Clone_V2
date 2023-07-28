@@ -17,10 +17,9 @@ import {
 } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import SearchTextField from "../../components/searchTextField/SearchTextField";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import TagEditButton from "./TagEditButton";
 import {
-  tagActions,
   useDeleteTagMutation,
   useUpdateTagMutation,
 } from "../../state/tagSlice";
@@ -28,7 +27,6 @@ import TagsCreateModal from "./TagsCreateModal";
 
 const TagsPage = () => {
   const theme = useTheme();
-  const dispatch = useDispatch();
   const [searchDesc, setSearchDesc] = useState("");
   const [openCreateTagDialog, setOpenCreateTagDialog] = useState(false);
 

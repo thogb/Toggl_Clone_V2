@@ -6,7 +6,6 @@ import {
   getDaysBetween,
 } from "../../utils/TTDateUtil";
 import SubButton from "../subButton/SubButton";
-import { useTheme } from "@emotion/react";
 
 const TimeEntryDateInfo = ({
   duration,

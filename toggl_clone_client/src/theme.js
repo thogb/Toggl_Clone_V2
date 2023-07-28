@@ -1,5 +1,4 @@
 import { alpha, createTheme } from "@mui/material";
-import { red } from "@mui/material/colors";
 
 export const themeSettings = (mode) => {
   const spacing = 8;

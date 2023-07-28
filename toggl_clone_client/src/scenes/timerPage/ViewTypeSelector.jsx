@@ -2,12 +2,11 @@ import React, { useState } from "react";
 import SubButton from "../../components/subButton/SubButton";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import { Box, Divider, Stack, Typography, alpha } from "@mui/material";
+import { Stack, Typography, alpha } from "@mui/material";
 import TTPopper from "../../components/ttPopper/TTPopper";
 import TTPopperContainer from "../../components/ttPopper/TTPopperContainer";
 import TTPopperDivider from "../../components/ttPopper/TTPopperDivider";
 import { TTPopperHeading } from "../../components/ttPopper/TTPopperHeading";
-import { useTheme } from "@emotion/react";
 import StackBetween from "../../components/stackBetween/StackBetween";
 import styled from "@emotion/styled";
 import { viewTypes } from "./TimerPage";
@@ -45,7 +44,6 @@ const ViewTypeButton = styled("button")(({ theme }) => ({
 
 const ViewTypeSelector = ({ viewType = viewTypes.LIST }) => {
   const [anchorEl, setAnchorEl] = useState(null);
-  const theme = useTheme();
 
   return (
     <>

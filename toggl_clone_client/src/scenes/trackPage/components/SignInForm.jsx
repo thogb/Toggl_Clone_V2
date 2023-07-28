@@ -15,7 +15,7 @@ import React, { useState } from "react";
 import AppleIcon from "@mui/icons-material/Apple";
 import GoogleIcon from "../../../fromTogglTrack/GoogleIcon";
 import { amber, red } from "@mui/material/colors";
-import * as yup from "yup";
+import { object, string } from "yup";
 import { Form, Formik } from "formik";
 import HttpsIcon from "@mui/icons-material/Https";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
@@ -104,10 +104,9 @@ const CompanySSOLink = styled(Link)(({ theme }) => ({
   },
 }));
 
-const registerSchema = yup.object().shape({
-  email: yup.string().email("Invalid email address").required("Required"),
-  password: yup
-    .string()
+const registerSchema = object().shape({
+  email: string().email("Invalid email address").required("Required"),
+  password: string()
     .test("password-length", "between 8 and 72 characters", (value) => {
       return value && value.length >= 8 && value.length <= 72;
     })
@@ -119,9 +118,9 @@ const registerSchema = yup.object().shape({
     }),
 });
 
-const loginSchema = yup.object().shape({
-  email: yup.string().email("Invalid email address").required(),
-  password: yup.string().required("Password cannot be empty"),
+const loginSchema = object().shape({
+  email: string().email("Invalid email address").required(),
+  password: string().required("Password cannot be empty"),
 });
 
 const initialValues = {

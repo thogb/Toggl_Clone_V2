@@ -21,9 +21,7 @@ import {
   useBatchDeleteTimeEntryMutation,
   useBatchPatchTimeEntryMutation,
 } from "../../state/groupedEntryListSlice";
-import TimeEntryInputModal, {
-  TEInputModalFromTEs,
-} from "../timeEntryInputModal/TimeEntryInputModal";
+import { TEInputModalFromTEs } from "../timeEntryInputModal/TimeEntryInputModal";
 import { timeEntryUtil } from "../../utils/TimeEntryUtil";
 import { compare } from "fast-json-patch";
 
