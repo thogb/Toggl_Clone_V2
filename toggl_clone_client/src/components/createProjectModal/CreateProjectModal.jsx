@@ -76,15 +76,11 @@ const projectScheme = object().shape({
   private: bool(),
 });
 
-const intialValues = {
-  name: "",
-  private: true,
-};
-
 const CreateProjectModal = ({
   open,
   onClose,
   currentWorkspace,
+  initialName,
   workspaces,
   onComplete,
 }) => {
@@ -98,6 +94,11 @@ const CreateProjectModal = ({
   const [workspaceSelectorAEL, setWorkspaceSelectorAEL] = useState(null);
 
   const [addProject] = useAddProjectMutation();
+
+  const intialValues = {
+    name: initialName,
+    private: true,
+  };
 
   const handleFormikSubmit = async (values, formikhelpers) => {
     const project = {

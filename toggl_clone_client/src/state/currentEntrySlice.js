@@ -190,12 +190,8 @@ export const currentEntrySlice = createSlice({
       }
     },
     changeWorkspace: (state, action) => {
-      console.log(action);
       const { newWorkspaceId } = action.payload;
-      console.log(state.workspaceId);
-      console.log(newWorkspaceId);
       if (state.workspaceId !== newWorkspaceId) {
-        console.log("Chaning workspaceid");
         state.projectId = null;
         state.tagsChecked = [];
         state.workspaceId = newWorkspaceId;

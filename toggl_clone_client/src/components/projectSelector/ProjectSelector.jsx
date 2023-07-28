@@ -67,7 +67,10 @@ const ProjectSelector = ({
   }, [searchDesc]);
 
   const handleProjectSeletion = (project) => {
-    if (onSelectionComplete) onSelectionComplete({ project: project });
+    if (onSelectionComplete)
+      onSelectionComplete({
+        project: project,
+      });
     onClose();
   };
 
@@ -129,7 +132,7 @@ const ProjectSelector = ({
         color={project.colour}
         name={project.name}
         selected={currentProjectId === project.id}
-        onClick={() => handleProjectSeletion(project, null)}
+        onClick={() => handleProjectSeletion(project)}
       />
     ));
   };
@@ -156,6 +159,13 @@ const ProjectSelector = ({
             onClear={handleSearchClear}
             style={{
               margin: theme.spacing(2.5, theme.ttSpacings.popper.px / 2),
+            }}
+            inputProps={{
+              onKeyDown: (e) => {
+                if (e.key === "Enter" && e.ctrlKey) {
+                  setOpenModal(true);
+                }
+              },
             }}
           />
           {/* show searched projects */}
@@ -228,7 +238,12 @@ const ProjectSelector = ({
                     selected={!currentProjectId}
                     color={alpha(theme.palette.primary.main, 0.6)}
                     name={"No Project"}
-                    onClick={() => handleProjectSeletion({ id: null })}
+                    onClick={() =>
+                      handleProjectSeletion({
+                        id: null,
+                        workspaceId: selectedWorkspace.id,
+                      })
+                    }
                   />
                   <TTPopperHeading mb={1} mt={2} mx={theme.spacing(1)}>
                     No client
@@ -262,6 +277,7 @@ const ProjectSelector = ({
         <CreateProjectModal
           open={openModal}
           workspaces={workspaces}
+          initialName={searchDesc}
           currentWorkspace={selectedWorkspace}
           onClose={handleProjectModalClose}
           onComplete={handleProjectModalComplete}

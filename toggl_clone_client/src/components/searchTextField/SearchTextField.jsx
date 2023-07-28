@@ -57,6 +57,7 @@ const SearchTextField = ({
   autoFocus = true,
   placeholder,
   style,
+  inputProps,
 }) => {
   const handleClose = () => {
     if (onClear) onClear();
@@ -76,6 +77,7 @@ const SearchTextField = ({
         onBlur={onBlur}
         onChange={onChange}
         placeholder={placeholder}
+        {...inputProps}
       />
       <Adornment
         className="SearchTextField-endAdornment SearchTextField-closeIconButton"

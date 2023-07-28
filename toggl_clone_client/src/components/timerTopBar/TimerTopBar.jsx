@@ -288,8 +288,8 @@ const TimerTopBar = () => {
     const { project } = selectionData;
     dispatch(
       changeProject({
-        projectId: project === null ? null : project.id,
-        workspaceId: project === null ? workspaceId : project.workspaceId,
+        projectId: project.id,
+        workspaceId: project.workspaceId ?? workspaceId,
       })
     );
   };
