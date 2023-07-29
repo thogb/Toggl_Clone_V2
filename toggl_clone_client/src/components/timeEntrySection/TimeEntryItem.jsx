@@ -1,4 +1,4 @@
-import React, { memo, useMemo } from "react";
+import React, { memo } from "react";
 import TimeEntryItemRecord from "./TimeEntryItemRecord";
 import { timeEntryCheckedActions } from "./TimeEntryCheckedReducer";
 import { useDispatch, useSelector } from "react-redux";
