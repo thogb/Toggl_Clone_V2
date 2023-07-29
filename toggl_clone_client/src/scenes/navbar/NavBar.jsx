@@ -36,12 +36,14 @@ const analysePaths = {
   paths: [
     {
       name: "Reports",
-      path: "/reports",
+      // path: "/reports",
+      path: "",
       icon: <ArticleIcon />,
     },
     {
       name: "Insights",
-      path: "/insights",
+      // path: "/insights",
+      path: "",
       icon: <AssessmentIcon />,
     },
   ],
@@ -52,17 +54,20 @@ const managePaths = {
   paths: [
     {
       name: "Projects",
-      path: "/projects",
+      // path: "/projects",
+      path: "",
       icon: <FolderIcon />,
     },
     {
       name: "Clients",
-      path: "/clients",
+      // path: "/clients",
+      path: "",
       icon: <AccountBoxIcon />,
     },
     {
       name: "Teams",
-      path: "/teams",
+      // path: "/teams",
+      path: "",
       icon: <GroupIcon />,
     },
     {
@@ -72,14 +77,15 @@ const managePaths = {
     },
     {
       name: "Integrations",
-      path: "/integrations",
+      // path: "/integrations",
+      path: "",
       icon: <PowerIcon />,
     },
-    {
-      name: "Api",
-      path: "/api",
-      icon: <PowerIcon />,
-    },
+    // {
+    //   name: "Api",
+    //   path: "/api",
+    //   icon: <PowerIcon />,
+    // },
   ],
 };
 
@@ -88,17 +94,20 @@ const adminPaths = {
   paths: [
     {
       name: "Subscription",
-      path: "/subscription",
+      // path: "/subscription",
+      path: "",
       icon: <CreditCardIcon />,
     },
     {
       name: "Organisation",
-      path: "/organisation",
+      // path: "/organisation",
+      path: "",
       icon: <CorporateFareIcon />,
     },
     {
       name: "Settings",
-      path: "/settings",
+      // path: "/settings",
+      path: "",
       icon: <SettingsIcon />,
     },
   ],
@@ -222,7 +231,8 @@ const NavBar = ({ loading = false, onClose = () => {} }) => {
               <NotificationsIcon fontSize="small" sx={{ color: "white" }} />
             </Badge>
           </SideNavBarButton>
-          <SideNavBarButton to="/where">
+          {/* <SideNavBarButton to="/where"> */}
+          <SideNavBarButton to="">
             <HelpIcon fontSize="small" sx={{ color: grey[500] }} />
           </SideNavBarButton>
         </Box>

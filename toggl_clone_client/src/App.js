@@ -20,13 +20,6 @@ function App() {
   // const mode = "dark";
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
 
-  // TODO: to be replaced with api calls
-  // useEffect(() => {
-  //   const dateGroupedEntries = generateDateGroupedEntries(getRawEntryList());
-
-  //   dispatch(setDateGroupedEntries({ dateGroupedEntries: dateGroupedEntries }));
-  // }, []);
-
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -42,7 +35,7 @@ function App() {
             <Route element={<DashBoard />}>
               <Route path={ROUTES.TIMER} element={<TimerPage />} />
               <Route path="/tags" element={<TagsPage />} />
-              <Route path="/api" element={<ApiPage />} />
+              {/* <Route path="/api" element={<ApiPage />} /> */}
             </Route>
           </Route>
           <Route path="*" element={<DefaultRoute />} />
