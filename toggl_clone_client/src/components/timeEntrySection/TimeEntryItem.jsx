@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, useMemo } from "react";
 import TimeEntryItemRecord from "./TimeEntryItemRecord";
 import { timeEntryCheckedActions } from "./TimeEntryCheckedReducer";
 import { useDispatch, useSelector } from "react-redux";
@@ -63,13 +63,31 @@ const TimeEntryItem = ({
 }) => {
   const dispatch = useDispatch();
   const workspaceId = timeEntry.workspaceId;
+  const projectId = timeEntry.projectId;
   const tagList =
     useSelector((state) => state.tags.tagNames)[workspaceId] ?? [];
+  const projects = useSelector((state) => state.projects.projects);
+  const workspaces = useSelector((state) => state.workspaces.workspaces);
 
   const [patchTimeEntry] = usePatchTimeEntryMutation();
   const [deleteTimeEntry] = useDeleteTimeEntryMutation();
   const [addTimeEntry] = useAddTimeEntryMutation();
   const [addTag] = useAddTagMutation();
+
+  const workspace = useMemo(() => {
+    let found = null;
+    for (let workspaceList of Object.values(workspaces)) {
+      found = workspaceList.find((w) => w.id === workspaceId);
+      if (found) break;
+    }
+    return found;
+  }, [workspaceId]);
+
+  const project = useMemo(() => {
+    if (projectId && workspaceId) {
+      return projects[workspaceId].find((project) => project.id === projectId);
+    }
+  }, [projectId]);
 
   const onDescriptionEdit = async (description) => {
     if (timeEntry.description !== description) {
@@ -280,6 +298,9 @@ const TimeEntryItem = ({
       startDate={timeEntry.startDate}
       stopDate={timeEntry.stopDate}
       tagList={tagList}
+      project={project}
+      projects={projects}
+      workspace={workspace}
       isChildrenOfGroup={isChildrenOfGroup}
       checked={
         timeEntryChecked.checkedList.findIndex(

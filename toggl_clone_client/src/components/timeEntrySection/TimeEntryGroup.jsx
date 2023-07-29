@@ -36,8 +36,12 @@ const TimeEntryGroup = ({
   const dispatch = useDispatch();
   const [isExpanded, setIsExpanded] = useState(false);
   const workspaceId = groupedEntry.workspaceId;
+  const projectId = groupedEntry.projectId;
+
   const tagList =
     useSelector((state) => state.tags.tagNames)[workspaceId] ?? [];
+  const projects = useSelector((state) => state.projects.projects);
+  const workspaces = useSelector((state) => state.workspaces.workspaces);
 
   const [batchDeleteTimeEntry] = useBatchDeleteTimeEntryMutation();
   const [batchPatchTimeEntry] = useBatchPatchTimeEntryMutation();
@@ -64,6 +68,21 @@ const TimeEntryGroup = ({
       isCheckOn: checked || indeterminate,
     };
   }, [checkedList]);
+
+  const workspace = useMemo(() => {
+    let found = null;
+    for (let workspaceList of Object.values(workspaces)) {
+      found = workspaceList.find((w) => w.id === workspaceId);
+      if (found) break;
+    }
+    return found;
+  }, [workspaceId]);
+
+  const project = useMemo(() => {
+    if (projectId && workspaceId) {
+      return projects[workspaceId].find((project) => project.id === projectId);
+    }
+  }, [projectId]);
 
   const onDescriptionEdit = async (description) => {
     if (description !== groupedEntry.description) {
@@ -191,6 +210,9 @@ const TimeEntryGroup = ({
         indeterminate={checkboxInfo.indeterminate}
         variant="group"
         isExpanded={isExpanded}
+        project={project}
+        projects={projects}
+        workspace={workspace}
         groupSize={groupedEntry.entries.length}
         showCheckbox={timeEntryChecked.showCheckbox}
         timeEntryChecked={timeEntryChecked}

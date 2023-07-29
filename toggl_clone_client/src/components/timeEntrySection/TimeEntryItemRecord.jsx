@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useMemo, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import TimeEntryItemBase, {
   RightTools,
   TimeEntryLeftSection,
@@ -23,7 +23,6 @@ import { TTMenu } from "../ttMenu/TTMenu";
 import { TTMenuItem } from "../ttMenu/TTMenuItem";
 import TimeEntryDateInfo from "./TimeEntryDateInfo";
 import TimeEntryDateInfoChanger from "./TimeEntryDateInfoChanger";
-import { useSelector } from "react-redux";
 import ProjectButton from "../projectButton/ProjectButton";
 import ProjectSelector from "../projectSelector/ProjectSelector";
 
@@ -76,6 +75,10 @@ const TimeEntryItemRecord = ({
   startDate,
   stopDate,
 
+  project,
+  projects,
+  workspace,
+
   tagList,
 
   isChildrenOfGroup = false,
@@ -106,9 +109,6 @@ const TimeEntryItemRecord = ({
 }) => {
   const theme = useTheme();
 
-  const projects = useSelector((state) => state.projects.projects);
-  const workspaces = useSelector((state) => state.workspaces.workspaces);
-
   const [teDescription, setTeDescription] = useState(description);
   const [tagSelectorAnchor, setTagSelectorAnchor] = useState(null);
   const [menuAnchor, setMenuAnchor] = useState(null);
@@ -118,28 +118,11 @@ const TimeEntryItemRecord = ({
     setTeDescription(description);
   }, [description]);
 
-  const workspace = useMemo(() => {
-    let found = null;
-    for (let workspaceList of Object.values(workspaces)) {
-      found = workspaceList.find((w) => w.id === workspaceId);
-      if (found) break;
-    }
-    return found;
-  }, [workspaceId]);
-
-  const project = useMemo(() => {
-    if (projectId && workspaceId) {
-      return projects[workspaceId].find((project) => project.id === projectId);
-    }
-  }, [projectId]);
-
   const handleTeDescriptionChange = (e) => {
     setTeDescription(e.target.value);
   };
 
   const handleTeDescriptionInputComplete = (e) => {
-    // Api call to update description of entry
-    // console.log(e.target.value);
     const trimmedValue = e.target.value.trim();
     setTeDescription(trimmedValue);
     operations.onDescriptionEdit(trimmedValue);
@@ -160,6 +143,8 @@ const TimeEntryItemRecord = ({
 
   const hasTags = tagsChecked.length > 0;
   const commonTextColor = alpha(theme.palette.primary.main, 0.7);
+
+  console.log("end time " + Date.now());
 
   return (
     <StyledTimeEntryItemBase
