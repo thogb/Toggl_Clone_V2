@@ -3,11 +3,13 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Writers;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
 using System.Text;
 using TogglTrackCloneApi.Data;
 using TogglTrackCloneApi.Filters;
+using TogglTrackCloneApi.Helper;
 using TogglTrackCloneApi.Repositories;
 using TogglTrackCloneApi.Repositories.IRepositories;
 using TogglTrackCloneApi.Services;
@@ -50,7 +52,16 @@ builder.Services.AddControllers(
     })
     .AddNewtonsoftJson();
 
-builder.Services.AddDbContext<TTCloneContext>();
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddDbContext<TTCloneContext, TTCloneContextDev>();
+}
+else
+{
+    builder.Services.AddDbContext<TTCloneContext>();
+}
+/*builder.Services.AddDbContext<TTCloneContext>();*/
+
 
 // Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -82,6 +93,12 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+}
+
+if (app.Environment.IsProduction())
+{
+    var scope = app.Services.CreateScope();
+    await DataHelper.ManageDataAsync(scope.ServiceProvider);
 }
 
 app.UseHttpsRedirection();

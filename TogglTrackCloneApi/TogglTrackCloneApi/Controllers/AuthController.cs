@@ -65,6 +65,7 @@ namespace TogglTrackCloneApi.Controllers
             }
             catch (Exception ex)
             {
+                Console.Out.WriteLineAsync(ex.Message);
                 return this.StatusCode(StatusCodes.Status500InternalServerError, "Failed");
             }
         }

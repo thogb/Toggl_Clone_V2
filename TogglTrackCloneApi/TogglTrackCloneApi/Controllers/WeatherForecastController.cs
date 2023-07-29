@@ -37,7 +37,7 @@ namespace TogglTrackCloneApi.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet(Name = "GetWeatherForecast")]
+        [HttpGet("anon")]
         public IEnumerable<WeatherForecast> GetAnon()
         {
             Request.Cookies.ToList().ForEach((kp) => { Console.WriteLine(kp.ToString()); });
