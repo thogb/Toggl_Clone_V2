@@ -17,6 +17,8 @@ const SIZES = {
   xl: 438,
 };
 
+export const TTPopperSizes = SIZES;
+
 const StyledPaper = styled(Paper)(({ theme }) => ({
   borderRadius: "8px",
   display: "flex",

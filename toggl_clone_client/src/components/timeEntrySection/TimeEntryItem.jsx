@@ -57,37 +57,40 @@ const TimeEntryItem = ({
   timeEntry,
   isChildrenOfGroup = false,
 
+  project = false,
+  projects = false,
+  workspace = false,
+
   //   checked = false,
   timeEntryChecked,
   timeEntryCheckedDispatch,
 }) => {
   const dispatch = useDispatch();
   const workspaceId = timeEntry.workspaceId;
-  const projectId = timeEntry.projectId;
   const tagList =
     useSelector((state) => state.tags.tagNames)[workspaceId] ?? [];
-  const projects = useSelector((state) => state.projects.projects);
-  const workspaces = useSelector((state) => state.workspaces.workspaces);
+  // const projects = useSelector((state) => state.projects.projects);
+  // const workspaces = useSelector((state) => state.workspaces.workspaces);
 
   const [patchTimeEntry] = usePatchTimeEntryMutation();
   const [deleteTimeEntry] = useDeleteTimeEntryMutation();
   const [addTimeEntry] = useAddTimeEntryMutation();
   const [addTag] = useAddTagMutation();
 
-  const workspace = useMemo(() => {
-    let found = null;
-    for (let workspaceList of Object.values(workspaces)) {
-      found = workspaceList.find((w) => w.id === workspaceId);
-      if (found) break;
-    }
-    return found;
-  }, [workspaceId]);
+  // const workspace = useMemo(() => {
+  //   let found = null;
+  //   for (let workspaceList of Object.values(workspaces)) {
+  //     found = workspaceList.find((w) => w.id === workspaceId);
+  //     if (found) break;
+  //   }
+  //   return found;
+  // }, [workspaceId]);
 
-  const project = useMemo(() => {
-    if (projectId && workspaceId) {
-      return projects[workspaceId].find((project) => project.id === projectId);
-    }
-  }, [projectId]);
+  // const project = useMemo(() => {
+  //   if (projectId && workspaceId) {
+  //     return projects[workspaceId].find((project) => project.id === projectId);
+  //   }
+  // }, [projectId]);
 
   const onDescriptionEdit = async (description) => {
     if (timeEntry.description !== description) {
@@ -211,16 +214,16 @@ const TimeEntryItem = ({
     }
   };
 
-  const handleCreateTagClick = async (tagName) => {
-    if (tagName) {
-      try {
-        const payload = await addTag({
-          tagName: tagName,
-          workspaceId: workspaceId,
-        }).unwrap();
-      } catch (error) {}
-    }
-  };
+  // const handleCreateTagClick = async (tagName) => {
+  //   if (tagName) {
+  //     try {
+  //       const payload = await addTag({
+  //         tagName: tagName,
+  //         workspaceId: workspaceId,
+  //       }).unwrap();
+  //     } catch (error) {}
+  //   }
+  // };
 
   const onDeleteClick = async (e) => {
     const cloned = timeEntryUtil.cloneTimeEntry(timeEntry);
@@ -318,7 +321,7 @@ const TimeEntryItem = ({
         onDeleteClick,
         onMenuClick,
         onStartButtonClick,
-        onCreateTagClick: handleCreateTagClick,
+        // onCreateTagClick: handleCreateTagClick,
       }}
     />
   );

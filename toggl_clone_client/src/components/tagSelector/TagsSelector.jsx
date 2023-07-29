@@ -2,15 +2,19 @@ import React, { useEffect, useState } from "react";
 import TTIconButton from "../ttIconButton/TTIconButton";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import { useTheme } from "@emotion/react";
-import TTPopper from "../ttPopper/TTPopper";
+import TTPopper, { TTPopperSizes } from "../ttPopper/TTPopper";
 import { Box, Button, Typography } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import TTPopperDivider from "../ttPopper/TTPopperDivider";
 import CheckboxList from "../checkboxList/CheckboxList";
 import SearchTextField from "../searchTextField/SearchTextField";
 import { grey } from "@mui/material/colors";
+import { useAddTagMutation } from "../../state/tagSlice";
+
+export const tagSelectorWidth = TTPopperSizes.sm;
 
 const TagsSelector = ({
+  workspaceId,
   tagList,
   tagCheckedList = [],
   onClose,
@@ -34,6 +38,8 @@ const TagsSelector = ({
   const [filteredLocalList, setFilteredLocalList] = useState([...tagList]);
   const [checkedList, setCheckedList] = useState([...tagCheckedList]);
   const [createdLocalList, setCreatedLocalList] = useState([]);
+
+  const [addTag] = useAddTagMutation();
 
   useEffect(() => {
     // setCreatedLocalList([]);
@@ -72,20 +78,31 @@ const TagsSelector = ({
   };
 
   const handleCreateTagClick = () => {
-    if (onCreateTagClick) onCreateTagClick(searchValue);
-    if (searchValue) {
-      setCreatedLocalList([...createdLocalList, searchValue]);
+    const tagName = searchValue.trim();
+    if (tagName) {
+      addTag({
+        tagName: tagName,
+        workspaceId: workspaceId,
+      });
+      if (onCreateTagClick) onCreateTagClick(tagName);
+      setCreatedLocalList([...createdLocalList, tagName]);
     }
     handleSearchClearClick();
   };
+
   const handlePopperClose = () => {
     const newCheckedList = [...checkedList].sort();
     if (onSelectionComplete) onSelectionComplete(newCheckedList);
-    setAnchorEl(null);
-    setCreatedLocalList([]);
+    if (triggerComponent) setAnchorEl(null);
     setCheckedList(newCheckedList);
+    cleanState();
+  };
+
+  const cleanState = () => {
+    setCreatedLocalList([]);
     setSearchValue("");
   };
+
   const handlePopperOpen = (e) => {
     setAnchorEl(e.currentTarget);
   };
@@ -95,7 +112,7 @@ const TagsSelector = ({
     if (onClose) onClose(newCheckedList);
     if (onSelectionComplete) onSelectionComplete(newCheckedList);
     setCheckedList(newCheckedList);
-    setSearchValue("");
+    cleanState();
   };
 
   const searchIsNotEmpty = searchValue !== "";

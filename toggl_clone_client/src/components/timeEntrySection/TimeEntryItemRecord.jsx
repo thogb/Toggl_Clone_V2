@@ -15,7 +15,7 @@ import { Box, Stack, Typography, alpha } from "@mui/material";
 import GrowingInput from "../growingInput/GrowingInput";
 import TTIconButton from "../ttIconButton/TTIconButton";
 import SubButton from "../subButton/SubButton";
-import TagsSelector from "../tagSelector/TagsSelector";
+import TagsSelector, { tagSelectorWidth } from "../tagSelector/TagsSelector";
 import TimeEntryExpandButton from "./TimeEntryExpandButton";
 import classNames from "classnames";
 import { useTheme } from "@emotion/react";
@@ -104,7 +104,7 @@ const TimeEntryItemRecord = ({
     onExpandButonClick: (e) => {},
     onMenuClick: (option) => {},
     onStartButtonClick: (e) => {},
-    onCreateTagClick: () => {},
+    // onCreateTagClick: () => {},
   },
 }) => {
   const theme = useTheme();
@@ -113,6 +113,7 @@ const TimeEntryItemRecord = ({
   const [tagSelectorAnchor, setTagSelectorAnchor] = useState(null);
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [projectAnchorEl, setProjectAnchorEl] = useState(null);
+  const [tagSelectorClientWidth, setTagSelectorClientWidth] = useState(0);
 
   useEffect(() => {
     setTeDescription(description);
@@ -143,8 +144,6 @@ const TimeEntryItemRecord = ({
 
   const hasTags = tagsChecked.length > 0;
   const commonTextColor = alpha(theme.palette.primary.main, 0.7);
-
-  console.log("end time " + Date.now());
 
   return (
     <StyledTimeEntryItemBase
@@ -231,26 +230,24 @@ const TimeEntryItemRecord = ({
       >
         <Box ml={"auto"} overflow={tagSelectorAnchor ? "none" : "hidden"}>
           <TagsSelector
+            workspaceId={workspaceId}
             tagList={tagList}
-            placement={hasTags ? "bottom-start" : "bottom-end"}
+            placement={"bottom-start"}
             tagCheckedList={tagsChecked}
             popperAnchorEl={tagSelectorAnchor}
             onClose={handleTagsSelectorClose}
+            offset={[-(tagSelectorWidth - 70 - tagSelectorClientWidth / 2), 10]}
             onCreateTagClick={operations.onCreateTagClick}
-            triggerTouchable={true}
             triggerComponent={
               hasTags ? (
                 <SubButton
                   noVerticalPadding={true}
                   style={{
-                    // paddingTop: "0px",
-                    // paddingBottom: "0px",
-                    // minWidth: 0,
-                    // overflow: "hidden",
                     width: !tagSelectorAnchor ? "100%" : "auto",
                   }}
                   onClick={(e) => {
                     setTagSelectorAnchor(e.currentTarget);
+                    setTagSelectorClientWidth(e.currentTarget.clientWidth);
                   }}
                 >
                   <Typography
@@ -267,6 +264,7 @@ const TimeEntryItemRecord = ({
                   selected={hasTags}
                   onClick={(e) => {
                     setTagSelectorAnchor(e.currentTarget);
+                    setTagSelectorClientWidth(e.currentTarget.clientWidth);
                   }}
                 >
                   <LocalOfferIcon />

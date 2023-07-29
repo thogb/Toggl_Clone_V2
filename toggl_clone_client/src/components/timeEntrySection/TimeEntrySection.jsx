@@ -10,6 +10,9 @@ import TimeEntryItem from "./TimeEntryItem";
 import TimeEntryGroup from "./TimeEntryGroup";
 import { alpha } from "@mui/material";
 import { grey } from "@mui/material/colors";
+import withSelectorPW from "./withSelectorPW";
+
+const TimeEntryItemWithSelector = withSelectorPW(TimeEntryItem);
 
 const TimeEntryList = styled("ul")(({ theme }) => ({
   listStyle: "none",
@@ -63,7 +66,7 @@ const TimeEntrySection = ({ sectionData, ...other }) => {
       {groupedEntries.map((groupedEntry) => {
         if (groupedEntry.entries.length === 1) {
           return (
-            <TimeEntryItem
+            <TimeEntryItemWithSelector
               key={groupedEntry.entries[0].id}
               dateGroupId={sectionData.dateGroupId}
               gId={groupedEntry.gId}

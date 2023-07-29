@@ -237,6 +237,9 @@ const TimeEntryGroup = ({
             dateGroupId={dateGroupId}
             gId={groupedEntry.gId}
             timeEntry={entry}
+            project={project}
+            projects={projects}
+            workspace={workspace}
             isChildrenOfGroup={true}
             //   checked={timeEntryChecked.checkedList.indexOf(entry.id) !== -1}
             timeEntryChecked={timeEntryChecked}

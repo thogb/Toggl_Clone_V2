@@ -220,16 +220,16 @@ const TimerTopBar = () => {
     dispatch(resetDateInfo());
   };
 
-  const handleCreateTagClick = async (tagName) => {
-    if (tagName) {
-      try {
-        const payload = await addTag({
-          tagName: tagName,
-          workspaceId: workspaceId,
-        }).unwrap();
-      } catch (error) {}
-    }
-  };
+  // const handleCreateTagClick = async (tagName) => {
+  //   if (tagName) {
+  //     try {
+  //       const payload = await addTag({
+  //         tagName: tagName,
+  //         workspaceId: workspaceId,
+  //       }).unwrap();
+  //     } catch (error) {}
+  //   }
+  // };
 
   const handleTimePopperClose = async (dateInfo) => {
     if (duration < 0) {
@@ -399,8 +399,9 @@ const TimerTopBar = () => {
           />
         )}
         <TagsSelector
+          workspaceId={workspaceId}
           tagList={tagList}
-          onCreateTagClick={handleCreateTagClick}
+          // onCreateTagClick={handleCreateTagClick}
           tagCheckedList={tagCheckedList}
           onSelectionComplete={handleTagsSelectionComplete}
         />
