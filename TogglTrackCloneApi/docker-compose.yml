@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  toggltrackcloneapi:
+    image: ${DOCKER_REGISTRY-}toggltrackcloneapi
+    build:
+      context: .
+      dockerfile: TogglTrackCloneApi/Dockerfile

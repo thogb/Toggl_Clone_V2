@@ -23,13 +23,23 @@ namespace TogglTrackCloneApi.Controllers
         }
 
         [Authorize]
-        [HttpGet(Name = "GetWeatherForecast")]
+        [HttpGet(Name = "GetWeatherForecastAuth")]
         public IEnumerable<WeatherForecast> Get()
         {
-            Console.WriteLine("test");
-            Console.WriteLine(User.FindFirst(ClaimTypes.Email)!.Value);
-            Console.WriteLine(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-            Console.WriteLine(Request.Headers.Authorization);
+            Request.Cookies.ToList().ForEach((kp) => { Console.WriteLine(kp.ToString()); });
+            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
+            {
+                Date = DateTime.Now.AddDays(index),
+                TemperatureC = Random.Shared.Next(-20, 55),
+                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
+            })
+            .ToArray();
+        }
+
+        [AllowAnonymous]
+        [HttpGet(Name = "GetWeatherForecast")]
+        public IEnumerable<WeatherForecast> GetAnon()
+        {
             Request.Cookies.ToList().ForEach((kp) => { Console.WriteLine(kp.ToString()); });
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {

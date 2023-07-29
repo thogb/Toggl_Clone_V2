@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33516.290
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TogglTrackCloneApi", "TogglTrackCloneApi\TogglTrackCloneApi.csproj", "{B34EC393-7193-46AB-A6CE-B5F1D5EC31F8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TogglTrackCloneApi", "TogglTrackCloneApi\TogglTrackCloneApi.csproj", "{B34EC393-7193-46AB-A6CE-B5F1D5EC31F8}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{EABCC055-CC19-4225-92C4-541C27B26E2E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{B34EC393-7193-46AB-A6CE-B5F1D5EC31F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B34EC393-7193-46AB-A6CE-B5F1D5EC31F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B34EC393-7193-46AB-A6CE-B5F1D5EC31F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EABCC055-CC19-4225-92C4-541C27B26E2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EABCC055-CC19-4225-92C4-541C27B26E2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EABCC055-CC19-4225-92C4-541C27B26E2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EABCC055-CC19-4225-92C4-541C27B26E2E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
