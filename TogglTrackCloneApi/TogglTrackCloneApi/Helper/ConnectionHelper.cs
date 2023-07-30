@@ -24,6 +24,8 @@ namespace TogglTrackCloneApi.Helper
                 Password = userInfo[1],
                 Database = databaseUri.LocalPath.TrimStart('/'),
                 SslMode = SslMode.Disable,
+                Timeout = 300,
+                CommandTimeout = 300
                 /*                TrustServerCertificate = true*/
             };
             Console.WriteLine(builder.ToString());

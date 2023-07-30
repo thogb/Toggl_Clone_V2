@@ -123,11 +123,22 @@ if (app.Environment.IsProduction())
 
 app.UseHttpsRedirection();
 
-app.UseCors(options => options
-.WithOrigins(new[] { "http://localhost:3000"})
-    .AllowAnyHeader()
-    .AllowAnyMethod()
-    .AllowCredentials());
+if (app.Environment.IsDevelopment())
+{
+    app.UseCors(options => options
+        .SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials());
+} else
+{
+      app.UseCors(options => options
+        .SetIsOriginAllowed(origin => new Uri(origin).Host == "ttcloneapp.netlify.app")
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials());
+
+}
 
 app.UseAuthentication();
 app.UseAuthorization();

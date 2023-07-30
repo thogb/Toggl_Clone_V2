@@ -48,7 +48,7 @@ import { timeEntryUtil } from "../../utils/TimeEntryUtil";
 import { createReplacePatch } from "../../utils/otherUtil";
 import { listUtil } from "../../utils/listUtil";
 import { useAddTagMutation } from "../../state/tagSlice";
-import { Folder } from "@mui/icons-material";
+import { Folder, LocalOffer } from "@mui/icons-material";
 import ProjectSelector from "../projectSelector/ProjectSelector";
 import { useAddProjectMutation } from "../../state/projectSlice";
 import ProjectButton from "../projectButton/ProjectButton";
@@ -82,14 +82,12 @@ const TimerTopBar = () => {
 
   const desciptionInput = useRef();
   const [isTimerMode, setIsTimerMode] = useState(true);
+  const [tagAnchorEl, setTagAnchorEl] = useState(null);
   const [projectAnchorEl, setProjectAnchorEl] = useState(null);
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [addTimeEntry] = useAddTimeEntryMutation();
   const [patchTimeEntry] = usePatchTimeEntryMutation();
-  const [addTag] = useAddTagMutation();
-  const [addProject] = useAddProjectMutation();
 
-  const mw620 = useMediaQuery("(min-width:620px)");
   const theme = useTheme();
 
   const currentWorkspaceId = currentWorkspace.id ?? 0;
@@ -403,9 +401,23 @@ const TimerTopBar = () => {
           tagList={tagList}
           // onCreateTagClick={handleCreateTagClick}
           tagCheckedList={tagCheckedList}
+          popperAnchorEl={tagAnchorEl}
+          onClose={() => setTagAnchorEl(null)}
           onSelectionComplete={handleTagsSelectionComplete}
+          triggerComponent={
+            <TTIconButton
+              selected={tagCheckedList?.length > 0}
+              onClick={(e) => setTagAnchorEl(e.currentTarget)}
+            >
+              <LocalOffer />
+            </TTIconButton>
+          }
         />
-        <TTIconButton disabled style={{ margin: theme.spacing(0, 1) }}>
+        <TTIconButton
+          disabled
+          style={{ margin: theme.spacing(0, 1) }}
+          onClick={(e) => setTagAnchorEl(e.currentTarget)}
+        >
           <AttachMoneyIcon style={{ fontSize: "1.25rem" }} />
         </TTIconButton>
         {/* time Entries */}

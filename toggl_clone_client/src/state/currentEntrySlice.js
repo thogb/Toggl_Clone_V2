@@ -212,6 +212,7 @@ export const currentEntrySlice = createSlice({
       ttCloneApi.endpoints.getWorkspaces.matchFulfilled,
       (state, action) => {
         if (!state.timerStarted) {
+          console.log(action.payload);
           state.workspaceId = action.payload[0].id;
         }
       }
