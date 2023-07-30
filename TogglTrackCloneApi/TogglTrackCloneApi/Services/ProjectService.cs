@@ -29,6 +29,7 @@ namespace TogglTrackCloneApi.Services
         {
             int workspaceId = projectDTO.WorkspaceId;
             await _workspaceService.ValidateWorkspaceAndUserCanEditProject(workspaceId, userId);
+            await ValidateProjectName(projectDTO.Name, projectDTO.WorkspaceId);
 
             Project project = _mapper.Map<Project>( projectDTO);
 
@@ -49,6 +50,7 @@ namespace TogglTrackCloneApi.Services
             request.ApplyTo(projectDTO);
             if (projectDTO.WorkspaceId > 0 && projectDTO.WorkspaceId != project.WorkspaceId)
                 throw new TTIllegalEditException("cannot edit workspace id");
+            await ValidateProjectName(projectDTO.Name, projectDTO.WorkspaceId);
 
             _mapper.Map(projectDTO, project);
 
@@ -77,12 +79,21 @@ namespace TogglTrackCloneApi.Services
             if (project == null) throw new TTNotFoundException("project not found");
 
             await _workspaceService.ValidateWorkspaceAndUserCanEditProject(workspaceId, userId);
+            await ValidateProjectName(projectDTO.Name, projectDTO.WorkspaceId);
 
             _mapper.Map(projectDTO, project);
 
             _projectRepository.Update(project);
             await _projectRepository.SaveChangesAsync();
             return _mapper.Map<ProjectResponseDTO>(project);
+        }
+
+        public async Task ValidateProjectName(string projectName, int workspaceId)
+        {
+            if (await _projectRepository.ProjectNameExists(projectName, workspaceId))
+            {
+                throw new TTIllegalEditException("Project name already exists");
+            }
         }
     }
 }

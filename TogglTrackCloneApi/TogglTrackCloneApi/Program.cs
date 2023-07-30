@@ -52,13 +52,33 @@ builder.Services.AddControllers(
     })
     .AddNewtonsoftJson();
 
-if (builder.Environment.IsDevelopment())
+var provider = config.GetValue("Provider", string.Empty);
+
+if (provider == string.Empty)
 {
-    builder.Services.AddDbContext<TTCloneContext, TTCloneContextDev>();
+    if (builder.Environment.IsDevelopment())
+    {
+        provider = "SqlServer";
+    }
+    else
+    {
+        provider = "Npgsql";
+    }
+}
+
+Console.WriteLine(provider);
+
+if (provider == "SqlServer")
+{
+    builder.Services.AddDbContext<TTCloneContext>();
+}
+else if (provider == "Npgsql")
+{
+    builder.Services.AddDbContext<TTCloneContext, TTCloneContextProd>();
 }
 else
 {
-    builder.Services.AddDbContext<TTCloneContext>();
+    throw new Exception("Unsupported database type.");
 }
 /*builder.Services.AddDbContext<TTCloneContext>();*/
 

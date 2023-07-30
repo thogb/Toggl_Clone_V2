@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TogglTrackCloneApi.Helper;
 using TogglTrackCloneApi.Models;
 
 namespace TogglTrackCloneApi.Data
@@ -25,8 +26,8 @@ namespace TogglTrackCloneApi.Data
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             /*base.OnConfiguring(optionsBuilder);*/
-/*            optionsBuilder.UseSqlServer(_config.GetConnectionString("TogglTrackClone"));*/
-            optionsBuilder.UseNpgsql(_config.GetConnectionString("TogglTrackClone"));
+            /*            optionsBuilder.UseSqlServer(_config.GetConnectionString("TogglTrackClone"));*/
+            optionsBuilder.UseSqlServer(_config.GetConnectionString("TogglTrackClone"), o => o.MigrationsAssembly("SqlSeverMigrations"));
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
