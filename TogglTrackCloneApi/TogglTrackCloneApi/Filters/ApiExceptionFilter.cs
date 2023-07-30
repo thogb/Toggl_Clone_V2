@@ -27,7 +27,7 @@ namespace TogglTrackCloneApi.Filters
             }
 
             context.Result = new JsonResult(new ApiError { Message=message});
-            _logger.LogError(context.Exception.ToString());
+            /*_logger.LogError(context.Exception.ToString());*/
 
             base.OnException(context);
         }
