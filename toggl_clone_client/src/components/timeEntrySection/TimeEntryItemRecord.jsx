@@ -244,6 +244,7 @@ const TimeEntryItemRecord = ({
                   noVerticalPadding={true}
                   style={{
                     width: !tagSelectorAnchor ? "100%" : "auto",
+                    zIndex: theme.zIndex.popper - 10,
                   }}
                   onClick={(e) => {
                     setTagSelectorAnchor(e.currentTarget);
