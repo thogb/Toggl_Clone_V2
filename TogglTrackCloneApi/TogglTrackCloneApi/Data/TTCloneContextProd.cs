@@ -15,7 +15,7 @@ namespace TogglTrackCloneApi.Data
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             /*base.OnConfiguring(optionsBuilder);*/
-            optionsBuilder.UseNpgsql(ConnectionHelper.GetConnectionString(_config) ?? "Npsql", o => o.MigrationsAssembly("NpgsqlMigrations"));
+            optionsBuilder.UseNpgsql(ConnectionHelper.GetConnectionString(_config) ?? "Npsql");
         }
     }
 }

@@ -27,7 +27,7 @@ namespace TogglTrackCloneApi.Data
         {
             /*base.OnConfiguring(optionsBuilder);*/
             /*            optionsBuilder.UseSqlServer(_config.GetConnectionString("TogglTrackClone"));*/
-            optionsBuilder.UseSqlServer(_config.GetConnectionString("TogglTrackClone"), o => o.MigrationsAssembly("SqlSeverMigrations"));
+            optionsBuilder.UseSqlServer(_config.GetConnectionString("TogglTrackClone"));
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
