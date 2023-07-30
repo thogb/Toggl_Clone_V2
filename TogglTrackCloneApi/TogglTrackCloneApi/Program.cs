@@ -24,6 +24,7 @@ builder.Logging.AddConsole();
 
 // Add services to the container.
 
+string? jwtKey = Environment.GetEnvironmentVariable("JWT_KEY");
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -32,7 +33,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = false,
             ValidateIssuer = false,
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config.GetSection("JWTSettings:Key").Value))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey ?? config.GetSection("JWTSettings:Key").Value))
         };
     });
 /*    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,

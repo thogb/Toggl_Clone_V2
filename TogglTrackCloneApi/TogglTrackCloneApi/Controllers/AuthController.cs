@@ -103,8 +103,8 @@ namespace TogglTrackCloneApi.Controllers
                 new Claim(ClaimTypes.Email, email),
             
             };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("JWTSettings:Key").Value));
+            string? jwtKey = Environment.GetEnvironmentVariable("JWT_KEY");
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey ?? _configuration.GetSection("JWTSettings:Key").Value));
 
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
