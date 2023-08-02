@@ -4,7 +4,12 @@ import { useMemo } from "react";
 import { themeSettings } from "./theme";
 import "./App.css";
 import AuthorizedPageWrapper from "./routes/AuthorizedPageWrapper";
-import { anonRoutes, generateRoutes, timerRoute } from "./routes/Routes";
+import {
+  anonRoutes,
+  generateRoutes,
+  reportRoute,
+  timerRoute,
+} from "./routes/Routes";
 import DefaultRoute from "./routes/DefaultRoute";
 import UnAuthorizedPageWrapper from "./routes/UnAuthorizedPageWrapper";
 import DashBoard from "./scenes/dashBoard/DashBoard";
@@ -34,6 +39,7 @@ function App() {
                 path={timerRoute.path}
                 element={<timerRoute.component />}
               />
+              {generateRoutes([reportRoute])}
               <Route path="/tags" element={<TagsPage />} />
               {/* <Route path="/api" element={<ApiPage />} /> */}
             </Route>

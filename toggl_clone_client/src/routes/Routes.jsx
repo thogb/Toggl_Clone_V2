@@ -3,6 +3,8 @@ import LogInPage from "../scenes/trackPage/LogInPage";
 import SignUpPage from "../scenes/trackPage/SignUpPage";
 import TrackPageWrapper from "./TrackPageWrapper";
 import TimerPage from "../scenes/timerPage/TimerPage";
+import ReportsPage from "../scenes/reportsPage/ReportsPage";
+import ReportsSummaryPage from "../scenes/reportsPage/ReportsSummaryPage";
 
 // const SIGNUP = "/track/signup";
 // const LOGIN = "/track/login";
@@ -36,27 +38,27 @@ export const timerRoute = {
 export const reportRoute = {
   name: "reports",
   path: "/reports",
-  component: null,
+  component: ReportsPage,
   routes: [
     {
       name: "summary",
       path: "summary",
-      component: null,
+      component: ReportsSummaryPage,
     },
     {
       name: "summary",
       path: "detailed",
-      component: null,
+      component: ReportsSummaryPage,
     },
     {
       name: "summary",
       path: "weekly",
-      component: null,
+      component: ReportsSummaryPage,
     },
     {
       name: "summary",
       path: "saved",
-      component: null,
+      component: ReportsSummaryPage,
     },
   ],
 };

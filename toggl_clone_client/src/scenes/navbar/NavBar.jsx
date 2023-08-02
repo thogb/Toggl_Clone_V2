@@ -36,8 +36,8 @@ const analysePaths = {
   paths: [
     {
       name: "Reports",
-      // path: "/reports",
-      path: "",
+      path: "/reports",
+      // path: "",
       icon: <ArticleIcon />,
     },
     {
