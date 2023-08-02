@@ -1,14 +1,10 @@
 import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import { Route, Routes } from "react-router-dom";
-import TimerPage from "./scenes/timerPage/TimerPage";
 import { useMemo } from "react";
 import { themeSettings } from "./theme";
 import "./App.css";
-import SignUpPage from "./scenes/trackPage/SignUpPage";
-import LogInPage from "./scenes/trackPage/LogInPage";
 import AuthorizedPageWrapper from "./routes/AuthorizedPageWrapper";
-import TrackPageWrapper from "./routes/TrackPageWrapper";
-import { ROUTES, anonRoutes, generateRoutes } from "./routes/Routes";
+import { anonRoutes, generateRoutes, timerRoute } from "./routes/Routes";
 import DefaultRoute from "./routes/DefaultRoute";
 import UnAuthorizedPageWrapper from "./routes/UnAuthorizedPageWrapper";
 import DashBoard from "./scenes/dashBoard/DashBoard";
@@ -34,7 +30,10 @@ function App() {
           </Route>
           <Route element={<AuthorizedPageWrapper />}>
             <Route element={<DashBoard />}>
-              <Route path={ROUTES.TIMER} element={<TimerPage />} />
+              <Route
+                path={timerRoute.path}
+                element={<timerRoute.component />}
+              />
               <Route path="/tags" element={<TagsPage />} />
               {/* <Route path="/api" element={<ApiPage />} /> */}
             </Route>

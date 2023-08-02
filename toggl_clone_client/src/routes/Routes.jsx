@@ -2,27 +2,35 @@ import { Route } from "react-router-dom";
 import LogInPage from "../scenes/trackPage/LogInPage";
 import SignUpPage from "../scenes/trackPage/SignUpPage";
 import TrackPageWrapper from "./TrackPageWrapper";
+import TimerPage from "../scenes/timerPage/TimerPage";
 
-const SIGNUP = "/track/signup";
-const LOGIN = "/track/login";
-const TIMER = "/timer";
+// const SIGNUP = "/track/signup";
+// const LOGIN = "/track/login";
+// const TIMER = "/timer";
+
+export const loginRoute = {
+  name: "login",
+  path: "/track/login",
+  component: LogInPage,
+};
+
+export const singupRoute = {
+  name: "signup",
+  path: "/track/signup",
+  component: SignUpPage,
+};
 
 export const trackRoute = {
   name: "track",
   path: "/track",
   component: TrackPageWrapper,
-  routes: [
-    {
-      name: "login",
-      path: "login",
-      component: LogInPage,
-    },
-    {
-      name: "Signup",
-      path: "signup",
-      component: SignUpPage,
-    },
-  ],
+  routes: [loginRoute, singupRoute],
+};
+
+export const timerRoute = {
+  name: "timer",
+  path: "/timer",
+  component: TimerPage,
 };
 
 export const reportRoute = {
@@ -102,16 +110,17 @@ const adminRoutes = [
 export const anonRoutes = [trackRoute];
 
 export const dashboardRoutes = [
+  timerRoute,
   ...analyseRoutes,
   ...manageRoutes,
   ...adminRoutes,
 ];
 
-export const ROUTES = {
-  SIGNUP,
-  LOGIN,
-  TIMER,
-};
+// export const ROUTES = {
+//   SIGNUP,
+//   LOGIN,
+//   TIMER,
+// };
 
 export const generateRoutes = (routes) => {
   return routes.map((route) => {
