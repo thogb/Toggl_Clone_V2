@@ -2,6 +2,7 @@ import React from "react";
 import TTAppbar, {
   TTAppbarActions,
   TTAppbarContent,
+  TTAppbarLink,
   TTAppbarMain,
   TTAppbarStart,
   TTAppbarTitle,
@@ -9,15 +10,28 @@ import TTAppbar, {
 } from "../../components/ttAppbar/TTAppbar";
 import { Button } from "@mui/material";
 import { GetApp, Save } from "@mui/icons-material";
+import { reportRoute } from "../../routes/Routes";
+import { useLocation } from "react-router-dom";
 
 const ReportsAppbar = () => {
+  const { pathname } = useLocation();
+
   return (
     <TTAppbar>
       <TTAppbarMain>
         <TTAppbarStart>
           <TTAppbarTitle>Reports</TTAppbarTitle>
         </TTAppbarStart>
-        <TTAppbarContent>asd</TTAppbarContent>
+        <TTAppbarContent>
+          {reportRoute.routes.map((route) => (
+            <TTAppbarLink
+              key={route.name}
+              to={`${reportRoute.exactPath}/${route.path}`}
+            >
+              {route.name}
+            </TTAppbarLink>
+          ))}
+        </TTAppbarContent>
         <TTAppbarActions>
           <Button
             startIcon={<Save />}

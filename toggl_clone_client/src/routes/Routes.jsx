@@ -1,4 +1,4 @@
-import { Route } from "react-router-dom";
+import { Navigate, Route } from "react-router-dom";
 import LogInPage from "../scenes/trackPage/LogInPage";
 import SignUpPage from "../scenes/trackPage/SignUpPage";
 import TrackPageWrapper from "./TrackPageWrapper";
@@ -38,7 +38,13 @@ export const timerRoute = {
 export const reportRoute = {
   name: "reports",
   path: "/reports",
+  exactPath: "/reports",
   component: ReportsPage,
+  index: {
+    name: "summary",
+    path: "summary",
+    component: ReportsSummaryPage,
+  },
   routes: [
     {
       name: "summary",
@@ -46,17 +52,17 @@ export const reportRoute = {
       component: ReportsSummaryPage,
     },
     {
-      name: "summary",
+      name: "detailed",
       path: "detailed",
       component: ReportsSummaryPage,
     },
     {
-      name: "summary",
+      name: "weekly",
       path: "weekly",
       component: ReportsSummaryPage,
     },
     {
-      name: "summary",
+      name: "saved",
       path: "saved",
       component: ReportsSummaryPage,
     },
@@ -128,10 +134,17 @@ export const generateRoutes = (routes) => {
   return routes.map((route) => {
     if (route.routes && route.routes.length > 0) {
       const inner = generateRoutes(route.routes);
-      const first = route.routes[0];
+      const indexRoute = route.index;
       return (
         <Route path={route.path} element={<route.component />} key={route.name}>
-          <Route index element={<first.component />} />
+          {/* <Route index element={<first.component />} /> */}
+          {indexRoute && (
+            <Route
+              index
+              element={<Navigate to={indexRoute.path} />}
+              key={indexRoute.name}
+            />
+          )}
           {inner}
         </Route>
       );

@@ -137,7 +137,7 @@ const NavBar = ({ loading = false, onClose = () => {} }) => {
 
   const leftDrawerWidth = 47;
 
-  const username = "Test";
+  const currPath = `/${location.pathname.split("/")[1]}`;
 
   const handleWorkspaceClick = (e) => {
     if (!loading && currentWorkspace?.name && currentOrganisation?.name) {
@@ -312,7 +312,7 @@ const NavBar = ({ loading = false, onClose = () => {} }) => {
               icon={<WatchLaterIcon />}
               to={"/timer"}
               disabled={loading}
-              selected={location.pathname === "/timer"}
+              selected={currPath === "/timer"}
             />
           </TTSideMenuList>
 
@@ -326,7 +326,7 @@ const NavBar = ({ loading = false, onClose = () => {} }) => {
                 icon={item.icon}
                 to={item.path}
                 disabled={loading}
-                selected={location.pathname === item.path}
+                selected={currPath === item.path}
               />
             ))}
           </TTSideMenuList>
@@ -341,7 +341,7 @@ const NavBar = ({ loading = false, onClose = () => {} }) => {
                 icon={item.icon}
                 to={item.path}
                 disabled={loading}
-                selected={location.pathname === item.path}
+                selected={currPath === item.path}
               />
             ))}
           </TTSideMenuList>
@@ -358,7 +358,7 @@ const NavBar = ({ loading = false, onClose = () => {} }) => {
                 icon={item.icon}
                 to={item.path}
                 disabled={loading}
-                selected={location.pathname === item.path}
+                selected={currPath === item.path}
               />
             ))}
           </TTSideMenuList>
