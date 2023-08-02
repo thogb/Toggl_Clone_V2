@@ -1,5 +1,7 @@
+import { Route } from "react-router-dom";
 import LogInPage from "../scenes/trackPage/LogInPage";
 import SignUpPage from "../scenes/trackPage/SignUpPage";
+import TrackPageWrapper from "./TrackPageWrapper";
 
 const SIGNUP = "/track/signup";
 const LOGIN = "/track/login";
@@ -7,8 +9,8 @@ const TIMER = "/timer";
 
 export const trackRoute = {
   name: "track",
-  path: "track",
-  component: null,
+  path: "/track",
+  component: TrackPageWrapper,
   routes: [
     {
       name: "login",
@@ -25,7 +27,7 @@ export const trackRoute = {
 
 export const reportRoute = {
   name: "reports",
-  path: "reports",
+  path: "/reports",
   component: null,
   routes: [
     {
@@ -97,7 +99,7 @@ const adminRoutes = [
   },
 ];
 
-export const anonRoutes = [...trackRoute];
+export const anonRoutes = [trackRoute];
 
 export const dashboardRoutes = [
   ...analyseRoutes,
@@ -109,4 +111,27 @@ export const ROUTES = {
   SIGNUP,
   LOGIN,
   TIMER,
+};
+
+export const generateRoutes = (routes) => {
+  return routes.map((route) => {
+    if (route.routes && route.routes.length > 0) {
+      const inner = generateRoutes(route.routes);
+      const first = route.routes[0];
+      return (
+        <Route path={route.path} element={<route.component />} key={route.name}>
+          <Route index element={<first.component />} />
+          {inner}
+        </Route>
+      );
+    } else {
+      return (
+        <Route
+          path={route.path}
+          element={<route.component />}
+          key={route.name}
+        />
+      );
+    }
+  });
 };

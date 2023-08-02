@@ -8,11 +8,10 @@ import SignUpPage from "./scenes/trackPage/SignUpPage";
 import LogInPage from "./scenes/trackPage/LogInPage";
 import AuthorizedPageWrapper from "./routes/AuthorizedPageWrapper";
 import TrackPageWrapper from "./routes/TrackPageWrapper";
-import { ROUTES } from "./routes/Routes";
+import { ROUTES, anonRoutes, generateRoutes } from "./routes/Routes";
 import DefaultRoute from "./routes/DefaultRoute";
 import UnAuthorizedPageWrapper from "./routes/UnAuthorizedPageWrapper";
 import DashBoard from "./scenes/dashBoard/DashBoard";
-import ApiPage from "./scenes/testingPage/ApiPage";
 import TagsPage from "./scenes/tagsPage/TagsPage";
 
 function App() {
@@ -20,16 +19,18 @@ function App() {
   // const mode = "dark";
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
 
+  const anonRouteComps = useMemo(() => generateRoutes(anonRoutes), []);
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <div className="app">
         <Routes>
           <Route element={<UnAuthorizedPageWrapper />}>
-            <Route element={<TrackPageWrapper />}>
+            {/* <Route element={<TrackPageWrapper />}>
               <Route path={ROUTES.SIGNUP} element={<SignUpPage />} />
               <Route path={ROUTES.LOGIN} element={<LogInPage />} />
-            </Route>
+            </Route> */}
+            {anonRouteComps}
           </Route>
           <Route element={<AuthorizedPageWrapper />}>
             <Route element={<DashBoard />}>
