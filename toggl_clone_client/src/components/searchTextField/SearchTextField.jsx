@@ -58,6 +58,7 @@ const SearchTextField = ({
   placeholder,
   style,
   inputProps,
+  ...others
 }) => {
   const handleClose = () => {
     if (onClear) onClear();
@@ -66,7 +67,7 @@ const SearchTextField = ({
   const showClearButton = clearOn && value !== "";
 
   return (
-    <StyledTextField style={style}>
+    <StyledTextField style={style} {...others}>
       <Adornment className="SearchTextField-startAdornment">
         {startAdornment ?? <SearchIcon fontSize="small" />}
       </Adornment>

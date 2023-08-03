@@ -11,13 +11,14 @@ import { grey } from "@mui/material/colors";
 
 const StyledListItem = styled(ListItem)(({ theme }) => ({
   padding: 0,
+  borderRadius: "8px",
 
   "&:hover": {
     backgroundColor: grey[200],
-    borderRadius: "8px",
   },
 
   "& > .MuiListItemButton-root": {
+    borderRadius: "8px",
     padding: theme.spacing(0.5, 1),
 
     "& > .MuiListItemIcon-root": {
@@ -45,19 +46,32 @@ const StyledListItem = styled(ListItem)(({ theme }) => ({
       overflow: "hidden",
 
       "& > .MuiTypography-root": {
-        fontSize: "1rem",
+        ...theme.typography.subtitle2,
+        fontSize: "0.975rem",
+        fontWeight: 400,
         textOverflow: "ellipsis",
         overflow: "hidden",
+        color: theme.palette.primary.main,
       },
     },
   },
 }));
 
-const CheckboxListItem = ({ value, checked, itemText, onClick }) => {
+const CheckboxListItem = ({
+  showSelected = false,
+  value,
+  checked,
+  itemText,
+  onClick,
+}) => {
   const labelId = `checkbox-list-label-${value}`;
   return (
     <StyledListItem>
-      <ListItemButton onClick={onClick} disableTouchRipple>
+      <ListItemButton
+        selected={showSelected && checked}
+        onClick={onClick}
+        disableTouchRipple
+      >
         <ListItemIcon>
           <Checkbox
             edge="start"

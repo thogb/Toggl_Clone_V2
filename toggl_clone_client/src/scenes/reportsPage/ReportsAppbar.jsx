@@ -8,14 +8,23 @@ import TTAppbar, {
   TTAppbarTitle,
   TTAppbarTool,
 } from "../../components/ttAppbar/TTAppbar";
-import { Button } from "@mui/material";
-import { GetApp, Save } from "@mui/icons-material";
+import { Button, Typography } from "@mui/material";
+import { GetApp, LocalOffer, Save } from "@mui/icons-material";
 import { reportRoute } from "../../routes/Routes";
 import { useLocation } from "react-router-dom";
+import TagsFilter from "../../components/filters/TagsFilter";
+import { FilterButton } from "../../components/filters/FilterButton";
+import { useSelector } from "react-redux";
 
 const ReportsAppbar = () => {
-  const { pathname } = useLocation();
+  const currentWorkspace = useSelector(
+    (state) => state.workspaces.currentWorkspace
+  );
 
+  const location = useLocation();
+  const currPath = location.pathname
+    .split(reportRoute.exactPath)[1]
+    .split("/")[1];
   return (
     <TTAppbar>
       <TTAppbarMain>
@@ -26,6 +35,7 @@ const ReportsAppbar = () => {
           {reportRoute.routes.map((route) => (
             <TTAppbarLink
               key={route.name}
+              className={route.path === currPath ? "TT-selected" : ""}
               to={`${reportRoute.exactPath}/${route.path}`}
             >
               {route.name}
@@ -46,7 +56,9 @@ const ReportsAppbar = () => {
           </Button>
         </TTAppbarActions>
       </TTAppbarMain>
-      <TTAppbarTool>asd</TTAppbarTool>
+      <TTAppbarTool>
+        <TagsFilter workspaceId={currentWorkspace.id} />
+      </TTAppbarTool>
     </TTAppbar>
   );
 };

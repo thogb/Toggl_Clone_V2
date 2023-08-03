@@ -2,7 +2,12 @@ import { List, Typography } from "@mui/material";
 import React from "react";
 import CheckboxListItem from "./CheckboxListItem";
 
-const CheckboxList = ({ itemList, checkedList, setCheckedList }) => {
+const CheckboxList = ({
+  itemList,
+  checkedList,
+  setCheckedList,
+  render = null,
+}) => {
   const handleToggle = (value) => () => {
     const currentIndex = checkedList.indexOf(value);
     const newChecked = [...checkedList];
@@ -26,15 +31,23 @@ const CheckboxList = ({ itemList, checkedList, setCheckedList }) => {
 
   return (
     <List>
-      {itemList.map((value) => (
-        <CheckboxListItem
-          key={value}
-          value={value}
-          onClick={handleToggle(value)}
-          itemText={value}
-          checked={checkedList.indexOf(value) !== -1}
-        />
-      ))}
+      {itemList.map((value) =>
+        render ? (
+          render({
+            value: value,
+            onClick: handleToggle(value),
+            checked: checkedList.indexOf(value) !== -1,
+          })
+        ) : (
+          <CheckboxListItem
+            key={value}
+            value={value}
+            onClick={handleToggle(value)}
+            itemText={value}
+            checked={checkedList.indexOf(value) !== -1}
+          />
+        )
+      )}
     </List>
   );
 };

@@ -113,11 +113,10 @@ const TTPopper = ({
   if (triggerComponent) {
     return (
       <PopperRoot
-        className={
-          openPopper
-            ? classNames("TTPopper-root", "TTPopper-open")
-            : "TTPopper-root"
-        }
+        className={classNames(
+          "TTPopper-root",
+          openPopper ? "TTPopper-open" : null
+        )}
         style={{
           position: sameWidthAsTrigger && "relative",
         }}
@@ -138,7 +137,8 @@ const TTPopper = ({
             className: classNames(
               triggerComponent.props.className,
               "TTPopper-trigger",
-              openPopper ? "TTPopper-open" : null
+              openPopper ? "TTPopper-open" : null,
+              openPopper ? "TT-open" : null
             ),
           })}
         </div>
