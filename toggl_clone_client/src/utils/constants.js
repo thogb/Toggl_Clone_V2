@@ -12,3 +12,21 @@ export const relativeURL = {
   LOGIN: "/track/login",
   SIGN_UP: "/track/signup",
 };
+
+export const TEAM_STATE = {
+  active: "active",
+  inactive: "inactive",
+  both: "both"
+}
+
+export const CLIENT_STATE = {
+  active: "active",
+  archived: "archived",
+  both: "both",
+}
+
+export const PROJECT_STATE = {
+  active: "active",
+  archived: "archived",
+  both: "both",
+}

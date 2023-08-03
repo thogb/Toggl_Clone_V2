@@ -11,6 +11,7 @@ export const popperClassNames = {
 };
 
 const SIZES = {
+  xs: 148,
   sm: 238,
   md: 288,
   lg: 338,

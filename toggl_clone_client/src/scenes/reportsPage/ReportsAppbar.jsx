@@ -15,6 +15,7 @@ import { useLocation } from "react-router-dom";
 import TagsFilter from "../../components/filters/TagsFilter";
 import { FilterButton } from "../../components/filters/FilterButton";
 import { useSelector } from "react-redux";
+import ProjectFilter from "../../components/filters/ProjectFilter";
 
 const ReportsAppbar = () => {
   const currentWorkspace = useSelector(
@@ -58,6 +59,7 @@ const ReportsAppbar = () => {
       </TTAppbarMain>
       <TTAppbarTool>
         <TagsFilter workspaceId={currentWorkspace.id} />
+        <ProjectFilter workspaceId={currentWorkspace.id} />
       </TTAppbarTool>
     </TTAppbar>
   );
