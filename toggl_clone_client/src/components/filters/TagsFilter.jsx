@@ -47,7 +47,9 @@ const TagsFilter = ({
   };
 
   const handleCheckedTagsChange = (newCheckedTags) => {
-    setCheckedTags(newCheckedTags.sort((a, b) => a.name.localeCompare(b.name)));
+    const sortedTags = [...newCheckedTags];
+    sortedTags.sort((a, b) => a.name.localeCompare(b.name));
+    setCheckedTags(sortedTags);
   };
 
   return (

@@ -58,9 +58,9 @@ function ProjectsFilter({
   };
 
   const handleCheckedProjectsChange = (newCheckedProjects) => {
-    setCheckedProjects(
-      newCheckedProjects.sort((a, b) => a.name.localeCompare(b.name))
-    );
+    const sortedProjects = [...newCheckedProjects];
+    sortedProjects.sort((a, b) => a.name.localeCompare(b.name));
+    setCheckedProjects(sortedProjects);
   };
 
   return (
