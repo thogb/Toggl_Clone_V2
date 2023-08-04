@@ -21,6 +21,11 @@ export default function ProjectsFilter({ workspaceId, onComplete }) {
     useSelector((state) => state.projects.projects)[workspaceId] ?? [];
 
   const [popperAnchorEl, setPopperAnchorEl] = useState(null);
+  const [subjectState, setSubjectState] = useState(PROJECT_STATE.active);
+
+  const handleSubjectStateFilterComplete = (value) => {
+    setSubjectState(value);
+  };
 
   return (
     <TTPopper
@@ -47,8 +52,9 @@ export default function ProjectsFilter({ workspaceId, onComplete }) {
       />
       <TTPopperActionSection>
         <SubjectStateFilter
+          onComplete={handleSubjectStateFilterComplete}
           subjectStates={Object.values(PROJECT_STATE)}
-          currentSubjectState={PROJECT_STATE.active}
+          currentSubjectState={subjectState}
         />
       </TTPopperActionSection>
     </TTPopper>

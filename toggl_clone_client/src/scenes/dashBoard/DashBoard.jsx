@@ -28,12 +28,14 @@ import { SnackbarProvider } from "notistack";
 import TTSuccessSnackbar from "../../components/customSnackbar/TTSuccessSnackbar";
 import TTErrorSnackbar from "../../components/customSnackbar/TTErrorSnackbar";
 
+export const NAVBAR_BREAKPOINT = "md";
+
 const DashBoard = () => {
   const dispatch = useDispatch();
   const [isMDrawerOpen, setIsMDrawerOpen] = useState(false);
 
   const theme = useTheme();
-  const belowMd = useMediaQuery(theme.breakpoints.down("md"));
+  const belowMd = useMediaQuery(theme.breakpoints.down(NAVBAR_BREAKPOINT));
   const user = useSelector((state) => state.auth.user);
 
   const organisationQuery = useGetOrganisationsQuery();

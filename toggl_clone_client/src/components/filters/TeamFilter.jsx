@@ -18,6 +18,12 @@ export const TeamFilterButton = (props) => {
 const TeamFilter = ({ workspaceId, onComplete }) => {
   const [popperAnchorEl, setPopperAnchorEl] = useState(null);
 
+  const [subjectState, setSubjectState] = useState(TEAM_STATE.active);
+
+  const handleSubjectStateFilterComplete = (value) => {
+    setSubjectState(value);
+  };
+
   const team = [];
   return (
     <TTPopper
@@ -35,8 +41,9 @@ const TeamFilter = ({ workspaceId, onComplete }) => {
       />
       <TTPopperActionSection>
         <SubjectStateFilter
+          onComplete={handleSubjectStateFilterComplete}
           subjectStates={Object.values(TEAM_STATE)}
-          currentSubjectState={TEAM_STATE.active}
+          currentSubjectState={subjectState}
         />
       </TTPopperActionSection>
     </TTPopper>

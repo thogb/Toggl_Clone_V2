@@ -18,6 +18,8 @@ const TagsFilter = ({ workspaceId, onComplete }) => {
   const tags = useSelector((state) => state.tags.tags)[workspaceId] ?? [];
 
   const [popperAnchorEl, setPopperAnchorEl] = useState(null);
+  const [checkedTags, setCheckedTags] = useState([]);
+  const [defaultSelected, setDefaultSelected] = useState(false);
 
   const handleTagButtonClick = (e) => {
     setPopperAnchorEl(e.currentTarget);
@@ -32,14 +34,14 @@ const TagsFilter = ({ workspaceId, onComplete }) => {
       <ListFilter
         searchPlaceholder={"Find tags..."}
         defaultText={"Without Tag"}
-        defaultselected={false}
+        defaultselected={defaultSelected}
         matchDescription={(item, searchText) =>
           item.name.toLowerCase().includes(searchText.toLowerCase().trim())
         }
-        setDefaultSelect={() => {}}
+        setDefaultSelect={setDefaultSelected}
         itemList={tags}
-        checkedItemList={[]}
-        setCheckedItemList={() => {}}
+        checkedItemList={checkedTags}
+        setCheckedItemList={setCheckedTags}
         renderListItem={({ value, onClick, checked }) => {
           return (
             <CheckboxListItem

@@ -18,6 +18,7 @@ import ProjectsFilter from "../../components/filters/ProjectsFilter";
 import ClientsFilter from "../../components/filters/ClientsFilter";
 import TeamFilter from "../../components/filters/TeamFilter";
 import DescriptionFilter from "../../components/filters/DescriptionFilter";
+import FilterGroup from "../../components/filters/FilterGroup";
 
 const ReportsAppbar = () => {
   const currentWorkspace = useSelector(
@@ -60,11 +61,13 @@ const ReportsAppbar = () => {
         </TTAppbarActions>
       </TTAppbarMain>
       <TTAppbarTool>
-        <TeamFilter workspaceId={currentWorkspace.id} />
-        <ClientsFilter workspaceId={currentWorkspace.id} />
-        <ProjectsFilter workspaceId={currentWorkspace.id} />
-        <TagsFilter workspaceId={currentWorkspace.id} />
-        <DescriptionFilter />
+        <FilterGroup>
+          <TeamFilter workspaceId={currentWorkspace.id} />
+          <ClientsFilter workspaceId={currentWorkspace.id} />
+          <ProjectsFilter workspaceId={currentWorkspace.id} />
+          <TagsFilter workspaceId={currentWorkspace.id} />
+          <DescriptionFilter />
+        </FilterGroup>
       </TTAppbarTool>
     </TTAppbar>
   );

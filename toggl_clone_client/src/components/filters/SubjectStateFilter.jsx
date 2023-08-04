@@ -49,17 +49,18 @@ export default function SubjectStateFilter({
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        <Typography fontSize={"0.90rem"} mr={0.5}>
-          Active
+        <Typography fontSize={"0.90rem"} mr={0.5} textTransform={"capitalize"}>
+          {currentSubjectState}
         </Typography>
         <KeyboardArrowRight style={{ fontSize: "0.85rem" }} />
         <TTPopper
           disableBackDrop
           size="xs"
           offset={[0, 0]}
-          placement={"right"}
+          placement={"right-start"}
           anchorEl={popperAnchorEl}
           onClose={() => setPopperAnchorEl(null)}
+          disablePortal={false}
         >
           <TTPopperContainer padding={theme.spacing(1 / 2)}>
             {subjectStates.map((subjectState) => (

@@ -18,6 +18,12 @@ export const ClientsFilterButton = (props) => {
 const ClientsFilter = ({ workspaceId, onComplete }) => {
   const [popperAnchorEl, setPopperAnchorEl] = useState(null);
 
+  const [subjectState, setSubjectState] = useState(CLIENT_STATE.active);
+
+  const handleSubjectStateFilterComplete = (value) => {
+    setSubjectState(value);
+  };
+
   const clients = [];
 
   return (
@@ -38,8 +44,9 @@ const ClientsFilter = ({ workspaceId, onComplete }) => {
       />
       <TTPopperActionSection>
         <SubjectStateFilter
+          onComplete={handleSubjectStateFilterComplete}
           subjectStates={Object.values(CLIENT_STATE)}
-          currentSubjectState={CLIENT_STATE.active}
+          currentSubjectState={subjectState}
         />
       </TTPopperActionSection>
     </TTPopper>
