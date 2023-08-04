@@ -15,7 +15,7 @@ export const ClientsFilterButton = (props) => {
   );
 };
 
-const ClientsFilter = ({ workspaceId, onComplete }) => {
+const ClientsFilter = ({ workspaceId, selected = false, onComplete }) => {
   const [popperAnchorEl, setPopperAnchorEl] = useState(null);
 
   const [subjectState, setSubjectState] = useState(CLIENT_STATE.active);
@@ -32,6 +32,7 @@ const ClientsFilter = ({ workspaceId, onComplete }) => {
       onClose={() => setPopperAnchorEl(null)}
       triggerComponent={
         <ClientsFilterButton
+          selected={selected}
           onClick={(e) => setPopperAnchorEl(e.currentTarget)}
         />
       }

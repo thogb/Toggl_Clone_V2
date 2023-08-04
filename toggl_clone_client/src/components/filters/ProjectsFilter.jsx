@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import TTPopper from "../ttPopper/TTPopper";
 import { FilterButton } from "./FilterButton";
 import { Circle, Folder } from "@mui/icons-material";
@@ -7,15 +7,14 @@ import { useSelector } from "react-redux";
 import { TTPopperActionSection } from "../ttPopper/TTPopperActionSection";
 import SubjectStateFilter from "./SubjectStateFilter";
 import { PROJECT_STATE } from "../../utils/constants";
-import CheckboxListItem, {
-  CheckBoxListItemBase,
-} from "../checkboxList/CheckboxListItem";
+import { CheckBoxListItemBase } from "../checkboxList/CheckboxListItem";
 import {
   Checkbox,
   ListItemButton,
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
+import { filterUtils } from "../../utils/filtersUtil";
 
 export const ProjectsFilterButton = (props) => {
   return (
@@ -25,7 +24,12 @@ export const ProjectsFilterButton = (props) => {
   );
 };
 
-export default function ProjectsFilter({ workspaceId, onComplete }) {
+function ProjectsFilter({
+  workspaceId,
+  selected = false,
+  projectFilterData,
+  onComplete,
+}) {
   const projects =
     useSelector((state) => state.projects.projects)[workspaceId] ?? [];
 
@@ -34,17 +38,42 @@ export default function ProjectsFilter({ workspaceId, onComplete }) {
   const [defaultSelected, setDefaultSelected] = useState(false);
   const [checkedProjects, setCheckedProjects] = useState([]);
 
+  useEffect(() => {
+    setDefaultSelected(projectFilterData.defaultSelected);
+    setCheckedProjects([...projectFilterData.projects]);
+  }, [projectFilterData]);
+
   const handleSubjectStateFilterComplete = (value) => {
     setSubjectState(value);
+  };
+
+  const handlePopperClose = () => {
+    if (onComplete) {
+      onComplete({
+        defaultSelected: defaultSelected,
+        projects: checkedProjects,
+      });
+    }
+    setPopperAnchorEl(null);
+  };
+
+  const handleCheckedProjectsChange = (newCheckedProjects) => {
+    setCheckedProjects(
+      newCheckedProjects.sort((a, b) => a.name.localeCompare(b.name))
+    );
   };
 
   return (
     <TTPopper
       anchorEl={popperAnchorEl}
-      onClose={() => setPopperAnchorEl(null)}
+      onClose={handlePopperClose}
       triggerComponent={
         <ProjectsFilterButton
-          count={checkedProjects.length}
+          selected={selected}
+          count={
+            projectFilterData.projects.length +
+            Number(projectFilterData.defaultSelected)
+          }
           onClick={(e) => setPopperAnchorEl(e.currentTarget)}
         />
       }
@@ -59,7 +88,7 @@ export default function ProjectsFilter({ workspaceId, onComplete }) {
         setDefaultSelect={setDefaultSelected}
         itemList={projects}
         checkedItemList={checkedProjects}
-        setCheckedItemList={setCheckedProjects}
+        setCheckedItemList={handleCheckedProjectsChange}
         renderListItem={({ value, onClick, checked }) => {
           return (
             <CheckBoxListItemBase key={value.id}>
@@ -91,3 +120,5 @@ export default function ProjectsFilter({ workspaceId, onComplete }) {
     </TTPopper>
   );
 }
+
+export default memo(ProjectsFilter);

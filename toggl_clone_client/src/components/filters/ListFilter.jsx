@@ -67,19 +67,19 @@ const ListFilter = ({
   };
 
   const handleAllClick = () => {
-    setDefaultSelect(null);
+    setDefaultSelect(false);
     setCheckedItemList(itemList);
   };
 
   const handleNoneClick = () => {
-    setDefaultSelect(null);
+    setDefaultSelect(false);
     setCheckedItemList([]);
   };
 
   const handleCheckedListChange = (newCheckedList) => {
     setCheckedItemList(newCheckedList);
     if (clearListOnDefaultSelect) {
-      setDefaultSelect(null);
+      setDefaultSelect(false);
     }
   };
 
@@ -146,7 +146,7 @@ const ListFilter = ({
                 ...values,
                 onClick: () => {
                   if (clearListOnDefaultSelect) {
-                    setDefaultSelect(null);
+                    setDefaultSelect(false);
                   }
                   values.onClick();
                 },

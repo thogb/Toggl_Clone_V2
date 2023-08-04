@@ -15,7 +15,7 @@ export const TeamFilterButton = (props) => {
   );
 };
 
-const TeamFilter = ({ workspaceId, onComplete }) => {
+const TeamFilter = ({ workspaceId, selected = false, onComplete }) => {
   const [popperAnchorEl, setPopperAnchorEl] = useState(null);
 
   const [subjectState, setSubjectState] = useState(TEAM_STATE.active);
@@ -30,7 +30,10 @@ const TeamFilter = ({ workspaceId, onComplete }) => {
       anchorEl={popperAnchorEl}
       onClose={() => setPopperAnchorEl(null)}
       triggerComponent={
-        <TeamFilterButton onClick={(e) => setPopperAnchorEl(e.currentTarget)} />
+        <TeamFilterButton
+          selected={selected}
+          onClick={(e) => setPopperAnchorEl(e.currentTarget)}
+        />
       }
     >
       <ListFilter

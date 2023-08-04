@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import TTPopper from "../ttPopper/TTPopper";
 import { FilterButton } from "./FilterButton";
 import { LocalOffer } from "@mui/icons-material";
 import ListFilter from "./ListFilter";
 import { useSelector } from "react-redux";
 import CheckboxListItem from "../checkboxList/CheckboxListItem";
+import { filterUtils } from "../../utils/filtersUtil";
 
 export const TagsFilterButton = (props) => {
   return (
@@ -14,24 +15,51 @@ export const TagsFilterButton = (props) => {
   );
 };
 
-const TagsFilter = ({ workspaceId, onComplete }) => {
+const TagsFilter = ({
+  workspaceId,
+  selected = false,
+  tagFilterData,
+  onComplete,
+}) => {
   const tags = useSelector((state) => state.tags.tags)[workspaceId] ?? [];
 
   const [popperAnchorEl, setPopperAnchorEl] = useState(null);
   const [checkedTags, setCheckedTags] = useState([]);
   const [defaultSelected, setDefaultSelected] = useState(false);
 
+  useEffect(() => {
+    setDefaultSelected(tagFilterData.defaultSelected);
+    setCheckedTags([...tagFilterData.tags]);
+  }, [tagFilterData]);
+
   const handleTagButtonClick = (e) => {
     setPopperAnchorEl(e.currentTarget);
+  };
+
+  const handlePopperClose = () => {
+    if (onComplete) {
+      onComplete({
+        defaultSelected: defaultSelected,
+        tags: checkedTags,
+      });
+    }
+    setPopperAnchorEl(null);
+  };
+
+  const handleCheckedTagsChange = (newCheckedTags) => {
+    setCheckedTags(newCheckedTags.sort((a, b) => a.name.localeCompare(b.name)));
   };
 
   return (
     <TTPopper
       anchorEl={popperAnchorEl}
-      onClose={() => setPopperAnchorEl(null)}
+      onClose={handlePopperClose}
       triggerComponent={
         <TagsFilterButton
-          count={checkedTags.length}
+          selected={selected}
+          count={
+            tagFilterData.tags.length + Number(tagFilterData.defaultSelected)
+          }
           onClick={handleTagButtonClick}
         />
       }
@@ -46,7 +74,7 @@ const TagsFilter = ({ workspaceId, onComplete }) => {
         setDefaultSelect={setDefaultSelected}
         itemList={tags}
         checkedItemList={checkedTags}
-        setCheckedItemList={setCheckedTags}
+        setCheckedItemList={handleCheckedTagsChange}
         renderListItem={({ value, onClick, checked }) => {
           return (
             <CheckboxListItem
@@ -63,4 +91,4 @@ const TagsFilter = ({ workspaceId, onComplete }) => {
   );
 };
 
-export default TagsFilter;
+export default memo(TagsFilter);

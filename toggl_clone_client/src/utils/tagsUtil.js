@@ -1,7 +1,6 @@
 const populateFromRaw = (state, rawTags) => {
   const tags = {};
   const tagNames = {};
-  console.log("Rewriting tags");
   for (let tag of rawTags) {
     if (!tags[tag.workspaceId]) {
       tags[tag.workspaceId] = [];

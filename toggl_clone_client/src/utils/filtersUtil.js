@@ -22,24 +22,44 @@ const getDefaultTagFilterData = () => {
   };
 };
 
-const isTeamFilterDataDiffDefault = (teamFilterData) => {};
+const isTeamFilterDataDiff = (teamFilterDataA, teamFilterDataB) => {};
 
-const isClientFilterDataDiffDefault = (clientFilterData) => {};
+const isTeamFilterDataDiffDefault = (teamFilterData) => {
+  return isTeamFilterDataDiff(getDefaultTeamFilterData(), teamFilterData);
+};
+
+const isClientFilterDataDiff = (clientFilterDataA, clientFilterDataB) => {};
+
+const isClientFilterDataDiffDefault = (clientFilterData) => {
+  return isClientFilterDataDiff(getDefaultClientFilterData(), clientFilterData);
+};
+
+const isProjectFilterDataDiff = (projectFilterDataA, projectFilterDataB) => {
+  return (
+    projectFilterDataA.defaultSelected !== projectFilterDataB.defaultSelected ||
+    !listUtil.isListEqual(
+      projectFilterDataA.projects,
+      projectFilterDataB.projects
+    )
+  );
+};
 
 const isProjectFilterDataDiffDefault = (projectFilterData) => {
-  const defaultData = getDefaultProjectFilterData();
+  return isProjectFilterDataDiff(
+    getDefaultProjectFilterData(),
+    projectFilterData
+  );
+};
+
+const isTagFilterDataDiff = (tagFilterDataA, tagFilterDataB) => {
   return (
-    projectFilterData.defaultSelected !== defaultData.defaultSelected ||
-    !listUtil.isListEqual(projectFilterData.projects, defaultData.projects)
+    tagFilterDataA.defaultSelected !== tagFilterDataB.defaultSelected ||
+    !listUtil.isListEqual(tagFilterDataA.tags, tagFilterDataB.tags)
   );
 };
 
 const isTagFilterDataDiffDefault = (tagFilterData) => {
-  const defaultData = getDefaultTagFilterData();
-  return (
-    tagFilterData.defaultSelected !== defaultData.defaultSelected ||
-    !listUtil.isListEqual(tagFilterData.tags, defaultData.tags)
-  );
+  return isTagFilterDataDiff(getDefaultTagFilterData(), tagFilterData);
 };
 
 export const filterUtils = {
@@ -48,8 +68,12 @@ export const filterUtils = {
   getDefaultProjectFilterData,
   getDefaultTagFilterData,
 
+  isTeamFilterDataDiff,
+  isClientFilterDataDiff,
   isTeamFilterDataDiffDefault,
+  isProjectFilterDataDiff,
   isClientFilterDataDiffDefault,
+  isTagFilterDataDiff,
   isProjectFilterDataDiffDefault,
   isTagFilterDataDiffDefault,
 };

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { FilterButton } from "./FilterButton";
 import { Abc, MoreHoriz } from "@mui/icons-material";
 import TTPopper from "../ttPopper/TTPopper";
@@ -15,12 +15,19 @@ export const DescriptionFilterButton = (props) => {
   );
 };
 
-const DescriptionFilter = () => {
+const DescriptionFilter = ({ description, selected = false, onComplete }) => {
   const theme = useTheme();
 
   const [searchDesc, setSearchDesc] = useState("");
   const [withoutDescription, setWithoutDescription] = useState(false);
   const [popperAnchorEl, setPopperAnchorEl] = useState(null);
+
+  useEffect(() => {
+    setSearchDesc(description ?? "");
+    if (description === null) {
+      setWithoutDescription(true);
+    }
+  }, [description]);
 
   const handleSearchChange = (e) => {
     setWithoutDescription(false);
@@ -28,18 +35,25 @@ const DescriptionFilter = () => {
   };
 
   const handleWithoutDescriptionClick = () => {
-    console.log("clicked");
     setWithoutDescription(!withoutDescription);
     setSearchDesc("");
+  };
+
+  const handlePopperClose = () => {
+    if (onComplete) {
+      onComplete(withoutDescription ? null : searchDesc.trim());
+    }
+    setPopperAnchorEl(null);
   };
 
   return (
     <TTPopper
       anchorEl={popperAnchorEl}
-      onClose={() => setPopperAnchorEl(null)}
+      onClose={handlePopperClose}
       triggerComponent={
         <DescriptionFilterButton
-          endIconChildren={searchDesc && <MoreHoriz />}
+          selected={selected}
+          endIconChildren={description && <MoreHoriz />}
           onClick={(e) => setPopperAnchorEl(e.currentTarget)}
         />
       }
@@ -70,4 +84,4 @@ const DescriptionFilter = () => {
   );
 };
 
-export default DescriptionFilter;
+export default memo(DescriptionFilter);

@@ -8,7 +8,7 @@ const getReportsFilterData = () => {
     clientFilterData: filterUtils.getDefaultClientFilterData(),
     projectFilterData: filterUtils.getDefaultProjectFilterData(),
     tagFilterData: filterUtils.getDefaultTagFilterData(),
-    descriptionFilter: null,
+    descriptionFilter: "",
   };
 };
 
@@ -32,6 +32,15 @@ const reportsPageSlice = createSlice({
     setTagFilterData: (state, action) => {
       state.tagFilterData = action.payload.tagFilterData;
     },
+    setDescriptionFilter: (state, action) => {
+      state.descriptionFilter = action.payload.descriptionFilter;
+    },
+    resetFilters: (state) => {
+      return {
+        ...state,
+        ...getReportsFilterData(),
+      };
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -54,5 +63,5 @@ const reportsPageSlice = createSlice({
   },
 });
 
-export const projectPageActions = reportsPageSlice.actions;
+export const reportsPageActions = reportsPageSlice.actions;
 export default reportsPageSlice.reducer;
