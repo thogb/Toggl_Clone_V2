@@ -8,6 +8,7 @@ import organisationsReducer from "./organisationSlice";
 import tagsReducer from "./tagSlice";
 import projectsReducer from "./projectSlice";
 import notificationsReducer from "./notificationSlice";
+import reportsPageReducer from "./reportsPageSlice";
 
 export const store = configureStore({
   reducer: combineReducers({
@@ -19,6 +20,7 @@ export const store = configureStore({
     tags: tagsReducer,
     projects: projectsReducer,
     notifications: notificationsReducer,
+    reportsPage: reportsPageReducer,
     [ttCloneApi.reducerPath]: ttCloneApi.reducer,
   }),
   middleware: (getDefaultMiddleware) =>
