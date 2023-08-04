@@ -103,7 +103,7 @@ const ListFilter = ({
           No matching items
         </Typography>
       ) : (
-        <Box maxHeight={"380px"} overflow={"scroll"}>
+        <Box maxHeight={"380px"} overflow={"auto"}>
           {renderDefault
             ? renderDefault()
             : defaultText && (

@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
 
-const StyledListItem = styled(ListItem)(({ theme }) => ({
+export const CheckBoxListItemBase = styled(ListItem)(({ theme }) => ({
   padding: 0,
   borderRadius: "8px",
 
@@ -65,7 +65,7 @@ const CheckboxListItem = ({
 }) => {
   const labelId = `checkbox-list-label-${value}`;
   return (
-    <StyledListItem>
+    <CheckBoxListItemBase>
       <ListItemButton
         selected={showSelected && checked}
         onClick={onClick}
@@ -82,7 +82,7 @@ const CheckboxListItem = ({
         </ListItemIcon>
         <ListItemText id={labelId} primary={itemText} />
       </ListItemButton>
-    </StyledListItem>
+    </CheckBoxListItemBase>
   );
 };
 

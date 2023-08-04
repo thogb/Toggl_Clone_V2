@@ -1,12 +1,21 @@
 import React, { useState } from "react";
 import TTPopper from "../ttPopper/TTPopper";
 import { FilterButton } from "./FilterButton";
-import { Folder } from "@mui/icons-material";
+import { Circle, Folder } from "@mui/icons-material";
 import ListFilter from "./ListFilter";
 import { useSelector } from "react-redux";
 import { TTPopperActionSection } from "../ttPopper/TTPopperActionSection";
 import SubjectStateFilter from "./SubjectStateFilter";
 import { PROJECT_STATE } from "../../utils/constants";
+import CheckboxListItem, {
+  CheckBoxListItemBase,
+} from "../checkboxList/CheckboxListItem";
+import {
+  Checkbox,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+} from "@mui/material";
 
 export const ProjectsFilterButton = (props) => {
   return (
@@ -22,6 +31,8 @@ export default function ProjectsFilter({ workspaceId, onComplete }) {
 
   const [popperAnchorEl, setPopperAnchorEl] = useState(null);
   const [subjectState, setSubjectState] = useState(PROJECT_STATE.active);
+  const [defaultSelected, setDefaultSelected] = useState(false);
+  const [checkedProjects, setCheckedProjects] = useState([]);
 
   const handleSubjectStateFilterComplete = (value) => {
     setSubjectState(value);
@@ -40,15 +51,34 @@ export default function ProjectsFilter({ workspaceId, onComplete }) {
       <ListFilter
         searchPlaceholder={"Find project..."}
         defaultText={"Entries without project"}
-        defaultselected={false}
+        defaultselected={defaultSelected}
         matchDescription={(project, searchText) =>
           project.name.toLowerCase().includes(searchText.toLowerCase().trim())
         }
-        setDefaultSelect={() => {}}
+        setDefaultSelect={setDefaultSelected}
         itemList={projects}
-        checkedItemList={[]}
-        setCheckedItemList={() => {}}
-        renderListItem={({ value, onClick, checked }) => {}}
+        checkedItemList={checkedProjects}
+        setCheckedItemList={setCheckedProjects}
+        renderListItem={({ value, onClick, checked }) => {
+          return (
+            <CheckBoxListItemBase key={value.id}>
+              <ListItemButton onClick={onClick} disableTouchRipple>
+                <ListItemIcon>
+                  <Checkbox
+                    edge="start"
+                    checked={checked}
+                    tabIndex={-1}
+                    disableRipple
+                  />
+                </ListItemIcon>
+                <ListItemIcon>
+                  <Circle style={{ fontSize: "0.6rem", color: value.colour }} />
+                </ListItemIcon>
+                <ListItemText primary={value.name} />
+              </ListItemButton>
+            </CheckBoxListItemBase>
+          );
+        }}
       />
       <TTPopperActionSection>
         <SubjectStateFilter
