@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { Box } from "@mui/material";
+import { Box, useTheme } from "@mui/material";
 import React from "react";
 
 const StyledBox = styled(Box)(({ theme }) => ({
@@ -7,8 +7,11 @@ const StyledBox = styled(Box)(({ theme }) => ({
 }));
 
 const TTPopperContainer = ({ padding, children, style }) => {
+  const theme = useTheme();
+
   const fStyle = {
-    "--TTPopper-container-padding": padding ?? "16px",
+    "--TTPopper-container-padding":
+      padding ?? theme.spacing(theme.ttSpacings.popper.px / 2),
     display: "flex",
     flexDirection: "column",
     ...style,

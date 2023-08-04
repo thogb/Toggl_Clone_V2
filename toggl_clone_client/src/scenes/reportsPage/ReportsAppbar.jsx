@@ -13,9 +13,11 @@ import { GetApp, LocalOffer, Save } from "@mui/icons-material";
 import { reportRoute } from "../../routes/Routes";
 import { useLocation } from "react-router-dom";
 import TagsFilter from "../../components/filters/TagsFilter";
-import { FilterButton } from "../../components/filters/FilterButton";
 import { useSelector } from "react-redux";
-import ProjectFilter from "../../components/filters/ProjectFilter";
+import ProjectsFilter from "../../components/filters/ProjectsFilter";
+import ClientsFilter from "../../components/filters/ClientsFilter";
+import TeamFilter from "../../components/filters/TeamFilter";
+import DescriptionFilter from "../../components/filters/DescriptionFilter";
 
 const ReportsAppbar = () => {
   const currentWorkspace = useSelector(
@@ -58,8 +60,11 @@ const ReportsAppbar = () => {
         </TTAppbarActions>
       </TTAppbarMain>
       <TTAppbarTool>
+        <TeamFilter workspaceId={currentWorkspace.id} />
+        <ClientsFilter workspaceId={currentWorkspace.id} />
+        <ProjectsFilter workspaceId={currentWorkspace.id} />
         <TagsFilter workspaceId={currentWorkspace.id} />
-        <ProjectFilter workspaceId={currentWorkspace.id} />
+        <DescriptionFilter />
       </TTAppbarTool>
     </TTAppbar>
   );

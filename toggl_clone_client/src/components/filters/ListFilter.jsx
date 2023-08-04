@@ -108,6 +108,7 @@ const ListFilter = ({
             ? renderDefault()
             : defaultText && (
                 <CheckboxListItem
+                  showSelected={true}
                   value={defaultText}
                   itemText={defaultText}
                   checked={Boolean(defaultselected)}
@@ -136,6 +137,7 @@ const ListFilter = ({
             </ListFilterCaptionButton>
           </Stack>
           <CheckboxList
+            showSelected={true}
             checkedList={checkedItemList}
             itemList={filteredItemList}
             setCheckedList={handleCheckedListChange}
