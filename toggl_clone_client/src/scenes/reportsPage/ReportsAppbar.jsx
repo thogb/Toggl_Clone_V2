@@ -8,8 +8,8 @@ import TTAppbar, {
   TTAppbarTitle,
   TTAppbarTool,
 } from "../../components/ttAppbar/TTAppbar";
-import { Button, Typography } from "@mui/material";
-import { GetApp, LocalOffer, Save } from "@mui/icons-material";
+import { Button } from "@mui/material";
+import { GetApp, Save } from "@mui/icons-material";
 import { reportRoute } from "../../routes/Routes";
 import { useLocation } from "react-router-dom";
 import TagsFilter from "../../components/filters/TagsFilter";
@@ -20,7 +20,7 @@ import TeamFilter from "../../components/filters/TeamFilter";
 import DescriptionFilter from "../../components/filters/DescriptionFilter";
 import FilterGroup from "../../components/filters/FilterGroup";
 
-const ReportsAppbar = () => {
+const ReportsAppbar = ({ onActualFilterChange }) => {
   const currentWorkspace = useSelector(
     (state) => state.workspaces.currentWorkspace
   );
@@ -29,6 +29,23 @@ const ReportsAppbar = () => {
   const currPath = location.pathname
     .split(reportRoute.exactPath)[1]
     .split("/")[1];
+
+  const handleTeamFilterComplete = (teamFilterData) => {};
+
+  const handleProjectFilterComplete = (projectFilterData) => {
+    if (onActualFilterChange) onActualFilterChange();
+  };
+
+  const handleClientFilterComplete = (clientFilterData) => {};
+
+  const handleTagFilterComplete = (tagFilterData) => {
+    if (onActualFilterChange) onActualFilterChange();
+  };
+
+  const handleDescriptionFilterComplete = (descriptionFilterData) => {
+    if (onActualFilterChange) onActualFilterChange();
+  };
+
   return (
     <TTAppbar>
       <TTAppbarMain>
@@ -62,11 +79,23 @@ const ReportsAppbar = () => {
       </TTAppbarMain>
       <TTAppbarTool>
         <FilterGroup>
-          <TeamFilter workspaceId={currentWorkspace.id} />
-          <ClientsFilter workspaceId={currentWorkspace.id} />
-          <ProjectsFilter workspaceId={currentWorkspace.id} />
-          <TagsFilter workspaceId={currentWorkspace.id} />
-          <DescriptionFilter />
+          <TeamFilter
+            workspaceId={currentWorkspace.id}
+            onComplete={handleTeamFilterComplete}
+          />
+          <ClientsFilter
+            workspaceId={currentWorkspace.id}
+            onComplete={handleClientFilterComplete}
+          />
+          <ProjectsFilter
+            workspaceId={currentWorkspace.id}
+            onComplete={handleProjectFilterComplete}
+          />
+          <TagsFilter
+            workspaceId={currentWorkspace.id}
+            onComplete={handleTagFilterComplete}
+          />
+          <DescriptionFilter onComplete={handleDescriptionFilterComplete} />
         </FilterGroup>
       </TTAppbarTool>
     </TTAppbar>

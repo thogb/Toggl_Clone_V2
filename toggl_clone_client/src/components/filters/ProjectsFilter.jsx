@@ -44,6 +44,7 @@ export default function ProjectsFilter({ workspaceId, onComplete }) {
       onClose={() => setPopperAnchorEl(null)}
       triggerComponent={
         <ProjectsFilterButton
+          count={checkedProjects.length}
           onClick={(e) => setPopperAnchorEl(e.currentTarget)}
         />
       }

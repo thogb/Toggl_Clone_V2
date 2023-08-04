@@ -1,8 +1,33 @@
 import { Button, alpha, styled } from "@mui/material";
 import classNames from "classnames";
 
+export const FilterButtonEndIcon = styled("div")(({ theme }) => ({
+  padding: "3px 4px",
+  borderRadius: "4px",
+  backgroundColor: theme.palette.primary.dark,
+  marginLeft: theme.spacing(1),
+  color: "white",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  fontSize: "0.9em",
+  lineHeight: 0.95,
+  "&>svg": {
+    fontSize: "1.5em",
+    margin: "-0.25ch",
+  },
+}));
+
 export const FilterButton = styled(
-  ({ selected = false, open = false, className, ...others }) => (
+  ({
+    selected = false,
+    open = false,
+    count = 0,
+    endIconChildren,
+    children,
+    className,
+    ...others
+  }) => (
     <Button
       className={classNames(
         selected ? "TT-selected" : null,
@@ -10,7 +35,17 @@ export const FilterButton = styled(
         className
       )}
       {...others}
-    />
+    >
+      {children}
+      {count > 0 && (
+        <FilterButtonEndIcon>
+          <span>{count}</span>
+        </FilterButtonEndIcon>
+      )}
+      {endIconChildren && (
+        <FilterButtonEndIcon>{endIconChildren}</FilterButtonEndIcon>
+      )}
+    </Button>
   )
 )(({ theme }) => ({
   alignItems: "center",

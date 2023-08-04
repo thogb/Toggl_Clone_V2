@@ -29,7 +29,12 @@ const TagsFilter = ({ workspaceId, onComplete }) => {
     <TTPopper
       anchorEl={popperAnchorEl}
       onClose={() => setPopperAnchorEl(null)}
-      triggerComponent={<TagsFilterButton onClick={handleTagButtonClick} />}
+      triggerComponent={
+        <TagsFilterButton
+          count={checkedTags.length}
+          onClick={handleTagButtonClick}
+        />
+      }
     >
       <ListFilter
         searchPlaceholder={"Find tags..."}

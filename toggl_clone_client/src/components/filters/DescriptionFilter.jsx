@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FilterButton } from "./FilterButton";
-import { Abc } from "@mui/icons-material";
+import { Abc, MoreHoriz } from "@mui/icons-material";
 import TTPopper from "../ttPopper/TTPopper";
 import TTPopperContainer from "../ttPopper/TTPopperContainer";
 import SearchTextField from "../searchTextField/SearchTextField";
@@ -39,6 +39,7 @@ const DescriptionFilter = () => {
       onClose={() => setPopperAnchorEl(null)}
       triggerComponent={
         <DescriptionFilterButton
+          endIconChildren={searchDesc && <MoreHoriz />}
           onClick={(e) => setPopperAnchorEl(e.currentTarget)}
         />
       }
