@@ -46,6 +46,10 @@ const TagsSelector = ({
     reOrderTagsList();
   }, [tagCheckedList, tagList]);
 
+  useEffect(() => {
+    updateFilterList(searchValue);
+  }, [searchValue]);
+
   const reOrderTagsList = () => {
     const newCheckedList = [...tagCheckedList, ...createdLocalList].sort();
     const filteredList = tagList
@@ -59,7 +63,7 @@ const TagsSelector = ({
   const handleSearchChange = (e) => {
     const newValue = e.target.value;
     setSearchValue(newValue);
-    updateFilterList(newValue);
+    // updateFilterList(newValue);
   };
 
   const handleSearchBlur = (e) => {
@@ -74,7 +78,7 @@ const TagsSelector = ({
 
   const handleSearchClearClick = () => {
     setSearchValue("");
-    updateFilterList("");
+    // updateFilterList("");
   };
 
   const handleCreateTagClick = () => {
