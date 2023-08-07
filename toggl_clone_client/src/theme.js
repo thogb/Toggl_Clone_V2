@@ -53,6 +53,22 @@ export const themeSettings = (mode) => {
       popper: 1050,
     },
     components: {
+      MuiTooltip: {
+        styleOverrides: {
+          tooltip: {
+            backgroundColor: theme.palette.common.white,
+            color: theme.palette.text.primary,
+            boxShadow: theme.shadows[6],
+            borderRadius: "6px",
+            padding: "12px",
+          },
+          arrow: {
+            "&::before": {
+              backgroundColor: theme.palette.common.white,
+            },
+          },
+        },
+      },
       MuiBackdrop: {
         styleOverrides: {
           root: ({ theme }) =>

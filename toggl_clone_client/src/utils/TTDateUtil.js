@@ -1,11 +1,14 @@
 import {
   differenceInCalendarDays,
   differenceInSeconds,
+  eachDayOfInterval,
+  endOfWeek,
   format,
   isEqual,
   isToday,
   parse,
   setMilliseconds,
+  startOfWeek,
 } from "date-fns";
 import { DATE_FORMAT, REFERENCE_DATE, TIME_FORMAT } from "./constants";
 
@@ -127,4 +130,11 @@ export const convert12Hto24H = (hour, isAM) => {
   } else {
     return hour < 12 ? hour + 12 : hour;
   }
+};
+
+export const getDatesOfWeek = (date) => {
+  return eachDayOfInterval({
+    start: startOfWeek(date, { weekStartsOn: 1 }),
+    end: endOfWeek(date, { weekStartsOn: 1 }),
+  });
 };
