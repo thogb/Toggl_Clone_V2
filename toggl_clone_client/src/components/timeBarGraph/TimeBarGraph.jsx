@@ -3,6 +3,11 @@ import TTBarGraph from "../ttBarGraph/TTBarGraph";
 import { addSeconds, format } from "date-fns";
 import { getDatesOfWeek } from "../../utils/TTDateUtil";
 
+export const GRAPH_MODE = {
+  WEEK: "week",
+  DAY: "day",
+};
+
 const resolutions = {
   DAY: "day",
 };
@@ -11,7 +16,7 @@ const rowHeight = 40;
 const rowCount = 7;
 const axisContainerHeight = rowHeight * rowCount;
 
-const TimeBarGraph = ({ data }) => {
+const TimeBarGraph = ({ data, startDate, endDate }) => {
   const segmentCount = 6;
 
   const graphData = useMemo(() => {
@@ -55,13 +60,13 @@ const TimeBarGraph = ({ data }) => {
     <TTBarGraph
       axisUnit="h"
       axisMax={Math.max(graphData.maxValue, 10)}
-      data={[
-        ...graphData.barData,
-        ...graphData.barData,
-        ...graphData.barData,
-        ...graphData.barData,
-        ...[graphData.barData[0], graphData.barData[0], graphData.barData[0]],
-      ]}
+      // data={[
+      //   ...graphData.barData,
+      //   ...graphData.barData,
+      //   ...graphData.barData,
+      //   ...graphData.barData,
+      //   ...[graphData.barData[0], graphData.barData[0], graphData.barData[0]],
+      // ]}
       data={graphData.barData}
     />
   );
