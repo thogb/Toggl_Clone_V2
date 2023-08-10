@@ -61,10 +61,22 @@ const BarMain = styled("div")(({ theme }) => ({
 }));
 
 const BarIndicator = styled("div")(({ theme }) => ({
+  "@keyframes indicatorExpand": {
+    "0%": {
+      height: "0px",
+    },
+    "100%": {
+      height: "var(--bar-indicator-height)",
+    }
+  },
+
   backgroundColor: theme.palette.secondary.dark,
   borderTopLeftRadius: "5px",
   borderTopRightRadius: "5px",
   position: "absolute",
+  animation: "indicatorExpand 0.3s ease-out",
+  // animationName: "indicatorExpand",
+  // animationDuration: "2s",
   height: "var(--bar-indicator-height)",
   bottom: "0px",
   left: "var(--bar-indicator-horiz-gap)",

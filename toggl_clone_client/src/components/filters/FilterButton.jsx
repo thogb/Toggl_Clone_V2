@@ -60,7 +60,7 @@ export const FilterButton = styled(
     marginLeft: 0,
     backgroundColor: alpha(theme.palette.primary.light, 0.8),
     borderRadius: "5px",
-    padding: "3px 2px",
+    padding: "2px",
     "&>svg": {
       fontSize: "0.975rem",
       color: "white",
