@@ -9,6 +9,9 @@ const CenteredMetric = ({ label, centerX, centerY }) => {
       y={centerY}
       textAnchor="middle"
       dominantBaseline="central"
+      style={{
+        fontSize: "0.875rem",
+      }}
     >
       {label}
     </text>
